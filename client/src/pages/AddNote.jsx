@@ -110,8 +110,8 @@ function AddNote() {
                         InputProps={{ style: { borderRadius: '8px' } }}
                     />
                     <Box sx={{ mt: 2 }}>
-                        <Button variant="contained" type="submit" fullWidth sx={{ borderRadius: '24px', bgcolor: '#4caf50', color: '#ffffff', '&:hover': { bgcolor: '#388e3c' } }}>
-                            Add Note
+                        <Button variant="contained" type="submit" color="secondary" fullWidth sx={{ borderRadius: '24px', '&:hover': { bgcolor: '#313131' } }}>
+                            Add
                         </Button>
                     </Box>
                 </Box>
