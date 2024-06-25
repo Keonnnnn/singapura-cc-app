@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, Grid, IconButton, Paper } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -11,7 +11,7 @@ import { PhotoCamera, Close } from '@mui/icons-material';
 
 function AddNote() {
     const navigate = useNavigate();
-    // const { user } = useContext(UserContext);
+    const [imageFile, setImageFile] = useState(null);
 
     const formik = useFormik({
         initialValues: {
@@ -29,6 +29,9 @@ function AddNote() {
                 .required('Description is required.')
         }),
         onSubmit: (data) => {
+            if (imageFile) {
+                data.imageFile = imageFile;
+            }
             data.title = data.title.trim();
             data.description = data.description.trim();
             http.post('/notes', data)
@@ -48,6 +51,33 @@ function AddNote() {
         navigate("/notes");
     };
 
+    const onFileChange = (e) => {
+        let file = e.target.files[0];
+        if (file) {
+
+            if (file.size > 1024 * 1024) {
+                toast.error('Maximum file size is 1MB');
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append('file', file);
+
+            http.post('/file/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+                .then((res) => {
+                    setImageFile(res.data.filename);
+                })
+                .catch(function (error) {
+                    console.error("Failed to upload image:", error);
+                    toast.error('Failed to upload image');
+                });
+        }
+    };
+
     // Function to get the first initial from the first name
     const getInitials = (firstName) => {
         if (!firstName) return '';
@@ -60,6 +90,7 @@ function AddNote() {
         const randomIndex = Math.floor(Math.random() * colors.length);
         return colors[randomIndex];
     };
+
 
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -109,6 +140,24 @@ function AddNote() {
                         variant="outlined"
                         InputProps={{ style: { borderRadius: '8px' } }}
                     />
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                        <IconButton color="primary" component="label" sx={{ borderRadius: '8px' }}>
+                            <PhotoCamera />
+                            <input hidden accept="image/*" type="file" onChange={onFileChange} />
+                        </IconButton>
+                        {imageFile && (
+                            <Box sx={{ ml: 2, width: '300px', height: '200px', borderRadius: '8px', overflow: 'hidden' }}>
+                                <img
+                                    alt="note"
+                                    src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            </Box>
+                        )}
+                    </Box>
+
+
                     <Box sx={{ mt: 2 }}>
                         <Button variant="contained" type="submit" color="secondary" fullWidth sx={{ borderRadius: '24px', '&:hover': { bgcolor: '#313131' } }}>
                             Add

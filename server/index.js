@@ -6,6 +6,8 @@ const cors = require('cors');
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static('public'));
 
 // Enable CORS
 app.use(cors({
@@ -24,6 +26,9 @@ app.use('/notes', userNotesRoute);
 
 const userRoute = require('./routes/user');
 app.use('/user', userRoute);
+
+const fileRoute = require('./routes/file');
+app.use('/file', fileRoute);
 
 
 const db = require('./models');

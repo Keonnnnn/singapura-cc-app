@@ -13,6 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function EditNote() {
     const navigate = useNavigate();
+    const [imageFile, setImageFile] = useState(null);
 
     const { id } = useParams();
 
@@ -28,6 +29,7 @@ function EditNote() {
     useEffect(() => {
         http.get(`/notes/${id}`).then((res) => {
             setNote(res.data);
+            setImageFile(res.data.imageFile);
             setLoading(false);
             console.log(res.data);
         });
@@ -47,6 +49,9 @@ function EditNote() {
             .required('Description is required.')
         }),
         onSubmit: (data) => {
+            if (imageFile) {
+                data.imageFile = imageFile;
+            }
             data.title = data.title.trim();
             data.description = data.description.trim();
             http.put(`/notes/${id}`, data)
@@ -87,7 +92,34 @@ function EditNote() {
                 console.error(err);
                 toast.error('Failed to delete note');
             });
-    }
+    };
+
+
+    const onFileChange = (e) => {
+        let file = e.target.files[0];
+        if (file) {
+            if (file.size > 1024 * 1024) {
+                toast.error('Maximum file size is 1MB');
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append('file', file);
+
+            http.post('/file/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+                .then((res) => {
+                    setImageFile(res.data.filename);
+                })
+                .catch((err) => {
+                    console.error(err);
+                    toast.error('Failed to upload image');
+                });
+        }
+    };
 
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -132,6 +164,23 @@ function EditNote() {
                             helperText={formik.touched.description && formik.errors.description}
                             variant="outlined"
                         />
+
+
+                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                            <IconButton color="primary" component="label" sx={{ borderRadius: '8px' }}>
+                                <PhotoCamera />
+                                <input hidden accept="image/*" type="file" onChange={onFileChange} />
+                            </IconButton>
+                            {imageFile && (
+                                <Box sx={{ ml: 2, width: '300px', height: '200px' }}>
+                                    <img
+                                        alt="tutorial"
+                                        src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}
+                                        style={{ maxWidth: '100%', height: '100%', borderRadius: '8px' }}
+                                    />
+                                </Box>
+                            )}
+                        </Box>
 
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
                             <Button variant="contained" type="submit" color="secondary" sx={{ borderRadius: '24px' }}>
