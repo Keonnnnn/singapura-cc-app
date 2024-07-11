@@ -143,6 +143,11 @@ function App() {
                   <Typography>View Users</Typography>
                 </Link>
 
+                <Link to="/events">
+                  <Typography>View events</Typography>
+                </Link>
+
+                
 
 
                 {/* <Grid item>
