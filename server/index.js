@@ -2,8 +2,9 @@ const express = require('express');
 require('dotenv').config();
 
 const cors = require('cors');
-
 const app = express();
+
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -30,10 +31,17 @@ app.use('/user', userRoute);
 const fileRoute = require('./routes/file');
 app.use('/file', fileRoute);
 
+// Amelia's routes
+const eventRoute = require('./routes/events');
+app.use('/events', eventRoute);
+
 
 const db = require('./models');
-db.sequelize.sync({alter: true})
-    .then(() => {
+const createAdminUser = require('./scripts/createAdmin'); 
+
+db.sequelize.sync({ alter: true })
+    .then(async () => {
+        await createAdminUser(); 
         let port = process.env.APP_PORT;
         app.listen(port, () => {
             console.log(`Server running on http://localhost:${port}`);

@@ -1,19 +1,46 @@
+// Common Use Imports
 import './App.css';
-import { Container, AppBar, Toolbar, Typography, Box, Button, Avatar, Grid } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Container, AppBar, Toolbar, Typography, Box, Button, Avatar, Grid, IconButton } from '@mui/material';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import http from './http';
+import { ThemeProvider } from '@mui/material/styles';
+import { Search, Clear, BorderAll } from '@mui/icons-material';
+
+
+// Francine
+import MyTheme from './themes/MyTheme';
+import Register from './pages/Register';
+import UserContext from './contexts/UserContext';
+import ProtectedRoute from './ProtectedRoute.jsx'; // Unauthorised users redirected to login page
+import logo from './logo.png';
+import CreateStaff from './pages/CreateStaff';
+import ViewUsers from './pages/ViewUsers';
+import EditUser from './pages/EditUser';
+import ViewUser from './pages/ViewUser';
 import Notes from './pages/Notes';
 import Home from './pages/Home';
 import AddNote from './pages/AddNote';
 import EditNote from './pages/EditNote';
-import { ThemeProvider } from '@mui/material/styles';
-import MyTheme from './themes/MyTheme';
-import Register from './pages/Register';
 import Login from './pages/Login';
-import { useState, useEffect } from 'react';
-import http from './http';
-import UserContext from './contexts/UserContext';
-import ProtectedRoute from './ProtectedRoute.jsx';
-import logo from './logo.png';
+
+// Keon
+// import Posts from './pages/Posts'; 
+// import CreatePost from './pages/CreatePost';
+// import EditPost from './pages/EditPost';
+// import MyForm from './pages/MyForm';
+// import postImage from './assets/postImage.jpg';
+
+//Amelia
+import Events from './pages/Events'; // page
+import AddEvent from './pages/AddEvent'; //page
+import EditEvent from './pages/EditEvent'; //page
+import ChatBot from 'react-chatbotify'; //chatbot
+
+//Ahmed
+
+
+//Ayura
 
 
 
@@ -28,6 +55,8 @@ function App() {
         try {
           const res = await http.get('/user/auth');
           setUser(res.data.user);
+          console.log("Fetched User: ", res.data.user); // Add this line
+
         } catch (error) {
           console.error(error);
         }
@@ -50,10 +79,35 @@ function App() {
   };
 
   
-
   if (loading) {
-    return <div>Loading...</div>; // or a spinner
+    return <div>Loading...</div>; 
+  } 
+
+  const isStaffOrAdmin = () => {
+    return user && (user.role === 'Staff' || user.role === 'Admin');
+  };
+  
+  const flow = {
+    "start": {
+      "message": "Greetings to you! How can I help you today?",
+      path: "end"
+    }
   }
+
+  const options = {
+    theme: {
+      primaryColor: "#f9a99e",
+      secondaryColor: "#e2160f",
+      showFooter: false
+    },
+    chatHistory: {
+      storageKey: "example_theming"
+    }
+    
+  }
+
+
+  
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
@@ -80,6 +134,22 @@ function App() {
                 <Link to="/notes" >
                   <Typography>Notes</Typography>
                 </Link>
+
+                <Link to="/register-staff">
+                  <Typography>Add Staff</Typography>
+                </Link>
+
+                <Link to="/users">
+                  <Typography>View Users</Typography>
+                </Link>
+
+
+
+                {/* <Grid item>
+                  <Typography variant="h6" component="div" color="white">
+                    {isStaffOrAdmin() ? 'Staff Management Portal' : 'Customer Portal'}
+                  </Typography>
+                </Grid> */}
 
                 <Box sx={{flexGrow:1}}/>
                   { user && (
@@ -118,11 +188,21 @@ function App() {
               <Route path="/editnote/:id" element={<ProtectedRoute element={EditNote} />} />
               <Route path={"/register"} element={<Register />} />
               <Route path={"/login"} element={<Login />} />
+              <Route path={"/register-staff"} element={<ProtectedRoute element={CreateStaff} allowedRoles={['Admin']} />} />
+              <Route path={"/users"} element={<ProtectedRoute element={ViewUsers} allowedRoles={['Admin']} />} />
+              <Route path={"/users/:id/edit"} element={<ProtectedRoute element={EditUser} />} /> 
+              <Route path={"/users/:id/view"} element={<ProtectedRoute element={ViewUser} allowedRoles={['Admin']} />} />
+              <Route path={"/events"} element={<Events />} />
+              <Route path={"/addevent"} element={<AddEvent />} />
+              <Route path={"/editevent/:id"} element={<EditEvent />} />
+
             </Routes>
           </Container>
         </ThemeProvider>
       </Router>
+      <ChatBot flow={flow} options={options} />
     </UserContext.Provider>
+    
   );
 }
 

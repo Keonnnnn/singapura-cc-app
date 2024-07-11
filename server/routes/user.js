@@ -6,9 +6,10 @@ const yup = require('yup');
 const { sign } = require('jsonwebtoken');
 require('dotenv').config();
 const { validateToken } = require('../middlewares/auth');
+const { isAdmin } = require('../middlewares/auth');
 
 
-// REGISTER
+// REGISTER CUSTOMER
 router.post("/register", async (req, res) => {
     let data = req.body;
 
@@ -44,6 +45,45 @@ router.post("/register", async (req, res) => {
         res.status(400).json({ errors: err.errors });
     }
 });
+
+
+// CREATE STAFF WITH ADMIN ROLE
+router.post("/register-staff", validateToken, async (req, res) => { // Requires valid token and Admin role
+    const data = req.body;
+  
+    // Validation
+    let validationSchema = yup.object({
+      firstName: yup.string().trim().min(2).max(50).required()
+        .matches(/^[a-zA-Z '-,.]+$/, "First name only allow letters, spaces and characters: ' - , ."),
+      lastName: yup.string().trim().min(2).max(50).required()
+        .matches(/^[a-zA-Z '-,.]+$/, "Last name only allow letters, spaces and characters: ' - , ."),
+      email: yup.string().trim().lowercase().email().max(50).required(),
+      password: yup.string().trim().min(8).max(50).required()
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.")
+    });
+  
+    try {
+      data = await validationSchema.validate(data, { abortEarly: false });
+      // Check if email already exists
+      let existingUser = await User.findOne({ where: { email: data.email } });
+      if (existingUser) {
+        res.status(400).json({ message: 'Email already exists.' });
+        return;
+      }
+  
+      // Hash password
+      data.password = await bcrypt.hash(data.password, 10);
+  
+      // Set role to 'Staff'
+      data.role = 'Staff';
+  
+      // Create user (staff)
+      let result = await User.create(data);
+      res.json({ message: `Staff account for ${result.email} was created successfully.` });
+    } catch (err) {
+      res.status(400).json({ errors: err.errors });
+    }
+  });
 
 
 // LOGIN
@@ -83,7 +123,8 @@ router.post("/login", async (req, res) => {
             id: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
-            email: user.email
+            email: user.email,
+            role: user.role
         };
         let accessToken = sign(userInfo, process.env.APP_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
         res.json({
@@ -105,9 +146,113 @@ router.get("/auth", validateToken, (req, res) => {
         id: req.user.id,
         firstName: req.user.firstName,
         lastName: req.user.lastName,
-        email: req.user.email
+        email: req.user.email,
+        role: req.user.role
     };
     res.json({ user: userInfo });
 });
+
+
+// UPDATE USER
+router.put("/:id", validateToken, async (req, res) => {
+    const { id } = req.params;
+    let userData = req.body;
+
+    // Validation
+    let validationSchema = yup.object({
+        firstName: yup.string().trim().min(2).max(50)
+            .matches(/^[a-zA-Z '-,.]+$/, "First name only allow letters, spaces and characters: ' - , ."),
+        lastName: yup.string().trim().min(2).max(50)
+            .matches(/^[a-zA-Z '-,.]+$/, "Last name only allow letters, spaces and characters: ' - , ."),
+        email: yup.string().trim().lowercase().email().max(50)
+            .required('Email is required.'),
+    });
+
+    try {
+        userData = await validationSchema.validate(userData, { abortEarly: false });
+
+        // Check if user exists
+        let user = await User.findByPk(id);
+        if (!user) {
+            res.status(404).json({ message: 'User not found.' });
+            return;
+        }
+
+        // Exclude role from update data
+        delete userData.role;
+
+        // Update user data
+        await User.update(userData, { where: { id } });
+
+        res.json({ message: `User with ID ${id} updated successfully.` });
+    } catch (err) {
+        res.status(400).json({ errors: err.errors });
+    }
+});
+
+
+
+// DELETE USER
+router.delete("/:id", validateToken, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Check if user exists
+        let user = await User.findByPk(id);
+        if (!user) {
+            res.status(404).json({ message: 'User not found.' });
+            return;
+        }
+
+        // Delete user
+        await User.destroy({ where: { id } });
+
+        res.json({ message: `User with ID ${id} deleted successfully.` });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
+
+// RETRIEVE ALL USERS
+router.get("/", validateToken, isAdmin, async (req, res) => {
+    try {
+        const users = await User.findAll();
+        res.json(users);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
+
+
+// RETRIEVE SINGLE USER BY ID
+router.get("/:id", validateToken, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // Fetch user by ID
+        let user = await User.findByPk(id);
+        if (!user) {
+            res.status(404).json({ message: 'User not found.' });
+            return;
+        }
+
+        // Return user data
+        res.json(user);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+
+
+// RETRIEVE CUSTOMERS (for Admin and Staff)
+
 
 module.exports = router;

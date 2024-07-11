@@ -1,9 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define('User', {
-        // salutation: {
-        //     type: DataTypes.ENUM('Mr', 'Ms', 'Mrs', 'Dr', 'Prof'),
-        //     allowNull: false
-        // },
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true 
+        },
         firstName: {
             type: DataTypes.STRING(50),
             allowNull: false,
@@ -19,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
         email: {
             type: DataTypes.STRING(50),
             allowNull: false,
-            // unique: true
         },
         role: {
             type: DataTypes.ENUM('Customer', 'Staff', 'Admin'),

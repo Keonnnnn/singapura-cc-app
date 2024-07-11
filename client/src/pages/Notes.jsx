@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Input, IconButton, Button, Tooltip } from '@mui/material';
 import http from '../http';
 import { AccessTime, Search, Clear, Edit, Add } from '@mui/icons-material';
 import dayjs from 'dayjs';
@@ -49,23 +49,29 @@ function Notes() {
 
     return (
         <Box>
-            <Typography variant="h6" sx={{ my: 2 }}>Notes</Typography>
+            <Typography variant="h5" sx={{ my: 2 }}>Notes</Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Input value={search} placeholder='Search...' onChange={onSearchChange} onKeyDown={onSearchKeyDown} sx={{ mr: 1 }} />
-                <IconButton color="secondary" onClick={onClickSearch}>
-                    <Search />
-                </IconButton>
+                <Tooltip title="Search">
+                    <IconButton color="secondary" onClick={onClickSearch}>
+                        <Search />
+                    </IconButton>
+                </Tooltip>
 
-                <IconButton color="secondary" onClick={onClickClear}>
-                    <Clear />
-                </IconButton>
+                <Tooltip title="Clear">
+                    <IconButton color="secondary" onClick={onClickClear}>
+                        <Clear />
+                    </IconButton>
+                </Tooltip>
 
                 <Box sx={{ flexGrow: 1 }} />
                 <Link to="/addnote" style={{ textDecoration: 'none' }}>
-                    <IconButton sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' }, color: 'white', borderRadius: '50%' }}>
-                        <Add />
-                    </IconButton>
+                    <Tooltip title="Add Note">
+                        <IconButton sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' }, color: 'white', borderRadius: '50%' }}>
+                            <Add />
+                        </IconButton>
+                    </Tooltip>
                 </Link>
             </Box>
 
@@ -80,9 +86,11 @@ function Notes() {
                                             <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, fontSize: '1.25rem', flexGrow: 1 }}>{note.title}</Typography>
 
                                             <Link to={`/editnote/${note.id}`}>
-                                                <IconButton color="secondary" sx={{ padding: '4px' }}>
-                                                    <Edit sx={{ fontSize: '1.3rem' }} />
-                                                </IconButton>
+                                                <Tooltip title="Edit Note">
+                                                    <IconButton color="secondary" sx={{ padding: '4px' }}>
+                                                        <Edit sx={{ fontSize: '1.3rem' }} />
+                                                    </IconButton>
+                                                </Tooltip>
                                             </Link>
                                         </Box>
 
