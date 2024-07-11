@@ -1,17 +1,16 @@
-import React from 'react';
-import { Box, Typography, TextField, Button, Grid, IconButton, Paper } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Typography, TextField, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../http';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import UserContext from '../contexts/UserContext';
 import { PhotoCamera, Close } from '@mui/icons-material';
 
 function AddNote() {
     const navigate = useNavigate();
-    // const { user } = useContext(UserContext);
+    const [imageFile, setImageFile] = useState(null);
 
     const formik = useFormik({
         initialValues: {
@@ -29,6 +28,9 @@ function AddNote() {
                 .required('Description is required.')
         }),
         onSubmit: (data) => {
+            if (imageFile) {
+                data.imageFile = imageFile;
+            }
             data.title = data.title.trim();
             data.description = data.description.trim();
             http.post('/notes', data)
@@ -48,32 +50,44 @@ function AddNote() {
         navigate("/notes");
     };
 
-    // Function to get the first initial from the first name
-    const getInitials = (firstName) => {
-        if (!firstName) return '';
-        return firstName.charAt(0).toUpperCase();
-    };
+    const onFileChange = (e) => {
+        let file = e.target.files[0];
+        if (file) {
+            if (file.size > 1024 * 1024) {
+                toast.error('Maximum file size is 1MB');
+                return;
+            }
 
-    // Function to generate random background color
-    const getRandomColor = () => {
-        const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
-        const randomIndex = Math.floor(Math.random() * colors.length);
-        return colors[randomIndex];
+            let formData = new FormData();
+            formData.append('file', file);
+
+            http.post('/file/upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+                .then((res) => {
+                    setImageFile(res.data.filename);
+                })
+                .catch(function (error) {
+                    console.error("Failed to upload image:", error);
+                    toast.error('Failed to upload image');
+                });
+        }
     };
 
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
             <Paper elevation={3} sx={{ p: 3, maxWidth: 600, width: '100%', position: 'relative', borderRadius: '12px' }}>
-                <IconButton
-                    color="secondary"
-                    sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.8)', borderRadius: '50%' }}
-                    onClick={handleCancel}>
-                    <Close />
-                </IconButton>
+                <Tooltip title="Close">
+                    <IconButton
+                        color="secondary"
+                        sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.8)', borderRadius: '50%' }}
+                        onClick={handleCancel}>
+                        <Close />
+                    </IconButton>
+                </Tooltip>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    {/* <Box sx={{ width: '48px', height: '48px', overflow: 'hidden', borderRadius: '50%', marginRight: '12px', backgroundColor: getRandomColor(), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 'bold', color: '#ffffff' }}>
-                        {getInitials(user?.firstName)}
-                    </Box> */}
                     <Typography variant="h6" sx={{ flex: 1 }}>
                         Create a Note
                     </Typography>
@@ -109,6 +123,25 @@ function AddNote() {
                         variant="outlined"
                         InputProps={{ style: { borderRadius: '8px' } }}
                     />
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                        <Tooltip title="Upload Photo">
+                            <IconButton color="primary" component="label" sx={{ borderRadius: '8px' }}>
+                                <PhotoCamera />
+                                <input hidden accept="image/*" type="file" onChange={onFileChange} />
+                            </IconButton>
+                        </Tooltip>
+                        {imageFile && (
+                            <Box sx={{ ml: 2, width: '300px', height: '200px', borderRadius: '8px', overflow: 'hidden' }}>
+                                <img
+                                    alt="note"
+                                    src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                            </Box>
+                        )}
+                    </Box>
+
                     <Box sx={{ mt: 2 }}>
                         <Button variant="contained" type="submit" color="secondary" fullWidth sx={{ borderRadius: '24px', '&:hover': { bgcolor: '#313131' } }}>
                             Add

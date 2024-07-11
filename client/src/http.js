@@ -35,4 +35,17 @@ instance.interceptors.response.use(function (response) {
     return Promise.reject(error);
 });
 
+
+
+// fetch users
+export const fetchUsers = async () => {
+    try {
+        const response = await instance.get('/user/users');
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
 export default instance;

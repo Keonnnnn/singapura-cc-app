@@ -15,6 +15,21 @@ const validateToken = (req, res, next) => {
     catch (err) {
         return res.sendStatus(401);
     }
-}
+};
 
-module.exports = { validateToken };
+const isAdmin = (req, res, next) => {
+    return next();
+};
+
+
+
+const isAuthorized = (allowedRoles) => {
+    return (req, res, next) => {
+      if (!allowedRoles.includes(req.user.role)) {
+        return res.redirect('/'); // Or throw appropriate error
+      }
+      next();
+    };
+  };
+
+module.exports = { validateToken, isAdmin, isAuthorized };
