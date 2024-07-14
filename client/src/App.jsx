@@ -209,6 +209,8 @@ function App() {
               <Route path="/Rewards" element={<Rewards />} />
               <Route path="/EditRewards" element={<EditRewards />} />
               <Route path="/UpdateReward/:id" element={<UpdateReward />} />
+              <Route path={"/"} />
+              <Route path={"/rewards"} />
             </Routes>
           </Container>
         </ThemeProvider>
