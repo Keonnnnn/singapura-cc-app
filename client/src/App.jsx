@@ -7,7 +7,6 @@ import http from './http';
 import { ThemeProvider } from '@mui/material/styles';
 import { Search, Clear, BorderAll } from '@mui/icons-material';
 
-
 // Francine
 import MyTheme from './themes/MyTheme';
 import Register from './pages/Register';
@@ -41,7 +40,14 @@ import ChatBot from 'react-chatbotify'; //chatbot
 
 
 //Ayura
-
+import './App.css';
+import { createTheme, ThemeProvider, Container, AppBar, Toolbar, Typography } from '@mui/material';
+import { BrowserRouter as Router, Routes, Route, Link }
+  from 'react-router-dom';
+import Rewards from './pages/Rewards';
+import Sidebar from './pages/Sidebar';
+import EditRewards from './pages/EditRewards';
+import UpdateReward from './pages/updateReward';
 
 
 function App() {
@@ -78,15 +84,15 @@ function App() {
     return firstName.charAt(0).toUpperCase();
   };
 
-  
+
   if (loading) {
-    return <div>Loading...</div>; 
-  } 
+    return <div>Loading...</div>;
+  }
 
   const isStaffOrAdmin = () => {
     return user && (user.role === 'Staff' || user.role === 'Admin');
   };
-  
+
   const flow = {
     "start": {
       "message": "Greetings to you! How can I help you today?",
@@ -103,11 +109,11 @@ function App() {
     chatHistory: {
       storageKey: "example_theming"
     }
-    
+
   }
 
 
-  
+
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
@@ -118,17 +124,17 @@ function App() {
               <Toolbar disableGutters={true}>
                 <Link to="/">
                   <Grid container spacing={0}
-                      direction="column"
-                      alignItems="center"
-                      justifyContent="center"
-                      paddingTop={"10px"}
-                      >
+                    direction="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    paddingTop={"10px"}
+                  >
                     <Avatar src={logo} sx={{ width: 60, height: 60 }} />
                     <Typography variant="h6" component="div">
                       SINGAPURA CC
                     </Typography>
                   </Grid>
-                  
+
                 </Link>
 
                 <Link to="/notes" >
@@ -147,7 +153,7 @@ function App() {
                   <Typography>View events</Typography>
                 </Link>
 
-                
+
 
 
                 {/* <Grid item>
@@ -156,38 +162,38 @@ function App() {
                   </Typography>
                 </Grid> */}
 
-                <Box sx={{flexGrow:1}}/>
-                  { user && (
-                    <>
-                      <Avatar sx={{ width: 40, height: 40 }}>
-                        {getInitials(user.firstName)}
-                      </Avatar>
-                      {/* <Typography>{user.name}</Typography> */}
-                      <Typography sx={{ marginLeft: 1 }}>{user.firstName} {user.lastName}</Typography>
-                      <Button onClick={logout}>Logout</Button>
-                    </> 
-                  )
-                  }
-                  {!user && (
-                    <>
-                      <Link to="/register">
-                        <Typography>SIGN UP</Typography>
-                      </Link>
+                <Box sx={{ flexGrow: 1 }} />
+                {user && (
+                  <>
+                    <Avatar sx={{ width: 40, height: 40 }}>
+                      {getInitials(user.firstName)}
+                    </Avatar>
+                    {/* <Typography>{user.name}</Typography> */}
+                    <Typography sx={{ marginLeft: 1 }}>{user.firstName} {user.lastName}</Typography>
+                    <Button onClick={logout}>Logout</Button>
+                  </>
+                )
+                }
+                {!user && (
+                  <>
+                    <Link to="/register">
+                      <Typography>SIGN UP</Typography>
+                    </Link>
 
-                      <Link to="/login">
-                        <Typography>LOGIN</Typography>
-                      </Link>
-                    </>
-                  )}
+                    <Link to="/login">
+                      <Typography>LOGIN</Typography>
+                    </Link>
+                  </>
+                )}
 
-                  
+
               </Toolbar>
             </Container>
           </AppBar>
-
+          <Sidebar />
           <Container>
             <Routes>
-              <Route path={"/"} element={<Home />}/>
+              <Route path={"/"} element={<Home />} />
               <Route path="/notes" element={<ProtectedRoute element={Notes} />} />
               <Route path="/addnote" element={<ProtectedRoute element={AddNote} />} />
               <Route path="/editnote/:id" element={<ProtectedRoute element={EditNote} />} />
@@ -195,19 +201,21 @@ function App() {
               <Route path={"/login"} element={<Login />} />
               <Route path={"/register-staff"} element={<ProtectedRoute element={CreateStaff} allowedRoles={['Admin']} />} />
               <Route path={"/users"} element={<ProtectedRoute element={ViewUsers} allowedRoles={['Admin']} />} />
-              <Route path={"/users/:id/edit"} element={<ProtectedRoute element={EditUser} />} /> 
+              <Route path={"/users/:id/edit"} element={<ProtectedRoute element={EditUser} />} />
               <Route path={"/users/:id/view"} element={<ProtectedRoute element={ViewUser} allowedRoles={['Admin']} />} />
               <Route path={"/events"} element={<Events />} />
               <Route path={"/addevent"} element={<AddEvent />} />
               <Route path={"/editevent/:id"} element={<EditEvent />} />
-
+              <Route path="/Rewards" element={<Rewards />} />
+              <Route path="/EditRewards" element={<EditRewards />} />
+              <Route path="/UpdateReward/:id" element={<UpdateReward />} />
             </Routes>
           </Container>
         </ThemeProvider>
       </Router>
       <ChatBot flow={flow} options={options} />
     </UserContext.Provider>
-    
+
   );
 }
 
