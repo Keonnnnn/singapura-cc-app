@@ -152,8 +152,8 @@ function EditRewards() {
 
     return (
         <Box>
-            <Typography variant='h5' sx={{ margin: '-100px 100px 50px 450px' }}>Rewards</Typography>
-            <TableContainer component={Paper} sx={{ width: '65%', margin: '50px 450px 0px 450px' }}>
+            <Typography variant='h5' sx={{ margin: '-100px 0px 0px 100px' }}>Rewards</Typography>
+            <TableContainer component={Paper} sx={{ width: '100%', margin: '30px 0px 0px 100px'}}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
@@ -199,7 +199,7 @@ function EditRewards() {
                 </Table>
             </TableContainer>
             <React.Fragment>
-                <Button variant="outlined" onClick={handleAddDialogOpen} sx={{ borderColor: 'red', backgroundColor: 'red', color: 'white', margin: '100px 100px 50px 1390px' }}>
+                <Button variant="outlined" onClick={handleAddDialogOpen} sx={{ borderColor: 'red', backgroundColor: 'red', color: 'white', margin: '30px 0px 0px 1180px' }}>
                     Add
                 </Button>
                 <Dialog
