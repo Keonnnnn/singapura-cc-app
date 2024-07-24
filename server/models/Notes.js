@@ -1,5 +1,3 @@
-const { all } = require("../routes/userNotes");
-
 module.exports = (sequelize, DataTypes) => {
     const Notes = sequelize.define("Notes", {
         title: {
