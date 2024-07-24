@@ -45,8 +45,8 @@ function Rewards() {
     };
     return (
         <Box sx={{borderColor:'black'}}>
-            <Typography variant='h5' sx={{ margin: '-100px 100px 50px 450px'}}>Rewards</Typography>
-            <Box sx={{ width: '100%', margin: '50px 100px 50px 450px'}}>
+            <Typography variant='h5' sx={{ margin: '-100px 0px 0px 100px'}}>Rewards</Typography>
+            <Box sx={{ width: '100%', margin: '50px 0px 0px 100px'}}>
             <SearchBar
                 value={search} // Bind search state to SearchBar value
                 onChange={onSearchChange} // Update search state on input change
@@ -54,7 +54,7 @@ function Rewards() {
                 onCancel={onClickClear} // Handle clear button click (optional)
             />
             </Box>
-            <TableContainer component={Paper} sx={{ width: '65%', margin: '50px 100px 50px 450px'}}>
+            <TableContainer component={Paper} sx={{ width: '100%', margin: '30px 0px 0px 100px'}}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
