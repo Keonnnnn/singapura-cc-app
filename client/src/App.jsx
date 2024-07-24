@@ -40,10 +40,6 @@ import ChatBot from 'react-chatbotify'; //chatbot
 
 
 //Ayura
-import './App.css';
-import { createTheme, ThemeProvider, Container, AppBar, Toolbar, Typography } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, Link }
-  from 'react-router-dom';
 import Rewards from './pages/Rewards';
 import Sidebar from './pages/Sidebar';
 import EditRewards from './pages/EditRewards';
