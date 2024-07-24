@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Box, Typography, Grid, Card, CardContent, Input, IconButton } from '@mui/material';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import { Link } from 'react-router-dom';
+import { Box, Typography} from '@mui/material';
 import http from '../http';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -12,7 +8,6 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { AccessTime, Search, Clear } from '@mui/icons-material';
 import SearchBar from '@mkyy/mui-search-bar';
 
 function Rewards() {
