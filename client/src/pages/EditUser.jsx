@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import http from '../http';
-import { Box, Typography, TextField, Button, Grid, Paper, IconButton } from '@mui/material';
+import { Box, Typography, TextField, Button, Paper, IconButton } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
-import { PhotoCamera, Delete, Close } from '@mui/icons-material';
+import { Close } from '@mui/icons-material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -27,7 +26,7 @@ function EditUser() {
             setUser(res.data);
             setLoading(false);
         });
-    }, []);
+    }, [id]);
 
     const formik = useFormik({
         initialValues: {

@@ -170,13 +170,13 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register-staff" element={<ProtectedRoute element={CreateStaff} allowedRoles={['Admin']} />} />
               <Route path="/users" element={<ProtectedRoute element={ViewUsers} allowedRoles={['Admin']} />} />
-              <Route path="/users/:id/edit" element={<ProtectedRoute element={EditUser} />} />
+              <Route path="/users/:id/edit" element={<ProtectedRoute element={EditUser} allowedRoles={['Admin']} />} />
               <Route path="/users/:id/view" element={<ProtectedRoute element={ViewUser} allowedRoles={['Admin']} />} />
               <Route path="/events" element={<Events />} />
               <Route path="/addevent" element={<AddEvent />} />
               <Route path="/editevent/:id" element={<EditEvent />} />
-              <Route path="/feedbackform" element={<ProtectedRoute element={FeedbackForm} allowedRoles={['Admin']} />} />
-              <Route path="/feedbacklist" element={<ProtectedRoute element={FeedbackList} allowedRoles={['Admin']} />} />
+              <Route path="/feedbackform" element={<ProtectedRoute element={FeedbackForm} />} />
+              <Route path="/feedbacklist" element={<ProtectedRoute element={FeedbackList}  />} />
               <Route path="/feedback/:id" element={<FeedbackDetail />} />
               <Route path="/posts" element={user ? <Posts /> : <Navigate to="/login" />} />
               <Route path="/createpost" element={user ? <CreatePost /> : <Navigate to="/login" />} />

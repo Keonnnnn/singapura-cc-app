@@ -12,18 +12,17 @@ function ViewUser() {
     const navigate = useNavigate();
     const { id } = useParams();
 
-    const [user, setUser] = useState({
+    const [userDetails, setUserDetails] = useState({
         firstName: '',
         lastName: '',
         email: '',
-        username: '',
     });
 
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         http.get(`/user/${id}`).then((res) => {
-            setUser(res.data);
+            setUserDetails(res.data);
             setLoading(false);
         }).catch(err => {
             console.error("Error fetching user:", err);
@@ -35,10 +34,9 @@ function ViewUser() {
 
     const formik = useFormik({
         initialValues: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            username: user.username,
+            firstName: userDetails.firstName,
+            lastName: userDetails.lastName,
+            email: userDetails.email,
         },
         enableReinitialize: true,
         validationSchema: yup.object({
@@ -49,8 +47,6 @@ function ViewUser() {
                 .matches(/^[a-zA-Z '-,.]+$/, "Last name only allows letters, spaces and characters: ' - , .")
                 .required('Last name is required.'),
             email: yup.string().trim().lowercase().email().max(50).required('Email is required.'),
-            username: yup.string().trim().min(1).max(50)
-                .matches(/^[a-zA-Z0-9_.-]+$/, "Username only allows letters, numbers, underscores, periods, and hyphens."),
         }),
         onSubmit: async (values) => {
             navigate(`/users/${id}/edit`); // Redirect to edit user page
@@ -113,18 +109,6 @@ function ViewUser() {
                             onBlur={formik.handleBlur}
                             error={formik.touched.email && Boolean(formik.errors.email)}
                             helperText={formik.touched.email && formik.errors.email}
-                            variant="outlined"
-                        />
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Username"
-                            name="username"
-                            value={formik.values.username}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.username && Boolean(formik.errors.username)}
-                            helperText={formik.touched.username && formik.errors.username}
                             variant="outlined"
                         />
 
