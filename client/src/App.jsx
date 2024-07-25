@@ -38,9 +38,7 @@ import EditEvent from './pages/EditEvent'; //page
 import ChatBot from 'react-chatbotify'; //chatbot
 
 //Ahmed
-import FeedbackForm from './pages/FeedbackForm';
-import FeedbackList from './pages/FeedbackList';
-import FeedbackDetail from './pages/FeedbackDetail';
+
 
 //Ayura
 
@@ -149,14 +147,6 @@ function App() {
                   <Typography>View events</Typography>
                 </Link>
 
-                <Link to="/feedbackForm">
-                  <Typography>Feedback Form</Typography>
-                </Link>
-
-                <Link to="/feedbacklist">
-                  <Typography>View Feedbacks</Typography>
-                </Link>
-
                 
 
 
@@ -210,11 +200,6 @@ function App() {
               <Route path={"/events"} element={<Events />} />
               <Route path={"/addevent"} element={<AddEvent />} />
               <Route path={"/editevent/:id"} element={<EditEvent />} />
-              <Route path={"/feedbackform"} element= {<ProtectedRoute element={FeedbackForm} allowedRoles={['Admin']} />} />
-              <Route path={"/feedbacklist"} element={<ProtectedRoute element={FeedbackList} allowedRoles={['Admin']} />} />
-              <Route path="/feedback/:id" element={<FeedbackDetail />} />
-              
-
 
             </Routes>
           </Container>
