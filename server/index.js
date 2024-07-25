@@ -1,10 +1,7 @@
 const express = require('express');
 require('dotenv').config();
-
 const cors = require('cors');
 const app = express();
-
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -20,7 +17,6 @@ app.get("/", (req, res) => {
     res.send("Welcome to Singapura CC!");
 });
 
-
 // Routes
 const userNotesRoute = require('./routes/userNotes');
 app.use('/notes', userNotesRoute);
@@ -35,22 +31,19 @@ app.use('/file', fileRoute);
 const eventRoute = require('./routes/events');
 app.use('/events', eventRoute);
 
-// Added Ahmed's Feedback API route
+// Keon
+const postRoute = require('./routes/post');
+app.use('/post', postRoute);
+
+const likeRoute = require('./routes/likes'); 
+app.use("/like", likeRoute);
+
+// Ahmed's Feedback API route
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/feedback', feedbackRoutes);
 
-
 const db = require('./models');
 const createAdminUser = require('./scripts/createAdmin'); 
-
-// Verify Database Connection
-db.sequelize.authenticate()
-    .then(() => {
-        console.log('Connection has been established successfully.');
-    })
-    .catch(err => {
-        console.error('Unable to connect to the database:', err);
-    });
 
 db.sequelize.sync({ alter: true })
     .then(async () => {

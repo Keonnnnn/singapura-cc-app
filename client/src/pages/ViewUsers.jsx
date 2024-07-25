@@ -4,6 +4,7 @@ import http from '../http';
 import { Link } from 'react-router-dom';
 import { Visibility, Edit, Delete } from '@mui/icons-material'; 
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ViewUsers() {
     const [users, setUsers] = useState([]);
@@ -21,7 +22,6 @@ function ViewUsers() {
         fetchUsers();
     }, []);
 
-    
     const [open, setOpen] = useState(false);
 
     const handleDelete = (id) => {
@@ -48,7 +48,6 @@ function ViewUsers() {
         }
     };
 
-    // Handle loading state
     if (users.length === 0) {
         return <div>Loading...</div>;
     }
@@ -117,7 +116,6 @@ function ViewUsers() {
                 </DialogActions>
             </Dialog>
 
-            
             <ToastContainer />
         </Box>
     );
