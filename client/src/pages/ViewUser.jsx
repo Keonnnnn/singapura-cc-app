@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import http from '../http';
-import { Box, Typography, TextField, Button, Grid, Paper, IconButton } from '@mui/material';
+import { Box, Typography, TextField, Button, Paper, IconButton } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useNavigate } from 'react-router-dom';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
-import { PhotoCamera, Delete, Close } from '@mui/icons-material';
-import { ToastContainer, toast } from 'react-toastify';
+import { Close } from '@mui/icons-material';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function ViewUser() {
     const navigate = useNavigate();
     const { id } = useParams();
 
-    const [user, setUser] = useState({
+    const [userDetails, setUserDetails] = useState({
         firstName: '',
         lastName: '',
         email: '',
@@ -24,16 +22,21 @@ function ViewUser() {
 
     useEffect(() => {
         http.get(`/user/${id}`).then((res) => {
-            setUser(res.data);
+            setUserDetails(res.data);
             setLoading(false);
+        }).catch(err => {
+            console.error("Error fetching user:", err);
+            if (err.response && err.response.status === 404) {
+                navigate('/users'); // Redirect to users list if user is not found
+            }
         });
-    }, []);
+    }, [id, navigate]);
 
     const formik = useFormik({
         initialValues: {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
+            firstName: userDetails.firstName,
+            lastName: userDetails.lastName,
+            email: userDetails.email,
         },
         enableReinitialize: true,
         validationSchema: yup.object({
@@ -111,7 +114,7 @@ function ViewUser() {
 
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                             <Button variant="contained" type="submit" color="secondary" sx={{ borderRadius: '24px' }}>
-                            Edit
+                                Edit
                             </Button>
                         </Box>
                     </Box>

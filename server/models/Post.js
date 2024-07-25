@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const Notes = sequelize.define("Notes", {
+    const Post = sequelize.define("Post", {
         title: {
             type: DataTypes.STRING(100),
             allowNull: false
@@ -9,18 +9,22 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         imageFile: {
-            type: DataTypes.STRING(20)
+            type: DataTypes.STRING(200)
         }
     }, {
-        tableName: "notes",
+        tableName: 'posts'
     });
 
-    Notes.associate = (models) => {
-        Notes.belongsTo(models.User, {
+    Post.associate = (models) => {
+        Post.belongsTo(models.User, {
             foreignKey: "userId",
             as: 'user'
         });
+        Post.hasMany(models.Like, {
+            foreignKey: 'postId',
+            onDelete: 'CASCADE'
+        });
     };
 
-    return Notes;
-} 
+    return Post;
+}
