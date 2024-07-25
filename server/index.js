@@ -1,10 +1,7 @@
 const express = require('express');
 require('dotenv').config();
-
 const cors = require('cors');
 const app = express();
-
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -20,7 +17,6 @@ app.get("/", (req, res) => {
     res.send("Welcome to Singapura CC!");
 });
 
-
 // Routes
 const userNotesRoute = require('./routes/userNotes');
 app.use('/notes', userNotesRoute);
@@ -35,6 +31,12 @@ app.use('/file', fileRoute);
 const eventRoute = require('./routes/events');
 app.use('/events', eventRoute);
 
+// Keon
+const postRoute = require('./routes/post');
+app.use('/post', postRoute);
+
+const likeRoute = require('./routes/likes'); // Corrected to '/routes/likes'
+app.use("/like", likeRoute);
 
 const db = require('./models');
 const createAdminUser = require('./scripts/createAdmin'); 

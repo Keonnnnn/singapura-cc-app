@@ -4,16 +4,12 @@ const instance = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL
 });
 
-
 // Add a request interceptor
 instance.interceptors.request.use(function (config) {
-    // Do somethinf before request is sent
+    // Do something before request is sent
     let accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
         config.headers["Authorization"] = `Bearer ${accessToken}`;
-    }
-    if (config.data && config.data.user) {
-        delete config.data.user;
     }
     return config;
 }, function (error) {
@@ -21,23 +17,20 @@ instance.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 
-
 // Add a response interceptor
 instance.interceptors.response.use(function (response) {
     // Do something with response data
     return response;
 }, function (error) {
     // Do something with response error
-    if (error.response.status === 401 || error.response.status === 403) {
+    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         localStorage.clear();
         window.location = '/login';
     }
     return Promise.reject(error);
 });
 
-
-
-// fetch users
+// Fetch users
 export const fetchUsers = async () => {
     try {
         const response = await instance.get('/user/users');
@@ -46,6 +39,5 @@ export const fetchUsers = async () => {
         throw error;
     }
 };
-
 
 export default instance;

@@ -3,11 +3,10 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const { User } = require('../models');
 const yup = require('yup');
-const { sign } = require('jsonwebtoken');
+const { sign } = require('jsonwebtoken'); // Ensure 'sign' is imported
 require('dotenv').config();
 const { validateToken } = require('../middlewares/auth');
 const { isAdmin } = require('../middlewares/auth');
-
 
 // REGISTER CUSTOMER
 router.post("/register", async (req, res) => {
@@ -16,12 +15,15 @@ router.post("/register", async (req, res) => {
     // Validation
     let validationSchema = yup.object({
         firstName: yup.string().trim().min(2).max(50).required()
-        .matches(/^[a-zA-Z '-,.]+$/, "First name only allow letters, spaces and characters: ' - , ."),
+            .matches(/^[a-zA-Z '-,.]+$/, "First name only allow letters, spaces and characters: ' - , ."),
         lastName: yup.string().trim().min(2).max(50).required()
-        .matches(/^[a-zA-Z '-,.]+$/, "Last name only allow letters, spaces and characters: ' - , ."),
+            .matches(/^[a-zA-Z '-,.]+$/, "Last name only allow letters, spaces and characters: ' - , ."),
         email: yup.string().trim().lowercase().email().max(50).required(),
         password: yup.string().trim().min(8).max(50).required()
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.")
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character."),
+        confirmPassword: yup.string().trim()
+            .oneOf([yup.ref('password'), null], 'Passwords must match')
+            .required('Confirm Password is required')
     });
 
     try {
@@ -39,52 +41,52 @@ router.post("/register", async (req, res) => {
 
         // Create user
         let result = await User.create(data);
-        res.json({message: `Email ${result.email} was registered successfully.`});
-    }
-    catch (err) {
+        res.json({ message: `Email ${result.email} was registered successfully.` });
+    } catch (err) {
         res.status(400).json({ errors: err.errors });
     }
 });
 
-
 // CREATE STAFF WITH ADMIN ROLE
 router.post("/register-staff", validateToken, async (req, res) => { // Requires valid token and Admin role
     const data = req.body;
-  
+
     // Validation
     let validationSchema = yup.object({
-      firstName: yup.string().trim().min(2).max(50).required()
-        .matches(/^[a-zA-Z '-,.]+$/, "First name only allow letters, spaces and characters: ' - , ."),
-      lastName: yup.string().trim().min(2).max(50).required()
-        .matches(/^[a-zA-Z '-,.]+$/, "Last name only allow letters, spaces and characters: ' - , ."),
-      email: yup.string().trim().lowercase().email().max(50).required(),
-      password: yup.string().trim().min(8).max(50).required()
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.")
+        firstName: yup.string().trim().min(2).max(50).required()
+            .matches(/^[a-zA-Z '-,.]+$/, "First name only allow letters, spaces and characters: ' - , ."),
+        lastName: yup.string().trim().min(2).max(50).required()
+            .matches(/^[a-zA-Z '-,.]+$/, "Last name only allow letters, spaces and characters: ' - , ."),
+        email: yup.string().trim().lowercase().email().max(50).required(),
+        password: yup.string().trim().min(8).max(50).required()
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character."),
+        confirmPassword: yup.string().trim()
+            .oneOf([yup.ref('password'), null], 'Passwords must match')
+            .required('Confirm Password is required')
     });
-  
-    try {
-      data = await validationSchema.validate(data, { abortEarly: false });
-      // Check if email already exists
-      let existingUser = await User.findOne({ where: { email: data.email } });
-      if (existingUser) {
-        res.status(400).json({ message: 'Email already exists.' });
-        return;
-      }
-  
-      // Hash password
-      data.password = await bcrypt.hash(data.password, 10);
-  
-      // Set role to 'Staff'
-      data.role = 'Staff';
-  
-      // Create user (staff)
-      let result = await User.create(data);
-      res.json({ message: `Staff account for ${result.email} was created successfully.` });
-    } catch (err) {
-      res.status(400).json({ errors: err.errors });
-    }
-  });
 
+    try {
+        data = await validationSchema.validate(data, { abortEarly: false });
+        // Check if email already exists
+        let existingUser = await User.findOne({ where: { email: data.email } });
+        if (existingUser) {
+            res.status(400).json({ message: 'Email already exists.' });
+            return;
+        }
+
+        // Hash password
+        data.password = await bcrypt.hash(data.password, 10);
+
+        // Set role to 'Staff'
+        data.role = 'Staff';
+
+        // Create user (staff)
+        let result = await User.create(data);
+        res.json({ message: `Staff account for ${result.email} was created successfully.` });
+    } catch (err) {
+        res.status(400).json({ errors: err.errors });
+    }
+});
 
 // LOGIN
 router.post("/login", async (req, res) => {
@@ -94,7 +96,7 @@ router.post("/login", async (req, res) => {
     let validationSchema = yup.object({
         email: yup.string().trim().lowercase().email().max(50).required(),
         password: yup.string().trim().min(8).max(50).required()
-        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.")
+            .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.")
     });
 
     try {
@@ -115,15 +117,13 @@ router.post("/login", async (req, res) => {
             return;
         }
 
-        // res.json({message: `Welcome back, ${user.firstName}!`});
-
-
         // Return user info
         let userInfo = {
             id: user.id,
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
+            username: user.username,  // Include username
             role: user.role
         };
         let accessToken = sign(userInfo, process.env.APP_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
@@ -132,26 +132,23 @@ router.post("/login", async (req, res) => {
             user: userInfo
         });
 
-        }
-
-    catch (err) {
+    } catch (err) {
         res.status(400).json({ errors: err.errors });
     }
 });
 
-
-// AUTHENICATE
+// AUTHENTICATE
 router.get("/auth", validateToken, (req, res) => {
     let userInfo = {
         id: req.user.id,
         firstName: req.user.firstName,
         lastName: req.user.lastName,
         email: req.user.email,
+        username: req.user.username,  // Include username
         role: req.user.role
     };
     res.json({ user: userInfo });
 });
-
 
 // UPDATE USER
 router.put("/:id", validateToken, async (req, res) => {
@@ -164,11 +161,14 @@ router.put("/:id", validateToken, async (req, res) => {
             .matches(/^[a-zA-Z '-,.]+$/, "First name only allow letters, spaces and characters: ' - , ."),
         lastName: yup.string().trim().min(2).max(50)
             .matches(/^[a-zA-Z '-,.]+$/, "Last name only allow letters, spaces and characters: ' - , ."),
-        email: yup.string().trim().lowercase().email().max(50)
-            .required('Email is required.'),
+        email: yup.string().trim().lowercase().email().max(50),
+        username: yup.string().trim().min(1).max(50)
+            .matches(/^[a-zA-Z0-9_.-]+$/, "Username only allows letters, numbers, underscores, periods, and hyphens."),
     });
 
     try {
+        console.log('Updating user with data:', userData); // Log the incoming data
+
         userData = await validationSchema.validate(userData, { abortEarly: false });
 
         // Check if user exists
@@ -184,13 +184,14 @@ router.put("/:id", validateToken, async (req, res) => {
         // Update user data
         await User.update(userData, { where: { id } });
 
-        res.json({ message: `User with ID ${id} updated successfully.` });
+        // Return updated user data
+        user = await User.findByPk(id);
+        res.json(user);
     } catch (err) {
+        console.error('Error updating user:', err); // Log the error
         res.status(400).json({ errors: err.errors });
     }
 });
-
-
 
 // DELETE USER
 router.delete("/:id", validateToken, async (req, res) => {
@@ -214,8 +215,6 @@ router.delete("/:id", validateToken, async (req, res) => {
     }
 });
 
-
-
 // RETRIEVE ALL USERS
 router.get("/", validateToken, isAdmin, async (req, res) => {
     try {
@@ -226,9 +225,6 @@ router.get("/", validateToken, isAdmin, async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
-
-
-
 
 // RETRIEVE SINGLE USER BY ID
 router.get("/:id", validateToken, async (req, res) => {
@@ -249,10 +245,5 @@ router.get("/:id", validateToken, async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
-
-
-
-// RETRIEVE CUSTOMERS (for Admin and Staff)
-
 
 module.exports = router;

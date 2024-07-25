@@ -8,7 +8,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserContext from '../contexts/UserContext';
 
-
 function Login() {
     const navigate = useNavigate();
     const { setUser } = useContext(UserContext);
@@ -31,15 +30,11 @@ function Login() {
                 .then((res) => {
                     localStorage.setItem("accessToken", res.data.accessToken);
                     setUser(res.data.user);
-                    // console.log(res.data);
-                    navigate('/');
-                    // window.location.reload();
-
+                    navigate('/');  // Navigate to home after login
                 })
                 .catch(function (err) {
                     toast.error(`${err.response.data.message}`);
                 });
-
         }
     });
 
@@ -53,18 +48,13 @@ function Login() {
         <Typography variant="h5" sx={{my: 2}}>LOGIN</Typography>
 
         <Box component="form" sx={{maxWidth: '500px'}} onSubmit={formik.handleSubmit}>
-
             <TextField fullWidth margin="dense" autoComplete="off" label="Email" name="email" value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.email && Boolean(formik.errors.email)} helperText={formik.touched.email && formik.errors.email} />
-
             <TextField fullWidth margin="dense" autoComplete="off" type="password" label="Password" name="password" value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur} error={formik.touched.password && Boolean(formik.errors.password)} helperText={formik.touched.password && formik.errors.password} />
-
             <Button fullWidth variant="contained" type="submit" sx={{mt: 2}}>LOGIN</Button>
-
             <ToastContainer />
         </Box>
-
     </Box>
   );
 }
 
-export default Login
+export default Login;

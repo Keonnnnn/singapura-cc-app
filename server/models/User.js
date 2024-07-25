@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true 
+            autoIncrement: true
         },
         firstName: {
             type: DataTypes.STRING(50),
@@ -12,6 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         lastName: {
             type: DataTypes.STRING(50),
             allowNull: false
+        },
+        username: {
+            type: DataTypes.STRING(50),
+            allowNull: true  // Allow it to be null initially
         },
         password: {
             type: DataTypes.STRING(100),
@@ -30,11 +34,11 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     User.associate = (models) => {
-        User.hasMany(models.Notes, {
+        User.hasMany(models.Post, {
             foreignKey: 'userId',
             onDelete: "cascade"
         });
     };
 
     return User;
-}
+};
