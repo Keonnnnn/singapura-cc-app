@@ -34,7 +34,9 @@ import EditEvent from './pages/EditEvent'; //page
 import ChatBot from 'react-chatbotify'; //chatbot
 
 //Ahmed
-
+import FeedbackForm from './pages/FeedbackForm';
+import FeedbackList from './pages/FeedbackList';
+import FeedbackDetail from './pages/FeedbackDetail';
 
 //Ayura
 import Rewards from './pages/Rewards';
@@ -100,10 +102,6 @@ function App() {
     }
 
   }
-
-
-
-  };
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
@@ -208,5 +206,6 @@ function App() {
       <ChatBot flow={flow} options={options} />
     </UserContext.Provider>
   );
+}
 
 export default App;
