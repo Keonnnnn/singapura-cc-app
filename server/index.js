@@ -38,8 +38,22 @@ app.use('/post', postRoute);
 const likeRoute = require('./routes/likes'); // Corrected to '/routes/likes'
 app.use("/like", likeRoute);
 
+
+// Added Ahmed's Feedback API route
+const feedbackRoutes = require('./routes/feedbackRoutes');
+app.use('/feedback', feedbackRoutes);
+
 const db = require('./models');
 const createAdminUser = require('./scripts/createAdmin'); 
+
+// Verify Database Connection
+db.sequelize.authenticate()
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
 
 db.sequelize.sync({ alter: true })
     .then(async () => {
