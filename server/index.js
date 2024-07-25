@@ -35,11 +35,10 @@ app.use('/events', eventRoute);
 const postRoute = require('./routes/post');
 app.use('/post', postRoute);
 
-const likeRoute = require('./routes/likes'); // Corrected to '/routes/likes'
+const likeRoute = require('./routes/likes'); 
 app.use("/like", likeRoute);
 
-
-// Added Ahmed's Feedback API route
+// Ahmed's Feedback API route
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/feedback', feedbackRoutes);
 

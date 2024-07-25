@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import http from '../http'
-import { Container, List, ListItem, ListItemText, Typography, Paper, Divider, ListItemAvatar, Avatar, Box } from '@mui/material';
+import React, { useEffect, useState, useContext } from 'react';
+import http from '../http';
+import { Container, List, ListItem, ListItemText, Typography, Paper, Divider, ListItemAvatar, Avatar, Box, IconButton, Tooltip } from '@mui/material';
+import { Edit } from '@mui/icons-material';
+import UserContext from '../contexts/UserContext';
 
 const FeedbackList = () => {
-    const [FeedbackList, setFeedbacklist] = useState([])
+    const { user } = useContext(UserContext);
+    const [FeedbackList, setFeedbacklist] = useState([]);
+
     useEffect(() => {
-        http.get('/Feedback').then((res) => {
+        http.get('/feedback').then((res) => {
             console.log(res.data);
             setFeedbacklist(res.data);
         });
@@ -25,30 +28,39 @@ const FeedbackList = () => {
                                 button 
                                 component="a" 
                                 href={`/feedback/${feedback.id}`} 
-                                sx={{ mb: 2, backgroundColor: '#f5f5f5', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+                                sx={{ mb: 2, backgroundColor: '#f5f5f5', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', display: 'flex', justifyContent: 'space-between' }}
                             >
-                                <ListItemAvatar>
-                                    <Avatar sx={{ bgcolor: '#b71c1c', color: '#fff' }}>
-                                        {feedback.userId}
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText 
-                                    primary={
-                                        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                            {feedback.content}
-                                        </Typography>
-                                    } 
-                                    secondary={
-                                        <Box component="span" sx={{ display: 'flex', flexDirection: 'column' }}>
-                                            <Typography variant="body2" color="textSecondary">
-                                                User ID: {feedback.userId}
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListItemAvatar>
+                                        <Avatar sx={{ bgcolor: '#b71c1c', color: '#fff' }}>
+                                            {feedback.userId}
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText 
+                                        primary={
+                                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                                                {feedback.content}
                                             </Typography>
-                                            <Typography variant="body2" color="textSecondary">
-                                                Rating: {feedback.eventId}
-                                            </Typography>
-                                        </Box>
-                                    }
-                                />
+                                        } 
+                                        secondary={
+                                            <Box component="span" sx={{ display: 'flex', flexDirection: 'column' }}>
+                                                <Typography variant="body2" color="textSecondary">
+                                                    User ID: {feedback.userId}
+                                                </Typography>
+                                                <Typography variant="body2" color="textSecondary">
+                                                    Rating: {feedback.eventId}
+                                                </Typography>
+                                            </Box>
+                                        }
+                                    />
+                                </Box>
+                                {feedback.userId === user.id && (
+                                    <Tooltip title="Edit Feedback">
+                                        <IconButton color="primary" component="a" href={`/feedback/${feedback.id}`}>
+                                            <Edit />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
                             </ListItem>
                             <Divider />
                         </React.Fragment>

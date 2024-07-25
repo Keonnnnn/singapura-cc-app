@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import http from '../http';
-import { Box, Typography, TextField, Button, Grid, Paper, IconButton } from '@mui/material';
+import { Box, Typography, TextField, Button, Paper, IconButton } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { useNavigate } from 'react-router-dom';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
-import { PhotoCamera, Delete, Close } from '@mui/icons-material';
-import { ToastContainer, toast } from 'react-toastify';
+import { Close } from '@mui/icons-material';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function ViewUser() {
@@ -18,6 +16,7 @@ function ViewUser() {
         firstName: '',
         lastName: '',
         email: '',
+        username: '',
     });
 
     const [loading, setLoading] = useState(true);
@@ -26,14 +25,20 @@ function ViewUser() {
         http.get(`/user/${id}`).then((res) => {
             setUser(res.data);
             setLoading(false);
+        }).catch(err => {
+            console.error("Error fetching user:", err);
+            if (err.response && err.response.status === 404) {
+                navigate('/users'); // Redirect to users list if user is not found
+            }
         });
-    }, []);
+    }, [id, navigate]);
 
     const formik = useFormik({
         initialValues: {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
+            username: user.username,
         },
         enableReinitialize: true,
         validationSchema: yup.object({
@@ -44,6 +49,8 @@ function ViewUser() {
                 .matches(/^[a-zA-Z '-,.]+$/, "Last name only allows letters, spaces and characters: ' - , .")
                 .required('Last name is required.'),
             email: yup.string().trim().lowercase().email().max(50).required('Email is required.'),
+            username: yup.string().trim().min(1).max(50)
+                .matches(/^[a-zA-Z0-9_.-]+$/, "Username only allows letters, numbers, underscores, periods, and hyphens."),
         }),
         onSubmit: async (values) => {
             navigate(`/users/${id}/edit`); // Redirect to edit user page
@@ -108,10 +115,22 @@ function ViewUser() {
                             helperText={formik.touched.email && formik.errors.email}
                             variant="outlined"
                         />
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="Username"
+                            name="username"
+                            value={formik.values.username}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.username && Boolean(formik.errors.username)}
+                            helperText={formik.touched.username && formik.errors.username}
+                            variant="outlined"
+                        />
 
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                             <Button variant="contained" type="submit" color="secondary" sx={{ borderRadius: '24px' }}>
-                            Edit
+                                Edit
                             </Button>
                         </Box>
                     </Box>

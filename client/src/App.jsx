@@ -1,4 +1,3 @@
-// Common Use Imports
 import './App.css';
 import { useState, useEffect } from 'react';
 import { Container, AppBar, Toolbar, Typography, Box, Button, Avatar, Grid } from '@mui/material';
@@ -10,7 +9,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import MyTheme from './themes/MyTheme';
 import Register from './pages/Register';
 import UserContext from './contexts/UserContext';
-import ProtectedRoute from './ProtectedRoute.jsx'; // Unauthorized users redirected to login page
+import ProtectedRoute from './ProtectedRoute.jsx'; 
 import logo from './logo.png';
 import CreateStaff from './pages/CreateStaff';
 import ViewUsers from './pages/ViewUsers';
@@ -28,12 +27,12 @@ import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
 
 // Amelia
-import Events from './pages/Events'; // page
-import AddEvent from './pages/AddEvent'; // page
-import EditEvent from './pages/EditEvent'; // page
-import ChatBot from 'react-chatbotify'; // chatbot
+import Events from './pages/Events'; 
+import AddEvent from './pages/AddEvent'; 
+import EditEvent from './pages/EditEvent'; 
+import ChatBot from 'react-chatbotify'; 
 
-//Ahmed
+// Ahmed
 import FeedbackForm from './pages/FeedbackForm';
 import FeedbackList from './pages/FeedbackList';
 import FeedbackDetail from './pages/FeedbackDetail';
@@ -65,7 +64,6 @@ function App() {
     window.location = '/';
   };
 
-  // Function to get the first initial from the first name
   const getInitials = (firstName) => {
     if (!firstName) return '';
     return firstName.charAt(0).toUpperCase();
@@ -74,10 +72,6 @@ function App() {
   if (loading) {
     return <div>Loading...</div>;
   }
-
-  const isStaffOrAdmin = () => {
-    return user && (user.role === 'Staff' || user.role === 'Admin');
-  };
 
   const flow = {
     "start": {

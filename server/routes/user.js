@@ -3,10 +3,9 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const { User } = require('../models');
 const yup = require('yup');
-const { sign } = require('jsonwebtoken'); // Ensure 'sign' is imported
+const { sign } = require('jsonwebtoken'); 
 require('dotenv').config();
-const { validateToken } = require('../middlewares/auth');
-const { isAdmin } = require('../middlewares/auth');
+const { validateToken, isAdmin } = require('../middlewares/auth');
 
 // REGISTER CUSTOMER
 router.post("/register", async (req, res) => {
@@ -48,7 +47,7 @@ router.post("/register", async (req, res) => {
 });
 
 // CREATE STAFF WITH ADMIN ROLE
-router.post("/register-staff", validateToken, async (req, res) => { // Requires valid token and Admin role
+router.post("/register-staff", validateToken, isAdmin, async (req, res) => {
     const data = req.body;
 
     // Validation
@@ -123,7 +122,7 @@ router.post("/login", async (req, res) => {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            username: user.username,  // Include username
+            username: user.username,
             role: user.role
         };
         let accessToken = sign(userInfo, process.env.APP_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
@@ -144,7 +143,7 @@ router.get("/auth", validateToken, (req, res) => {
         firstName: req.user.firstName,
         lastName: req.user.lastName,
         email: req.user.email,
-        username: req.user.username,  // Include username
+        username: req.user.username,
         role: req.user.role
     };
     res.json({ user: userInfo });
@@ -167,8 +166,6 @@ router.put("/:id", validateToken, async (req, res) => {
     });
 
     try {
-        console.log('Updating user with data:', userData); // Log the incoming data
-
         userData = await validationSchema.validate(userData, { abortEarly: false });
 
         // Check if user exists
@@ -188,7 +185,6 @@ router.put("/:id", validateToken, async (req, res) => {
         user = await User.findByPk(id);
         res.json(user);
     } catch (err) {
-        console.error('Error updating user:', err); // Log the error
         res.status(400).json({ errors: err.errors });
     }
 });
@@ -210,7 +206,6 @@ router.delete("/:id", validateToken, async (req, res) => {
 
         res.json({ message: `User with ID ${id} deleted successfully.` });
     } catch (err) {
-        console.error(err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
@@ -221,7 +216,6 @@ router.get("/", validateToken, isAdmin, async (req, res) => {
         const users = await User.findAll();
         res.json(users);
     } catch (err) {
-        console.error(err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });
@@ -231,17 +225,14 @@ router.get("/:id", validateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
-        // Fetch user by ID
         let user = await User.findByPk(id);
         if (!user) {
             res.status(404).json({ message: 'User not found.' });
             return;
         }
 
-        // Return user data
         res.json(user);
     } catch (err) {
-        console.error(err);
         res.status(500).json({ message: "Internal Server Error" });
     }
 });

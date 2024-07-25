@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         username: {
             type: DataTypes.STRING(50),
-            allowNull: true  // Allow it to be null initially
+            allowNull: true
         },
         password: {
             type: DataTypes.STRING(100),
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         email: {
             type: DataTypes.STRING(50),
-            allowNull: false,
+            allowNull: true,
         },
         role: {
             type: DataTypes.ENUM('Customer', 'Staff', 'Admin'),
