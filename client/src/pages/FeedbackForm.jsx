@@ -34,7 +34,7 @@ const FeedbackForm = () => {
       e.preventDefault();
   
       // Check if any field is empty
-      if (!userId) setUserIdError("Please fill in this field");
+      if (!userId) setUserIdError("Please fill in this field AAAAAAAAAAA");
       if (!eventId) setEventIdError("Please fill in this field");
       if (!content) setContentError("Please fill in this field");
   
