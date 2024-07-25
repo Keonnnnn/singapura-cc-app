@@ -4,6 +4,7 @@ import { Container, AppBar, Toolbar, Typography, Box, Button, Avatar, Grid } fro
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import http from './http';
 import { ThemeProvider } from '@mui/material/styles';
+import { Search, Clear, BorderAll } from '@mui/icons-material';
 
 // Francine
 import MyTheme from './themes/MyTheme';
