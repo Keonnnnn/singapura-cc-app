@@ -45,6 +45,10 @@ app.use('/feedback', feedbackRoutes);
 const db = require('./models');
 const createAdminUser = require('./scripts/createAdmin'); 
 
+//ayura routes 
+const rewardRoute = require('./routes/reward');
+app.use("/reward", rewardRoute);
+
 db.sequelize.sync({ alter: true })
     .then(async () => {
         await createAdminUser(); 

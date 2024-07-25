@@ -27,16 +27,22 @@ import Posts from './pages/Posts';
 import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
 
-// Amelia
-import Events from './pages/Events'; 
-import AddEvent from './pages/AddEvent'; 
-import EditEvent from './pages/EditEvent'; 
-import ChatBot from 'react-chatbotify'; 
+//Amelia
+import Events from './pages/Events'; // page
+import AddEvent from './pages/AddEvent'; //page
+import EditEvent from './pages/EditEvent'; //page
+import ChatBot from 'react-chatbotify'; //chatbot
 
-// Ahmed
+//Ahmed
 import FeedbackForm from './pages/FeedbackForm';
 import FeedbackList from './pages/FeedbackList';
 import FeedbackDetail from './pages/FeedbackDetail';
+
+//Ayura
+import Rewards from './pages/Rewards';
+import Sidebar from './pages/Sidebar';
+import EditRewards from './pages/EditRewards';
+import UpdateReward from './pages/updateReward';
 
 // Ayura
 
@@ -74,6 +80,10 @@ function App() {
     return <div>Loading...</div>;
   }
 
+  const isStaffOrAdmin = () => {
+    return user && (user.role === 'Staff' || user.role === 'Admin');
+  };
+
   const flow = {
     "start": {
       "message": "Greetings to you! How can I help you today?",
@@ -90,7 +100,8 @@ function App() {
     chatHistory: {
       storageKey: "example_theming"
     }
-  };
+
+  }
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
@@ -123,6 +134,7 @@ function App() {
                 <Link to="/events">
                   <Typography>View events</Typography>
                 </Link>
+
 
                 <Link to="/feedbackform">
                   <Typography>Feedback Form</Typography>
@@ -160,7 +172,7 @@ function App() {
               </Toolbar>
             </Container>
           </AppBar>
-
+          <Sidebar />
           <Container>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -182,6 +194,11 @@ function App() {
               <Route path="/posts" element={user ? <Posts /> : <Navigate to="/login" />} />
               <Route path="/createpost" element={user ? <CreatePost /> : <Navigate to="/login" />} />
               <Route path="/editpost/:id" element={user ? <EditPost /> : <Navigate to="/login" />} />
+              <Route path="/Rewards" element={<Rewards />} />
+              <Route path="/EditRewards" element={<EditRewards />} />
+              <Route path="/UpdateReward/:id" element={<UpdateReward />} />
+              <Route path={"/"} />
+              <Route path={"/rewards"} />
             </Routes>
           </Container>
         </ThemeProvider>
