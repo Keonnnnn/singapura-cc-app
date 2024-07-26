@@ -50,7 +50,7 @@ function updateReward() {
     });
     return (
         <Box>
-            <Card sx={{ borderColor: 'black', backgroundColor: 'white', color: 'black', margin: '100px 500px 100px 500px' }}>
+            <Card sx={{ borderColor: 'black', backgroundColor: 'white', color: 'black', margin: '100px 200px 100px 200px'}}>
                 <CardContent>
                     <Typography variant="h5" sx={{ my: 2 }}>
                         Edit Reward
@@ -62,6 +62,7 @@ function updateReward() {
                                     <Grid item xs={12} sm={6}>
                                         <TextField
                                             fullWidth margin="dense" autoComplete="off"
+                                            multiline minRows={1}
                                             label="Reward Name"
                                             name="rewardName"
                                             value={formik.values.rewardName}
@@ -74,7 +75,7 @@ function updateReward() {
                                     <Grid item xs={12} sm={6}>
                                         <TextField
                                             fullWidth margin="dense" autoComplete="off"
-                                            multiline minRows={2}
+                                            multiline minRows={1}
                                             label="Description"
                                             name="description"
                                             value={formik.values.description}
@@ -87,7 +88,7 @@ function updateReward() {
                                     <Grid item xs={12} sm={6}>
                                         <TextField
                                             fullWidth margin="dense" autoComplete="off"
-                                            multiline minRows={2}
+                                            multiline minRows={1}
                                             label="Points"
                                             name="Points"
                                             value={formik.values.Points}
@@ -100,7 +101,7 @@ function updateReward() {
                                     <Grid item xs={12} sm={6}>
                                         <TextField
                                             fullWidth margin="dense" autoComplete="off"
-                                            multiline minRows={2}
+                                            multiline minRows={1}
                                             label="Tier"
                                             name="Tier"
                                             value={formik.values.Tier}
