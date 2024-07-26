@@ -122,7 +122,7 @@ function EditUser() {
 
         const response = await http.put(`/user/${id}`, updatedUser);
         console.log(response.data);
-        navigate("/users");
+        navigate("/admin/users");
       } catch (error) {
         console.error("Error updating user:", error);
         toast.error("Failed to update user");
@@ -131,7 +131,7 @@ function EditUser() {
   });
 
   const handleCancel = () => {
-    navigate("/users"); // Redirect to users list
+    navigate("/admin/users"); // Redirect to users list
   };
 
   return (

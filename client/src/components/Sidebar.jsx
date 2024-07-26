@@ -44,7 +44,7 @@ const sideMenuOptions = [
       },
       {
         name: "Add Staff",
-        path: "/admin/add-staff",
+        path: "/admin/register-staff",
       },
       {
         name: "Add Customer",

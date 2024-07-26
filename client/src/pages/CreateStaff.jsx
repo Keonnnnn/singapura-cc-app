@@ -90,7 +90,7 @@ function CreateStaff() {
       http
         .post("/user/register-staff", data)
         .then((res) => {
-          navigate("/users");
+          navigate("/admin/users");
         })
         .catch(function (err) {
           toast.error(`${err.response.data.message}`);
@@ -304,7 +304,7 @@ function CreateStaff() {
             <Button
               variant="outlined"
               color="secondary"
-              onClick={() => navigate("/users")}
+              onClick={() => navigate("/admin/users")}
               sx={{ borderRadius: "24px" }}
             >
               Cancel

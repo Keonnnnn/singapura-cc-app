@@ -42,7 +42,7 @@ function ViewUser() {
       .catch((err) => {
         console.error("Error fetching user:", err);
         if (err.response && err.response.status === 404) {
-          navigate("/users"); // Redirect to users list if user is not found
+          navigate("/admin/users"); // Redirect to users list if user is not found
         }
       });
   }, [id, navigate]);
@@ -95,12 +95,12 @@ function ViewUser() {
         .matches(/^\d{8}$/, "Mobile number must be exactly 8 digits"),
     }),
     onSubmit: async () => {
-      navigate(`/users/${id}/edit`); // Redirect to edit user page
+      navigate(`/admin/users/${id}/edit`); // Redirect to edit user page
     },
   });
 
   const handleCancel = () => {
-    navigate("/users"); // Redirect to users list
+    navigate("/admin/users"); // Redirect to users list
   };
 
   return (

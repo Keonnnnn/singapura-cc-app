@@ -122,14 +122,14 @@ function ViewUsers() {
                     justifyContent: "center",
                   }}
                 >
-                  <Link to={`/users/${user.id}/view`}>
+                  <Link to={`/admin/users/${user.id}/view`}>
                     <Tooltip title="View Details">
                       <IconButton color="secondary" sx={{ padding: "4px" }}>
                         <Visibility />
                       </IconButton>
                     </Tooltip>
                   </Link>
-                  <Link to={`/users/${user.id}/edit`}>
+                  <Link to={`/admin/users/${user.id}/edit`}>
                     <Tooltip title="Edit User">
                       <IconButton color="secondary" sx={{ padding: "4px" }}>
                         <Edit />

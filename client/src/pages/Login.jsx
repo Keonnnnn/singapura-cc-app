@@ -46,19 +46,24 @@ function Login() {
           "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character."
         ),
     }),
-    onSubmit: (data) => {
-      data.email = data.email.trim().toLocaleLowerCase();
+    onSubmit: async (data) => {
+      data.email = data.email.trim().toLowerCase();
       data.password = data.password.trim();
-      http
-        .post("/user/login", data)
-        .then((res) => {
+      try {
+        const res = await http.post("/user/login", data);
+        if (res.data.needOtp) {
+          // Redirect to OTP page if OTP is needed
+          navigate("/otp-verification", {
+            state: { email: data.email, accessToken: res.data.accessToken },
+          });
+        } else {
           localStorage.setItem("accessToken", res.data.accessToken);
           setUser(res.data.user);
           navigate("/"); // Navigate to home after login
-        })
-        .catch(function (err) {
-          toast.error(`${err.response.data.message}`);
-        });
+        }
+      } catch (err) {
+        toast.error(`${err.response.data.message}`);
+      }
     },
   });
 
@@ -204,7 +209,6 @@ function Login() {
             </Link>
 
             <Box
-              fullWidth
               sx={{
                 display: "flex",
                 justifyContent: "center",

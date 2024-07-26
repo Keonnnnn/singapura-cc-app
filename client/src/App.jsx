@@ -1,32 +1,22 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import {
-  Container,
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Button,
-  Avatar,
-  Grid,
-} from "@mui/material";
+import {} from "@mui/material";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Link,
   Navigate,
 } from "react-router-dom";
 import http from "./http";
 import { ThemeProvider } from "@mui/material/styles";
-import { Search, Clear, BorderAll } from "@mui/icons-material";
+
+import Navbar from "./components/Navbar.jsx";
 
 // Francine
 import MyTheme from "./themes/MyTheme";
 import Register from "./pages/Register";
 import UserContext from "./contexts/UserContext";
 import ProtectedRoute from "./ProtectedRoute.jsx";
-import logo from "./logo.png";
 import CreateStaff from "./pages/CreateStaff";
 import ViewUsers from "./pages/ViewUsers";
 import EditUser from "./pages/EditUser";
@@ -52,7 +42,9 @@ import ChatBot from "react-chatbotify";
 import FeedbackForm from "./pages/FeedbackForm";
 import FeedbackList from "./pages/FeedbackList";
 import FeedbackDetail from "./pages/FeedbackDetail";
-import AdminLayout from "./components/ProtectedLayout.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+import OtpVerification from "./pages/OtpVerification.jsx";
 
 // Ayura
 
@@ -76,16 +68,6 @@ function App() {
     fetchUser();
   }, []);
 
-  const logout = () => {
-    localStorage.clear();
-    window.location = "/";
-  };
-
-  const getInitials = (firstName) => {
-    if (!firstName) return "";
-    return firstName.charAt(0).toUpperCase();
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -107,92 +89,12 @@ function App() {
       storageKey: "example_theming",
     },
   };
-
-  const publicNav = (
-    <AppBar
-      position="static"
-      className="AppBar"
-      sx={{ backgroundColor: "#D22B2B" }}
-    >
-      <Container>
-        <Toolbar disableGutters={true}>
-          <Link to="/">
-            <Grid
-              container
-              spacing={0}
-              direction="column"
-              alignItems="center"
-              justifyContent="center"
-              paddingTop={"10px"}
-            >
-              <Avatar src={logo} sx={{ width: 60, height: 60 }} />
-              <Typography variant="h6" component="div">
-                SINGAPURA CC
-              </Typography>
-            </Grid>
-          </Link>
-
-          <Link to="/notes">
-            <Typography>Notes</Typography>
-          </Link>
-
-          <Link to="/register-staff">
-            <Typography>Add Staff</Typography>
-          </Link>
-
-          <Link to="/admin/users">
-            <Typography>View Users</Typography>
-          </Link>
-
-          <Link to="/events">
-            <Typography>View events</Typography>
-          </Link>
-
-          <Link to="/feedbackform">
-            <Typography>Feedback Form</Typography>
-          </Link>
-
-          <Link to="/feedbacklist">
-            <Typography>View Feedbacks</Typography>
-          </Link>
-
-          <Link to="/posts">
-            <Typography>Connect</Typography>
-          </Link>
-
-          <Box sx={{ flexGrow: 1 }} />
-          {user && (
-            <>
-              <Avatar sx={{ width: 40, height: 40 }}>
-                {getInitials(user.firstName)}
-              </Avatar>
-              <Typography sx={{ marginLeft: 1 }}>
-                {user.firstName} {user.lastName}
-              </Typography>
-              <Button onClick={logout}>Logout</Button>
-            </>
-          )}
-          {!user && (
-            <>
-              <Link to="/register">
-                <Typography>SIGN UP</Typography>
-              </Link>
-
-              <Link to="/login">
-                <Typography>LOGIN</Typography>
-              </Link>
-            </>
-          )}
-        </Toolbar>
-      </Container>
-    </AppBar>
-  );
-
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <Router>
+        <Navbar />
+
         <ThemeProvider theme={MyTheme}>
-          {publicNav}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/notes" element={<ProtectedRoute element={Notes} />} />
@@ -206,8 +108,11 @@ function App() {
             />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/otp-verification" element={<OtpVerification />} />
             <Route
-              path="/register-staff"
+              path="/admin/register-staff"
               element={
                 <ProtectedRoute
                   element={CreateStaff}
@@ -218,19 +123,28 @@ function App() {
             <Route
               path="/admin/users"
               element={
-                <ProtectedRoute element={ViewUsers} allowedRoles={["Admin"]} />
+                <ProtectedRoute
+                  element={ViewUsers}
+                  allowedRoles={["Admin", "Staff"]}
+                />
               }
             />
             <Route
-              path="/users/:id/edit"
+              path="/admin/users/:id/edit"
               element={
-                <ProtectedRoute element={EditUser} allowedRoles={["Admin"]} />
+                <ProtectedRoute
+                  element={EditUser}
+                  allowedRoles={["Admin", "Staff"]}
+                />
               }
             />
             <Route
-              path="/users/:id/view"
+              path="/admin/users/:id/view"
               element={
-                <ProtectedRoute element={ViewUser} allowedRoles={["Admin"]} />
+                <ProtectedRoute
+                  element={ViewUser}
+                  allowedRoles={["Admin", "Staff"]}
+                />
               }
             />
             <Route path="/events" element={<Events />} />

@@ -79,6 +79,26 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(20),
         allowNull: true,
       },
+      resetToken: {
+        type: DataTypes.STRING(64),
+        allowNull: true,
+      },
+      resetTokenExpiry: {
+        type: DataTypes.STRING(20),
+        allowNull: true,
+      },
+      otpEnabled: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      otp: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      otpExpiry: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       role: {
         type: DataTypes.ENUM("Customer", "Staff", "Admin"),
         defaultValue: "Customer",
