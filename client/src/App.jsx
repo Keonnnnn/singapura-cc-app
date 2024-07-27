@@ -47,6 +47,9 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import OtpVerification from "./pages/OtpVerification.jsx";
 
 // Ayura
+import Rewards from "./pages/Rewards";
+import EditRewards from "./pages/EditRewards";
+import UpdateReward from "./pages/updateReward";
 
 function App() {
   const [user, setUser] = useState(null);
