@@ -23,7 +23,6 @@ const OtpVerification = () => {
   const [error, setError] = useState("");
   const [otpGenerated, setOtpGenerated] = useState(false); // State to track OTP generation
   const email = location.state?.email || "";
-  const accessToken = location.state?.accessToken || "";
 
   useEffect(() => {
     // Redirect if no email is found or if user is already logged in
@@ -60,7 +59,6 @@ const OtpVerification = () => {
       const response = await http.post("/user/verify-otp", {
         email,
         otp,
-        accessToken,
       });
       setMessage(response.data.message);
       setError("");

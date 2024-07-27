@@ -75,33 +75,26 @@ const Navbar = () => {
             </Grid>
           </Link>
 
-          <Box sx={{ flexGrow: 1, display: "flex", gap: 2 }}>
-            <Link to="/notes">
-              <Typography>Notes</Typography>
-            </Link>
-
-            <Link to="/admin/users">
-              <Typography>View Users</Typography>
-            </Link>
-
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "center",
+              gap: 10,
+            }}
+          >
             <Link to="/events">
-              <Typography>View events</Typography>
+              <Typography>Events</Typography>
             </Link>
 
-            <Link to="/feedbackform">
-              <Typography>Feedback Form</Typography>
-            </Link>
-
-            <Link to="/feedbacklist">
-              <Typography>View Feedbacks</Typography>
+            <Link to="/facilities">
+              <Typography>Facilities</Typography>
             </Link>
 
             <Link to="/posts">
               <Typography>Connect</Typography>
             </Link>
           </Box>
-
-          <Box sx={{ flexGrow: 1 }} />
           {user ? (
             <>
               <IconButton
