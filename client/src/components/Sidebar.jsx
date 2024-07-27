@@ -46,10 +46,6 @@ const sideMenuOptions = [
         name: "Add Staff",
         path: "/admin/register-staff",
       },
-      {
-        name: "Add Customer",
-        path: "/admin/add-customer",
-      },
     ],
   },
   {
@@ -64,11 +60,21 @@ const sideMenuOptions = [
     icon: "https://via.placeholder.com/26",
     path: "/admin/events",
   },
+
   {
-    name: "Rewards & Memberships",
-    // icon: rewardsIcon,
+    name: "Rewards",
+    // icon: dashboardIcon,
     icon: "https://via.placeholder.com/26",
-    path: "/admin/rewards-memberships",
+    subOptions: [
+      {
+        name: "View All Rewards",
+        path: "/admin/rewards",
+      },
+      {
+        name: "Add Rewards",
+        path: "/admin/add-rewards",
+      },
+    ],
   },
 ];
 
@@ -145,7 +151,7 @@ function Sidebar() {
                       : option.name.toLowerCase()
                   }`
                 )
-                  ? "#D90000"
+                  ? "#e2160f"
                   : "#FFF",
               }}
             >
@@ -232,7 +238,7 @@ function Sidebar() {
                         borderRadius: 2,
                         backgroundColor:
                           location.pathname === subOption.path
-                            ? "#D90000"
+                            ? "#e2160f"
                             : "#FFF",
                       }}
                     >

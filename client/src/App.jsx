@@ -29,6 +29,8 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword.jsx";
 import OtpVerification from "./pages/OtpVerification.jsx";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 
 // Keon
 import Posts from "./pages/Posts";
@@ -50,6 +52,7 @@ import FeedbackDetail from "./pages/FeedbackDetail";
 import Rewards from "./pages/Rewards";
 import EditRewards from "./pages/EditRewards";
 import UpdateReward from "./pages/updateReward";
+import Dashboard from "./pages/Dashboard.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -61,7 +64,6 @@ function App() {
         try {
           const res = await http.get("/user/auth");
           setUser(res.data.user);
-          console.log("Fetched User: ", res.data.user);
         } catch (error) {
           console.error(error);
         }
@@ -99,7 +101,32 @@ function App() {
 
         <ThemeProvider theme={MyTheme}>
           <Routes>
+            {/* customer routes */}
             <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/otp-verification" element={<OtpVerification />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
+
+            <Route path="/events" element={<Events />} />
+            <Route
+              path="/feedbackform"
+              element={<ProtectedRoute element={FeedbackForm} />}
+            />
+
+            <Route
+              path="/posts"
+              element={user ? <Posts /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/createpost"
+              element={user ? <CreatePost /> : <Navigate to="/login" />}
+            />
+
+            <Route path={"/rewards"} />
             <Route path="/notes" element={<ProtectedRoute element={Notes} />} />
             <Route
               path="/addnote"
@@ -109,11 +136,18 @@ function App() {
               path="/editnote/:id"
               element={<ProtectedRoute element={EditNote} />}
             />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/otp-verification" element={<OtpVerification />} />
+
+            {/* admin routes */}
+            <Route
+              path={"/admin/dashboard"}
+              element={
+                <ProtectedRoute
+                  element={Dashboard}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
+            />
+
             <Route
               path="/admin/register-staff"
               element={
@@ -150,35 +184,36 @@ function App() {
                 />
               }
             />
-            <Route path="/events" element={<Events />} />
-            <Route path="/addevent" element={<AddEvent />} />
-            <Route path="/editevent/:id" element={<EditEvent />} />
-            <Route
-              path="/feedbackform"
-              element={<ProtectedRoute element={FeedbackForm} />}
-            />
+
             <Route
               path="/feedbacklist"
               element={<ProtectedRoute element={FeedbackList} />}
             />
             <Route path="/feedback/:id" element={<FeedbackDetail />} />
-            <Route
-              path="/posts"
-              element={user ? <Posts /> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/createpost"
-              element={user ? <CreatePost /> : <Navigate to="/login" />}
-            />
+
+            <Route path="/addevent" element={<AddEvent />} />
+            <Route path="/editevent/:id" element={<EditEvent />} />
+
             <Route
               path="/editpost/:id"
               element={user ? <EditPost /> : <Navigate to="/login" />}
             />
-            <Route path="/Rewards" element={<Rewards />} />
-            <Route path="/EditRewards" element={<EditRewards />} />
-            <Route path="/UpdateReward/:id" element={<UpdateReward />} />
-            <Route path={"/"} />
-            <Route path={"/rewards"} />
+
+            <Route
+              path="/admin/rewards"
+              element={<ProtectedRoute element={Rewards} />}
+            />
+            <Route
+              path="/admin/edit-rewards"
+              element={<ProtectedRoute element={EditRewards} />}
+            />
+            <Route
+              path="/admin/update-rewards/:id"
+              element={<ProtectedRoute element={UpdateReward} />}
+            />
+
+            {/* routes not listed above */}
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </ThemeProvider>
       </Router>

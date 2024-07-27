@@ -103,7 +103,7 @@ router.post("/register", async (req, res) => {
     idNumber: yup.string().trim().required("ID Number is required"),
     citizenshipStatus: yup.string().required("Citizenship Status is required"),
     race: yup.string().required("Race is required"),
-    membershipType: yup.string().default("bronze"),
+    membershipType: yup.string().default("Bronze"),
   });
 
   try {
@@ -218,6 +218,7 @@ router.post("/login", async (req, res) => {
 
     // Check if email exists
     const user = await User.findOne({ where: { email: data.email } });
+
     if (!user) {
       return res
         .status(400)
@@ -246,11 +247,11 @@ router.post("/login", async (req, res) => {
       username: user.username,
       role: user.role,
     };
-    const accessToken = jwt.sign(userInfo, process.env.APP_SECRET, {
+
+    let accessToken = sign(userInfo, process.env.APP_SECRET, {
       expiresIn: process.env.TOKEN_EXPIRES_IN,
     });
-
-    return res.json({
+    res.json({
       accessToken: accessToken,
       user: userInfo,
       needOtp: false,
@@ -390,7 +391,7 @@ router.post("/generate-otp", async (req, res) => {
 });
 
 router.post("/verify-otp", async (req, res) => {
-  const { email, otp, accessToken } = req.body;
+  const { email, otp } = req.body;
 
   let user = await User.findOne({ where: { email } });
   if (!user || user.otp !== otp || user.otpExpiry < Date.now()) {
@@ -400,11 +401,31 @@ router.post("/verify-otp", async (req, res) => {
   // Clear OTP after successful verification
   await User.update({ otp: null, otpExpiry: null }, { where: { email } });
 
+  let accessToken = sign(userInfo, process.env.APP_SECRET, {
+    expiresIn: process.env.TOKEN_EXPIRES_IN,
+  });
+
   return res.status(200).json({
     accessToken: accessToken,
-    user: user,
     message: "OTP verified successfully.",
   });
+});
+
+// fetch user proifle by id
+router.get("/profile/:id", validateToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    let user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 // UPDATE USER
