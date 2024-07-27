@@ -26,6 +26,9 @@ import Home from "./pages/Home";
 import AddNote from "./pages/AddNote";
 import EditNote from "./pages/EditNote";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
+import OtpVerification from "./pages/OtpVerification.jsx";
 
 // Keon
 import Posts from "./pages/Posts";
@@ -42,9 +45,6 @@ import ChatBot from "react-chatbotify";
 import FeedbackForm from "./pages/FeedbackForm";
 import FeedbackList from "./pages/FeedbackList";
 import FeedbackDetail from "./pages/FeedbackDetail";
-import ForgotPassword from "./pages/ForgotPassword.jsx";
-import ResetPassword from "./pages/ResetPassword.jsx";
-import OtpVerification from "./pages/OtpVerification.jsx";
 
 // Ayura
 import Rewards from "./pages/Rewards";
@@ -174,6 +174,11 @@ function App() {
               path="/editpost/:id"
               element={user ? <EditPost /> : <Navigate to="/login" />}
             />
+            <Route path="/Rewards" element={<Rewards />} />
+            <Route path="/EditRewards" element={<EditRewards />} />
+            <Route path="/UpdateReward/:id" element={<UpdateReward />} />
+            <Route path={"/"} />
+            <Route path={"/rewards"} />
           </Routes>
         </ThemeProvider>
       </Router>
