@@ -6,6 +6,7 @@ import {
   ListItemText,
   Divider,
   Collapse,
+  Tooltip,
 } from "@mui/material";
 import {
   ChevronLeft,
@@ -17,26 +18,22 @@ import { Link, useLocation } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
 
 // Icons for the sidebar options
-// import dashboardIcon from "../assets/dashboard.svg";
-// import usersIcon from "../assets/users.svg";
-// import blogIcon from "../assets/blog.svg";
-// import eventsIcon from "../assets/events.svg";
-// import rewardsIcon from "../assets/rewards.svg";
-// import customerIcon from "../assets/customer.svg";
-// import staffIcon from "../assets/staff.svg";
+import dashboardIcon from "../assets/dashboard.svg";
+import usersIcon from "../assets/users.svg";
+import blogIcon from "../assets/blog.svg";
+import eventsIcon from "../assets/events.svg";
+import rewardsIcon from "../assets/rewards.svg";
 
 // Sidebar menu options
 const sideMenuOptions = [
   {
     name: "Dashboard",
-    // icon: dashboardIcon,
-    icon: "https://via.placeholder.com/26",
+    icon: dashboardIcon,
     path: "/admin/dashboard",
   },
   {
     name: "Users",
-    // icon: dashboardIcon,
-    icon: "https://via.placeholder.com/26",
+    icon: usersIcon,
     subOptions: [
       {
         name: "View All Users",
@@ -45,26 +42,36 @@ const sideMenuOptions = [
       {
         name: "Add Staff",
         path: "/admin/register-staff",
+        adminOnly: true,
       },
     ],
   },
   {
     name: "Blogs",
-    // icon: blogIcon,
-    icon: "https://via.placeholder.com/26",
-    path: "/admin/blogs",
+    icon: blogIcon,
+    path: "/posts",
   },
   {
     name: "Events",
-    // icon: eventsIcon,
-    icon: "https://via.placeholder.com/26",
-    path: "/admin/events",
+    icon: eventsIcon,
+    subOptions: [
+      {
+        name: "Add Events",
+        path: "/events",
+      },
+      {
+        name: "View Feedback",
+        path: "/feddbacklist",
+      },
+      {
+        name: "Add Feedback",
+        path: "/feedbackform",
+      },
+    ],
   },
-
   {
     name: "Rewards",
-    // icon: dashboardIcon,
-    icon: "https://via.placeholder.com/26",
+    icon: rewardsIcon,
     subOptions: [
       {
         name: "View All Rewards",
@@ -98,6 +105,11 @@ function Sidebar() {
       [name]: !prevOpen[name],
     }));
   };
+
+  const isActive = (path) => location.pathname === path;
+
+  const isParentActive = (subOptions) =>
+    subOptions && subOptions.some((subOption) => isActive(subOption.path));
 
   return (
     <Box
@@ -144,15 +156,10 @@ function Sidebar() {
               sx={{
                 my: 1,
                 borderRadius: 2,
-                backgroundColor: location.pathname.startsWith(
-                  `/admin/${
-                    option.name.toLowerCase().includes(" ")
-                      ? option.name.toLowerCase().replace(" ", "-")
-                      : option.name.toLowerCase()
-                  }`
-                )
-                  ? "#e2160f"
-                  : "#FFF",
+                backgroundColor:
+                  isActive(option.path) || isParentActive(option.subOptions)
+                    ? "#e2160f"
+                    : "#FFF",
               }}
             >
               {!option.subOptions ? (
@@ -177,12 +184,14 @@ function Sidebar() {
                       whiteSpace: "nowrap",
                     }}
                   >
-                    <img
-                      src={option.icon}
-                      alt={option.name}
-                      width={26}
-                      height={26}
-                    />
+                    <Tooltip title={option.name}>
+                      <img
+                        src={option.icon}
+                        alt={option.name}
+                        width={26}
+                        height={26}
+                      />
+                    </Tooltip>
                     <ListItemText
                       primary={option.name}
                       sx={{
@@ -205,12 +214,14 @@ function Sidebar() {
                     cursor: "pointer",
                   }}
                 >
-                  <img
-                    src={option.icon}
-                    alt={option.name}
-                    width={26}
-                    height={26}
-                  />
+                  <Tooltip title={option.name}>
+                    <img
+                      src={option.icon}
+                      alt={option.name}
+                      width={26}
+                      height={26}
+                    />
+                  </Tooltip>
                   <ListItemText
                     primary={option.name}
                     sx={{
@@ -229,43 +240,47 @@ function Sidebar() {
             {option.subOptions && (
               <Collapse in={open[option.name]} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
-                  {option.subOptions.map((subOption) => (
-                    <ListItem
-                      key={subOption.name}
-                      sx={{
-                        pl: 4,
-                        my: 1,
-                        borderRadius: 2,
-                        backgroundColor:
-                          location.pathname === subOption.path
+                  {option.subOptions
+                    .filter(
+                      (subOption) =>
+                        !subOption.adminOnly || (user && user.role === "Admin")
+                    )
+                    .map((subOption) => (
+                      <ListItem
+                        key={subOption.name}
+                        sx={{
+                          pl: 4,
+                          my: 1,
+                          borderRadius: 2,
+                          backgroundColor: isActive(subOption.path)
                             ? "#e2160f"
                             : "#FFF",
-                      }}
-                    >
-                      <Link
-                        to={subOption.path}
-                        style={{
-                          textDecoration: "none",
-                          display: "flex",
-                          gap: "30px",
-                          color: "black",
-                          width: "100%",
-                          alignItems: "center",
-                          whiteSpace: "nowrap",
                         }}
                       >
-                        <ListItemText
-                          primary={subOption.name}
-                          sx={{
-                            opacity: isMinimized ? 0 : 1,
-                            visibility: isMinimized ? "hidden" : "visible",
-                            transition:
-                              "opacity 0.1s ease-in-out, visibility 0s linear 0.1s",
+                        <Link
+                          to={subOption.path}
+                          style={{
+                            textDecoration: "none",
+                            display: "flex",
+                            gap: "30px",
+                            color: "black",
+                            width: "100%",
+                            alignItems: "center",
+                            whiteSpace: "nowrap",
                           }}
-                        />
-                      </Link>
-                    </ListItem>
-                  ))}
+                        >
+                          <ListItemText
+                            primary={subOption.name}
+                            sx={{
+                              opacity: isMinimized ? 0 : 1,
+                              visibility: isMinimized ? "hidden" : "visible",
+                              transition:
+                                "opacity 0.1s ease-in-out, visibility 0s linear 0.1s",
+                            }}
+                          />
+                        </Link>
+                      </ListItem>
+                    ))}
                 </List>
               </Collapse>
             )}

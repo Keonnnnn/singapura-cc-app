@@ -15,6 +15,8 @@ import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../logo.png";
 import UserContext from "../contexts/UserContext";
+import SearchIcon from "@mui/icons-material/Search";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const Navbar = () => {
   const { user } = useContext(UserContext);
@@ -83,20 +85,29 @@ const Navbar = () => {
               gap: 10,
             }}
           >
-            <Link to="/events">
-              <Typography>Events</Typography>
-            </Link>
+            {!isAdmin && (
+              <>
+                <Link to="/events">
+                  <Typography>Events</Typography>
+                </Link>
 
-            <Link to="/facilities">
-              <Typography>Facilities</Typography>
-            </Link>
+                <Link to="/facilities">
+                  <Typography>Facilities</Typography>
+                </Link>
 
-            <Link to="/posts">
-              <Typography>Connect</Typography>
-            </Link>
+                <Link to="/posts">
+                  <Typography>Connect</Typography>
+                </Link>
+              </>
+            )}
           </Box>
           {user ? (
             <>
+              {isAdmin && (
+                <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                  Staff Management Portal
+                </Typography>
+              )}
               <IconButton
                 id="account-button"
                 aria-controls={open ? "account-menu" : undefined}
@@ -140,17 +151,19 @@ const Navbar = () => {
                   <Typography color={"textSecondary"}>{user.email}</Typography>
                 </Box>
                 <Divider />
-                <Link
-                  to="/admin/dashboard"
-                  style={{
-                    textDecoration: "none",
-                    color: "inherit",
-                  }}
-                >
-                  <MenuItem>
-                    <Typography>Dashboard</Typography>
-                  </MenuItem>
-                </Link>
+                {isAdmin && (
+                  <Link
+                    to="/admin/dashboard"
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                    }}
+                  >
+                    <MenuItem>
+                      <Typography>Dashboard</Typography>
+                    </MenuItem>
+                  </Link>
+                )}
                 <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
               <Menu

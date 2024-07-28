@@ -146,19 +146,21 @@ function EditUser() {
           borderRadius: "12px",
         }}
       >
-        <IconButton
-          color="secondary"
-          sx={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            bgcolor: "rgba(255,255,255,0.8)",
-            borderRadius: "50%",
-          }}
-          onClick={handleCancel}
-        >
-          <Close />
-        </IconButton>
+        {/* <Tooltip title="Cancel">
+          <IconButton
+            color="secondary"
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              bgcolor: "rgba(255,255,255,0.8)",
+              borderRadius: "50%",
+            }}
+            onClick={handleCancel}
+          >
+            <Close />
+          </IconButton>
+        </Tooltip> */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Typography variant="h5" sx={{ flex: 1 }}>
             Edit User
