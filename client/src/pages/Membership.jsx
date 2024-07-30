@@ -52,9 +52,6 @@ function Membership() {
           <AccountCircleIcon sx={{ fontSize: '200px' }} />
           {user && (
             <>
-              <Avatar sx={{ width: 40, height: 40 }}>
-                {getInitials(user.firstName)}
-              </Avatar>
               <Typography sx={{ marginLeft: 1 }}>{user.firstName} {user.lastName}</Typography>
             </>
           )}

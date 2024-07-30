@@ -44,6 +44,7 @@ import Sidebar from './pages/Sidebar';
 import EditRewards from './pages/EditRewards';
 import UpdateReward from './pages/updateReward';
 import Membership from './pages/Membership.jsx';
+import ClaimRewards from './pages/claimRewards.jsx';
 
 // Ayura
 
@@ -204,6 +205,7 @@ function App() {
               <Route path={"/"} />
               <Route path={"/rewards"} />
               <Route path="/Membership" element={<Membership/>}/>
+              <Route path="/ClaimRewards" element={<ClaimRewards/>}/>
             </Routes>
           </Container>
         </ThemeProvider>
