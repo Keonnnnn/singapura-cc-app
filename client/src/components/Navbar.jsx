@@ -67,7 +67,23 @@ const Navbar = () => {
     >
       <Container>
         <Toolbar disableGutters={true}>
-          <Link to="/">
+          {/* <Link to="/">
+            <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justifyContent="center"
+              paddingTop={"10px"}
+            >
+              <Avatar src={logo} sx={{ width: 60, height: 60 }} />
+              <Typography variant="h6" component="div">
+                SINGAPURA CC
+              </Typography>
+            </Grid>
+          </Link> */}
+
+          <Link to={isAdmin ? "/admin/dashboard" : "/"}>
             <Grid
               container
               spacing={0}
@@ -83,6 +99,7 @@ const Navbar = () => {
             </Grid>
           </Link>
 
+
           <Box
             sx={{
               flexGrow: 1,
@@ -91,9 +108,16 @@ const Navbar = () => {
               gap: 10,
             }}
           >
+
+            {!user && (
+              <Link to="/about">
+                <Typography>About Us</Typography>
+              </Link>
+            )}
+
             {!isAdmin && (
               <>
-                <Link to="/events">
+                <Link to="">
                   <Typography>Events</Typography>
                 </Link>
 
@@ -111,7 +135,7 @@ const Navbar = () => {
             <>
               {isAdmin && (
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                  Staff Management Portal
+                  Admin Management Portal
                 </Typography>
               )}
               <IconButton
@@ -125,6 +149,16 @@ const Navbar = () => {
                   {getInitials(user.firstName)}
                 </Avatar>
               </IconButton>
+              <Typography 
+                sx={{ cursor: 'pointer' }}
+                aria-controls={open ? "account-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+                onClick={isAdmin ? handleClick : handleClickCustomer}>
+                  {user.firstName} {user.lastName}
+              </Typography>
+
+
               <Menu
                 id="account-menu"
                 anchorEl={anchorEl}
@@ -157,7 +191,22 @@ const Navbar = () => {
                   <Typography color={"textSecondary"}>{user.email}</Typography>
                 </Box>
                 <Divider />
-                {isAdmin && (
+
+                {/* my notes */}
+                <Link
+                  to="/notes"
+                  style={{
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                >
+                  <MenuItem>
+                    <Typography>My Notes</Typography>
+                  </MenuItem>
+                </Link>
+
+
+                {/* {isAdmin && (
                   <Link
                     to="/admin/dashboard"
                     style={{
@@ -169,7 +218,8 @@ const Navbar = () => {
                       <Typography>Dashboard</Typography>
                     </MenuItem>
                   </Link>
-                )}
+                )} */}
+
                 <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
               <Menu
@@ -205,6 +255,21 @@ const Navbar = () => {
                 </Box>
 
                 <Divider />
+
+                {/* my notes */}
+                <Link
+                  to="/notes"
+                  style={{
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                >
+                  <MenuItem>
+                    <Typography>My Notes</Typography>
+                  </MenuItem>
+                </Link>
+
+
                 <Link
                   to="/profile"
                   style={{
