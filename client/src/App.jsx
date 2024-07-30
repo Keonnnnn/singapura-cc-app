@@ -42,6 +42,8 @@ import Events from "./pages/Events";
 import AddEvent from "./pages/AddEvent";
 import EditEvent from "./pages/EditEvent";
 import ChatBot from "react-chatbotify";
+import CustomerEvent from './pages/CustomerEvents'; //page
+import RegisterEvent from './pages/RegisterEvents'; //page
 
 // Ahmed
 import FeedbackForm from "./pages/FeedbackForm";
@@ -85,22 +87,48 @@ function App() {
 
   // Amelia's codes
   const flow = {
-    start: {
-      message: "Greetings to you! How can I help you today?",
-      path: "end",
+    "start": {
+      "message": "Greetings to you! How can I help you today?",
+      "options": ["Tell me about the events", "Help me with something else"],
+      "path": "process_options"
     },
+    process_options: {
+      message: (params) => {
+        let link = "";
+        switch (params.userInput) {
+          case "Tell me about the events":
+            link = "events";
+            break;
+          case "Help me with something else":
+            return "Please describe your inquiry, and we will get back to you soon.";
+          default:
+            return "unknown_input";
+        }
+        setTimeout(() => {
+          window.open(link);
+        }, 2000)
+        return `Sit tight! I'll send you to ${params.userInput}!`;
+      }
+    },
+
+    "end": {
+      "message": "Thank you for using our service!",
+      "end": true
+    }
   };
+
 
   const options = {
     theme: {
       primaryColor: "#f9a99e",
       secondaryColor: "#e2160f",
-      showFooter: false,
+      showFooter: false
     },
     chatHistory: {
-      storageKey: "example_theming",
+      storageKey: "example_theming"
     },
   };
+
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
@@ -122,6 +150,8 @@ function App() {
             <Route path="/profile/:userId" element={<ProtectedRoute element={PostProfile} />} />
 
             <Route path="/events" element={<ProtectedRoute element={Events} allowedRoles={["Admin", "Staff"]} />} />
+            <Route path={"/customer-events"} element={<CustomerEvent />} />
+            <Route path={"/register/:id"} element={<RegisterEvent />} />
             <Route path="/feedbackform" element={<ProtectedRoute element={FeedbackForm} />} />
             <Route path="/posts" element={<ProtectedRoute element={Posts} />} />
             <Route path="/createpost" element={user ? <CreatePost /> : <Navigate to="/login" />} />
