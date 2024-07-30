@@ -48,24 +48,9 @@ function Notes() {
     };
 
     return (
-        <Box>
-            <Typography variant="h5" sx={{ my: 2 }}>Notes</Typography>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Input value={search} placeholder='Search...' onChange={onSearchChange} onKeyDown={onSearchKeyDown} sx={{ mr: 1 }} />
-                <Tooltip title="Search">
-                    <IconButton color="secondary" onClick={onClickSearch}>
-                        <Search />
-                    </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Clear">
-                    <IconButton color="secondary" onClick={onClickClear}>
-                        <Clear />
-                    </IconButton>
-                </Tooltip>
-
-                <Box sx={{ flexGrow: 1 }} />
+        <Box sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                <Typography variant="h5">My Notes</Typography>
                 <Link to="/addnote" style={{ textDecoration: 'none' }}>
                     <Tooltip title="Add Note">
                         <IconButton sx={{ bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark' }, color: 'white', borderRadius: '50%' }}>
@@ -75,45 +60,65 @@ function Notes() {
                 </Link>
             </Box>
 
-            <Grid container spacing={2}>
-                {
-                    notesList.map((note, i) => {
-                        return (
-                            <Grid item xs={12} md={6} lg={4} key={note.id}>
-                                <Card sx={{ borderRadius: 2 }}>  {/* Adjust borderRadius as needed */}
-                                    <CardContent>
-                                        <Box sx={{ display: 'flex', mb: 1 }}>
-                                            <Typography variant="h5" sx={{ mb: 1, fontWeight: 600, fontSize: '1.25rem', flexGrow: 1 }}>{note.title}</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Input
+                    value={search}
+                    placeholder='Search...'
+                    onChange={onSearchChange}
+                    onKeyDown={onSearchKeyDown}
+                    sx={{ mr: 1, flexGrow: 1, borderBottom: '1px solid gray' }}
+                />
+                <Tooltip title="Search">
+                    <IconButton color="primary" onClick={onClickSearch}>
+                        <Search />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Clear">
+                    <IconButton color="primary" onClick={onClickClear}>
+                        <Clear />
+                    </IconButton>
+                </Tooltip>
+            </Box>
 
-                                            <Link to={`/editnote/${note.id}`}>
-                                                <Tooltip title="Edit Note">
-                                                    <IconButton color="secondary" sx={{ padding: '4px' }}>
-                                                        <Edit sx={{ fontSize: '1.3rem' }} />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </Link>
-                                        </Box>
-
-                                        <Typography sx={{ whiteSpace: 'pre-wrap', mb: 2, fontSize: '1rem' }}>{note.description}</Typography>
-
-                                        {
-                                            note.imageFile && (
-                                                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-                                                    <img src={`${import.meta.env.VITE_FILE_BASE_URL}${note.imageFile}`} alt="note" style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px' }} />
-                                                </Box>
-                                            )
-                                        }
-
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
-                                            <AccessTime sx={{ mr: 0.5, fontSize: '1rem' }} />
-                                            <Typography sx={{ fontSize: '0.865rem' }}>{dayjs(note.createdAt).format(global.datetimeFormat)}</Typography>
-                                        </Box>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                        );
-                    })
-                }
+            <Grid container spacing={3}>
+                {notesList.map((note) => (
+                    <Grid item xs={12} md={6} lg={4} key={note.id}>
+                        <Card sx={{ borderRadius: 2, boxShadow: 3 }}>
+                            <CardContent>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                                        {note.title}
+                                    </Typography>
+                                    <Link to={`/editnote/${note.id}`} style={{ textDecoration: 'none' }}>
+                                        <Tooltip title="Edit Note">
+                                            <IconButton color="primary">
+                                                <Edit />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Link>
+                                </Box>
+                                <Typography sx={{ whiteSpace: 'pre-wrap', mb: 2 }}>
+                                    {note.description}
+                                </Typography>
+                                {note.imageFile && (
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                                        <img
+                                            src={`${import.meta.env.VITE_FILE_BASE_URL}${note.imageFile}`}
+                                            alt="note"
+                                            style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px' }}
+                                        />
+                                    </Box>
+                                )}
+                                <Box sx={{ display: 'flex', alignItems: 'center' }} color="text.secondary">
+                                    <AccessTime sx={{ mr: 0.5, fontSize: '1rem' }} />
+                                    <Typography sx={{ fontSize: '0.875rem' }}>
+                                        {dayjs(note.createdAt).format(global.datetimeFormat)}
+                                    </Typography>
+                                </Box>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
             </Grid>
         </Box>
     );

@@ -59,7 +59,13 @@ function Login() {
         } else {
           localStorage.setItem("accessToken", res.data.accessToken);
           setUser(res.data.user);
-          navigate("/"); // Navigate to home after login
+          // navigate("/"); // Navigate to home after login
+
+          if (res.data.user.role === 'Admin' || res.data.user.role === 'Staff') {
+            navigate("/admin/dashboard"); // Navigate to dashboard for Admin/Staff
+          } else {
+            navigate("/"); // Navigate to home for Customer
+          }
         }
       } catch (err) {
         toast.error(`${err.response.data.message}`);
