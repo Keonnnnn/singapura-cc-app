@@ -354,155 +354,169 @@ const EditProfile = () => {
                 </Grid>
               </Grid>
 
-              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                Residential Address
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    margin="normal"
-                    label="Block No."
-                    name="blockNo"
-                    value={formik.values.blockNo}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.blockNo && Boolean(formik.errors.blockNo)
-                    }
-                    helperText={formik.touched.blockNo && formik.errors.blockNo}
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    margin="normal"
-                    label="Unit No."
-                    name="unitNo"
-                    value={formik.values.unitNo}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.unitNo && Boolean(formik.errors.unitNo)
-                    }
-                    helperText={formik.touched.unitNo && formik.errors.unitNo}
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    margin="normal"
-                    label="Street Name"
-                    name="streetName"
-                    value={formik.values.streetName}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.streetName &&
-                      Boolean(formik.errors.streetName)
-                    }
-                    helperText={
-                      formik.touched.streetName && formik.errors.streetName
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    margin="normal"
-                    label="Postal Code"
-                    name="postalCode"
-                    value={formik.values.postalCode}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.postalCode &&
-                      Boolean(formik.errors.postalCode)
-                    }
-                    helperText={
-                      formik.touched.postalCode && formik.errors.postalCode
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-              </Grid>
+              {user.role === "Customer" && (
+                <>
+                  <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                    Residential Address
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Block No."
+                        name="blockNo"
+                        value={formik.values.blockNo}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.blockNo &&
+                          Boolean(formik.errors.blockNo)
+                        }
+                        helperText={
+                          formik.touched.blockNo && formik.errors.blockNo
+                        }
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Unit No."
+                        name="unitNo"
+                        value={formik.values.unitNo}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.unitNo && Boolean(formik.errors.unitNo)
+                        }
+                        helperText={
+                          formik.touched.unitNo && formik.errors.unitNo
+                        }
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Street Name"
+                        name="streetName"
+                        value={formik.values.streetName}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.streetName &&
+                          Boolean(formik.errors.streetName)
+                        }
+                        helperText={
+                          formik.touched.streetName && formik.errors.streetName
+                        }
+                        variant="outlined"
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Postal Code"
+                        name="postalCode"
+                        value={formik.values.postalCode}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        error={
+                          formik.touched.postalCode &&
+                          Boolean(formik.errors.postalCode)
+                        }
+                        helperText={
+                          formik.touched.postalCode && formik.errors.postalCode
+                        }
+                        variant="outlined"
+                      />
+                    </Grid>
+                  </Grid>
 
-              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                Additional Information
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="ID Type"
-                    name="idType"
-                    value={formik.values.idType}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    fullWidth
-                    variant="outlined"
-                    error={
-                      formik.touched.idType && Boolean(formik.errors.idType)
-                    }
-                    helperText={formik.touched.idType && formik.errors.idType}
-                    disabled
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="ID Number"
-                    name="idNumber"
-                    value={formik.values.idNumber}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    fullWidth
-                    variant="outlined"
-                    error={
-                      formik.touched.idNumber && Boolean(formik.errors.idNumber)
-                    }
-                    helperText={
-                      formik.touched.idNumber && formik.errors.idNumber
-                    }
-                    disabled
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Citizenship Status"
-                    name="citizenshipStatus"
-                    value={formik.values.citizenshipStatus}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    fullWidth
-                    variant="outlined"
-                    error={
-                      formik.touched.citizenshipStatus &&
-                      Boolean(formik.errors.citizenshipStatus)
-                    }
-                    helperText={
-                      formik.touched.citizenshipStatus &&
-                      formik.errors.citizenshipStatus
-                    }
-                    disabled
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    label="Race"
-                    name="race"
-                    value={formik.values.race}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    fullWidth
-                    variant="outlined"
-                    error={formik.touched.race && Boolean(formik.errors.race)}
-                    helperText={formik.touched.race && formik.errors.race}
-                    disabled
-                  />
-                </Grid>
-              </Grid>
+                  <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                    Additional Information
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="ID Type"
+                        name="idType"
+                        value={formik.values.idType}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        fullWidth
+                        variant="outlined"
+                        error={
+                          formik.touched.idType && Boolean(formik.errors.idType)
+                        }
+                        helperText={
+                          formik.touched.idType && formik.errors.idType
+                        }
+                        disabled
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="ID Number"
+                        name="idNumber"
+                        value={formik.values.idNumber}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        fullWidth
+                        variant="outlined"
+                        error={
+                          formik.touched.idNumber &&
+                          Boolean(formik.errors.idNumber)
+                        }
+                        helperText={
+                          formik.touched.idNumber && formik.errors.idNumber
+                        }
+                        disabled
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="Citizenship Status"
+                        name="citizenshipStatus"
+                        value={formik.values.citizenshipStatus}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        fullWidth
+                        variant="outlined"
+                        error={
+                          formik.touched.citizenshipStatus &&
+                          Boolean(formik.errors.citizenshipStatus)
+                        }
+                        helperText={
+                          formik.touched.citizenshipStatus &&
+                          formik.errors.citizenshipStatus
+                        }
+                        disabled
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        label="Race"
+                        name="race"
+                        value={formik.values.race}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        fullWidth
+                        variant="outlined"
+                        error={
+                          formik.touched.race && Boolean(formik.errors.race)
+                        }
+                        helperText={formik.touched.race && formik.errors.race}
+                        disabled
+                      />
+                    </Grid>
+                  </Grid>
+                </>
+              )}
               <Box
                 sx={{
                   display: "flex",

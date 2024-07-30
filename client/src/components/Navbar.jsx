@@ -23,7 +23,12 @@ import UserContext from "../contexts/UserContext";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import http from "../http";
-import { Notifications as NotificationsIcon, Comment as CommentIcon, ThumbUp as ThumbUpIcon, PersonAdd as PersonAddIcon } from "@mui/icons-material";
+import {
+  Notifications as NotificationsIcon,
+  Comment as CommentIcon,
+  ThumbUp as ThumbUpIcon,
+  PersonAdd as PersonAddIcon,
+} from "@mui/icons-material";
 
 const Navbar = () => {
   const { user } = useContext(UserContext);
@@ -67,7 +72,6 @@ const Navbar = () => {
     setAnchorElAdmin(null);
   };
 
-
   const getInitials = (firstName) => {
     if (!firstName) return "";
     return firstName.charAt(0).toUpperCase();
@@ -81,7 +85,9 @@ const Navbar = () => {
   const fetchNotifications = async () => {
     try {
       const res = await http.get("/notifications");
-      const sortedNotifications = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const sortedNotifications = res.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
       setNotifications(sortedNotifications);
     } catch (err) {
       console.error("Failed to fetch notifications", err);
@@ -99,7 +105,13 @@ const Navbar = () => {
   const markAsRead = async (id) => {
     try {
       await http.put(`/notifications/${id}/read`);
-      setNotifications(notifications.map((notification) => (notification.id === id ? { ...notification, isRead: true } : notification)));
+      setNotifications(
+        notifications.map((notification) =>
+          notification.id === id
+            ? { ...notification, isRead: true }
+            : notification
+        )
+      );
     } catch (err) {
       console.error("Failed to mark notification as read", err);
     }
@@ -113,11 +125,22 @@ const Navbar = () => {
   const isAdmin = user && (user.role === "Admin" || user.role === "Staff");
 
   return (
-    <AppBar position="static" className="AppBar" sx={{ backgroundColor: "#D22B2B" }}>
+    <AppBar
+      position="static"
+      className="AppBar"
+      sx={{ backgroundColor: "#D22B2B" }}
+    >
       <Container>
         <Toolbar disableGutters={true}>
           <Link to={isAdmin ? "/admin/dashboard" : "/"}>
-            <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center" paddingTop={"10px"}>
+            <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justifyContent="center"
+              paddingTop={"10px"}
+            >
               <Avatar src={logo} sx={{ width: 60, height: 60 }} />
               <Typography variant="h6" component="div">
                 SINGAPURA CC
@@ -125,7 +148,14 @@ const Navbar = () => {
             </Grid>
           </Link>
 
-          <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center", gap: 10 }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              justifyContent: "center",
+              gap: 5,
+            }}
+          >
             {!user && (
               <Link to="/about">
                 <Typography>About Us</Typography>
@@ -142,7 +172,7 @@ const Navbar = () => {
                   <Typography>Facilities</Typography>
                 </Link>
 
-                <Link to="/notifications" >
+                <Link to="/notifications">
                   <Typography>Notification</Typography>
                 </Link>
 
@@ -166,7 +196,10 @@ const Navbar = () => {
 
               {location.pathname === "/posts" && (
                 <IconButton color="inherit" onClick={handleNotificationClick}>
-                  <Badge badgeContent={notifications.filter((n) => !n.isRead).length} color="secondary">
+                  <Badge
+                    badgeContent={notifications.filter((n) => !n.isRead).length}
+                    color="secondary"
+                  >
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
@@ -186,7 +219,9 @@ const Navbar = () => {
                 }}
               >
                 {notifications.length === 0 ? (
-                  <MenuItem onClick={handleNotificationClose}>No notifications</MenuItem>
+                  <MenuItem onClick={handleNotificationClose}>
+                    No notifications
+                  </MenuItem>
                 ) : (
                   <List sx={{ width: "100%", bgcolor: "background.paper" }}>
                     {notifications.map((notification) => (
@@ -195,7 +230,9 @@ const Navbar = () => {
                         key={notification.id}
                         onClick={() => markAsRead(notification.id)}
                         sx={{
-                          backgroundColor: notification.isRead ? "#f0f0f0" : "#fff",
+                          backgroundColor: notification.isRead
+                            ? "#f0f0f0"
+                            : "#fff",
                           fontWeight: notification.isRead ? "normal" : "bold",
                         }}
                       >
@@ -204,19 +241,43 @@ const Navbar = () => {
                           {notification.type === "comment" && <CommentIcon />}
                           {notification.type === "follow" && <PersonAddIcon />}
                         </ListItemIcon>
-                        <ListItemText primary={notification.message} secondary={formatNotificationTime(notification.createdAt)} />
+                        <ListItemText
+                          primary={notification.message}
+                          secondary={formatNotificationTime(
+                            notification.createdAt
+                          )}
+                        />
                       </ListItem>
                     ))}
                   </List>
                 )}
               </Menu>
-
-              <IconButton id="account-button" aria-controls={open ? "account-menu" : undefined} aria-haspopup="true" aria-expanded={open ? "true" : undefined} onClick={isAdmin ? handleClickAdmin : handleClickCustomer}>
-                <Avatar sx={{ width: 40, height: 40 }}>{getInitials(user.firstName)}</Avatar>
-              </IconButton>
-              <Typography sx={{ cursor: "pointer" }} aria-controls={open ? "account-menu" : undefined} aria-haspopup="true" aria-expanded={open ? "true" : undefined} >
-                {user.firstName} {user.lastName}
-              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+                aria-controls={open ? "account-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+                onClick={isAdmin ? handleClickAdmin : handleClickCustomer}
+              >
+                <IconButton id="account-button">
+                  <Avatar sx={{ width: 40, height: 40 }}>
+                    {getInitials(user.firstName)}
+                  </Avatar>
+                </IconButton>
+                <Typography
+                  sx={{ cursor: "pointer" }}
+                  aria-controls={open ? "account-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                >
+                  {user.firstName} {user.lastName}
+                </Typography>
+              </Box>
 
               {/* admin side */}
               <Menu
@@ -264,6 +325,23 @@ const Navbar = () => {
                     </MenuItem>
                   </Link>
                 )}
+                <Link
+                  to="/notes"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <MenuItem>
+                    <Typography>My Notes</Typography>
+                  </MenuItem>
+                </Link>
+
+                <Link
+                  to="/profile"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <MenuItem>
+                    <Typography>Profile</Typography>
+                  </MenuItem>
+                </Link>
                 <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
 
@@ -286,7 +364,15 @@ const Navbar = () => {
                   horizontal: "right",
                 }}
               >
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", paddingX: 2, paddingY: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    paddingX: 2,
+                    paddingY: 1,
+                  }}
+                >
                   <Typography fontWeight={"medium"}>
                     {user.firstName} {user.lastName}
                   </Typography>
@@ -295,18 +381,27 @@ const Navbar = () => {
 
                 <Divider />
 
-                <Link to="/notes" style={{ textDecoration: "none", color: "inherit" }}>
+                <Link
+                  to="/notes"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
                   <MenuItem>
                     <Typography>My Notes</Typography>
                   </MenuItem>
                 </Link>
 
-                <Link to="/profile" style={{ textDecoration: "none", color: "inherit" }}>
+                <Link
+                  to="/profile"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
                   <MenuItem>
                     <Typography>Profile</Typography>
                   </MenuItem>
                 </Link>
-                <Link to="/settings" style={{ textDecoration: "none", color: "inherit" }}>
+                <Link
+                  to="/settings"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
                   <MenuItem>
                     <Typography>Settings</Typography>
                   </MenuItem>
@@ -316,10 +411,16 @@ const Navbar = () => {
             </>
           ) : (
             <>
-              <Link to="/register" style={{ textDecoration: "none", color: "inherit" }}>
+              <Link
+                to="/register"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
                 <Typography>SIGN UP</Typography>
               </Link>
-              <Link to="/login" style={{ textDecoration: "none", color: "inherit" }}>
+              <Link
+                to="/login"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
                 <Typography>LOGIN</Typography>
               </Link>
             </>
