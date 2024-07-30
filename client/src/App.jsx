@@ -53,6 +53,7 @@ import Rewards from "./pages/Rewards";
 import EditRewards from "./pages/EditRewards";
 import UpdateReward from "./pages/updateReward";
 import Dashboard from "./pages/Dashboard.jsx";
+import EditProfile from "./pages/EditProfile.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -109,6 +110,7 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/otp-verification" element={<OtpVerification />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<EditProfile />} />
             <Route path="/settings" element={<Settings />} />
 
             <Route path="/events" element={<Events />} />

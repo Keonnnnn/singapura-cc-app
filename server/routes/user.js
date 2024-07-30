@@ -503,7 +503,7 @@ router.post("/verify-otp", async (req, res) => {
   });
 });
 
-// fetch user proifle by id
+// fetch user profile by id
 router.get("/profile/:id", validateToken, async (req, res) => {
   const { id } = req.params;
 
@@ -517,6 +517,92 @@ router.get("/profile/:id", validateToken, async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// update profile
+router.put("/profile/:id", validateToken, async (req, res) => {
+  const { id } = req.params;
+  let data = req.body;
+
+  // Validation
+  let validationSchema = yup.object({
+    salutations: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(10)
+      .required("Salutations is required")
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "Salutations only allow letters, spaces and characters: ' - , ."
+      ),
+    firstName: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(50)
+      .required("First name is required")
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "First name only allow letters, spaces and characters: ' - , ."
+      ),
+    lastName: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(50)
+      .required("Last name is required")
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "Last name only allow letters, spaces and characters: ' - , ."
+      ),
+    email: yup
+      .string()
+      .trim()
+      .lowercase()
+      .email("Enter a valid email")
+      .max(50)
+      .required("Email is required"),
+    dateOfBirth: yup.date().required("Date of Birth is required"),
+    gender: yup.string().required("Gender is required"),
+    mobileNumber: yup
+      .string()
+      .trim()
+      .matches(/^\d{8}$/, "Mobile number must be exactly 8 digits")
+      .required("Mobile number is required"),
+    blockNo: yup.string().trim().required("Block No. is required"),
+    unitNo: yup.string().trim().required("Unit No. is required"),
+    streetName: yup.string().trim().required("Street Name is required"),
+    postalCode: yup
+      .string()
+      .trim()
+      .matches(/^\d{6}$/, "Postal Code must be exactly 6 digits")
+      .required("Postal Code is required"),
+    idType: yup.string().required("ID Type is required"),
+    idNumber: yup.string().trim().required("ID Number is required"),
+    citizenshipStatus: yup.string().required("Citizenship Status is required"),
+    race: yup.string().required("Race is required"),
+  });
+
+  try {
+    data = await validationSchema.validate(data, { abortEarly: false });
+
+    // Check if user exists
+    let user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
+
+    // Update user data
+    await User.update(data, { where: { id } });
+
+    // Return updated user data
+    user = await User.findByPk(id);
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ errors: err.errors });
   }
 });
 

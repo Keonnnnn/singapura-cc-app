@@ -110,7 +110,10 @@ function EditUser() {
   });
 
   const formik = useFormik({
-    initialValues: user,
+    initialValues: {
+      ...user,
+      dateOfBirth: user.dateOfBirth.split("T")[0],
+    },
     enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: async (values) => {

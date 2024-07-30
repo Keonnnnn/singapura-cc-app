@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Close, ArrowBack } from "@mui/icons-material";
+import { Close, ArrowBack, Edit } from "@mui/icons-material";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -20,84 +20,40 @@ function ViewUser() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [userDetails, setUserDetails] = useState({
+  const [user, setUser] = useState({
     salutations: "",
     firstName: "",
     lastName: "",
     dateOfBirth: "",
     gender: "",
     email: "",
+    password: "",
     mobileNumber: "",
+    blockNo: "",
+    unitNo: "",
+    streetName: "",
+    postalCode: "",
+    idType: "",
+    idNumber: "",
+    citizenshipStatus: "",
+    race: "",
   });
-
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    http
-      .get(`/user/${id}`)
-      .then((res) => {
-        setUserDetails(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching user:", err);
-        if (err.response && err.response.status === 404) {
-          navigate("/admin/users"); // Redirect to users list if user is not found
-        }
+    http.get(`/user/${id}`).then((res) => {
+      setUser({
+        ...res.data,
+        password: "**********",
       });
-  }, [id, navigate]);
+      setLoading(false);
+    });
+  }, [id]);
 
-  const formik = useFormik({
-    initialValues: {
-      salutations: userDetails.salutations,
-      firstName: userDetails.firstName,
-      lastName: userDetails.lastName,
-      dateOfBirth: userDetails.dateOfBirth,
-      gender: userDetails.gender,
-      email: userDetails.email,
-      mobileNumber: userDetails.mobileNumber,
-    },
-    enableReinitialize: true,
-    validationSchema: yup.object({
-      salutations: yup.string().trim(),
-      firstName: yup
-        .string()
-        .trim()
-        .min(2)
-        .max(50)
-        .matches(
-          /^[a-zA-Z '-,.]+$/,
-          "First name only allows letters, spaces and characters: ' - , ."
-        )
-        .required("First name is required."),
-      lastName: yup
-        .string()
-        .trim()
-        .min(2)
-        .max(50)
-        .matches(
-          /^[a-zA-Z '-,.]+$/,
-          "Last name only allows letters, spaces and characters: ' - , ."
-        )
-        .required("Last name is required."),
-      dateOfBirth: yup.date(),
-      gender: yup.string(),
-      email: yup
-        .string()
-        .trim()
-        .lowercase()
-        .email()
-        .max(50)
-        .required("Email is required."),
-      mobileNumber: yup
-        .string()
-        .trim()
-        .matches(/^\d{8}$/, "Mobile number must be exactly 8 digits"),
-    }),
-    onSubmit: async () => {
-      navigate(`/admin/users/${id}/edit`); // Redirect to edit user page
-    },
-  });
+  const [loading, setLoading] = useState(true);
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  const handleEdit = () => {
+    navigate(`/admin/users/${id}/edit`); // Redirect to edit user page
+  };
 
   const handleCancel = () => {
     navigate("/admin/users"); // Redirect to users list
@@ -134,182 +90,121 @@ function ViewUser() {
           <Typography variant="h5" sx={{ flex: 1 }}>
             View User
           </Typography>
+          <IconButton
+            color="secondary"
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              bgcolor: "rgba(255,255,255,0.8)",
+              borderRadius: "25%",
+              gap: 1,
+            }}
+            onClick={handleEdit}
+          >
+            <Edit />
+            <Typography>Edit</Typography>
+          </IconButton>
         </Box>
 
         {!loading && (
-          <Box component="form" onSubmit={formik.handleSubmit}>
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Basic Information
+            </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Salutations"
-                  name="salutations"
-                  value={formik.values.salutations}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.salutations &&
-                    Boolean(formik.errors.salutations)
-                  }
-                  helperText={
-                    formik.touched.salutations && formik.errors.salutations
-                  }
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  variant="outlined"
-                />
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body1">
+                  <strong>Salutations:</strong> {user.salutations}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body1">
+                  <strong>First Name:</strong> {user.firstName}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body1">
+                  <strong>Last Name:</strong> {user.lastName}
+                </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="First Name"
-                  name="firstName"
-                  value={formik.values.firstName}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.firstName && Boolean(formik.errors.firstName)
-                  }
-                  helperText={
-                    formik.touched.firstName && formik.errors.firstName
-                  }
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  variant="outlined"
-                />
+                <Typography variant="body1">
+                  <strong>Date of Birth:</strong>{" "}
+                  {new Date(user.dateOfBirth).toLocaleDateString(
+                    "en-US",
+                    options
+                  )}
+                </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Last Name"
-                  name="lastName"
-                  value={formik.values.lastName}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.lastName && Boolean(formik.errors.lastName)
-                  }
-                  helperText={formik.touched.lastName && formik.errors.lastName}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  variant="outlined"
-                />
+                <Typography variant="body1">
+                  <strong>Gender:</strong> {user.gender}
+                </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Date of Birth"
-                  name="dateOfBirth"
-                  value={formik.values.dateOfBirth}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.dateOfBirth &&
-                    Boolean(formik.errors.dateOfBirth)
-                  }
-                  helperText={
-                    formik.touched.dateOfBirth && formik.errors.dateOfBirth
-                  }
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  variant="outlined"
-                  type="date"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
+                <Typography variant="body1">
+                  <strong>Email:</strong> {user.email}
+                </Typography>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Gender"
-                  name="gender"
-                  value={formik.values.gender}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.gender && Boolean(formik.errors.gender)}
-                  helperText={formik.touched.gender && formik.errors.gender}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Email"
-                  name="email"
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="normal"
-                  label="Mobile Number"
-                  name="mobileNumber"
-                  value={formik.values.mobileNumber}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.mobileNumber &&
-                    Boolean(formik.errors.mobileNumber)
-                  }
-                  helperText={
-                    formik.touched.mobileNumber && formik.errors.mobileNumber
-                  }
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  variant="outlined"
-                />
+                <Typography variant="body1">
+                  <strong>Mobile Number:</strong> {user.mobileNumber}
+                </Typography>
               </Grid>
             </Grid>
 
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mt: 2,
-              }}
-            >
-              <Button
-                variant="contained"
-                type="submit"
-                color="secondary"
-                sx={{ borderRadius: "24px" }}
-              >
-                Edit
-              </Button>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={handleCancel}
-                sx={{ borderRadius: "24px" }}
-              >
-                Cancel
-              </Button>
-            </Box>
+            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+              Residential Address
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1">
+                  <strong>Block No.:</strong> {user.blockNo}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1">
+                  <strong>Unit No.:</strong> {user.unitNo}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">
+                  <strong>Street Name:</strong> {user.streetName}
+                </Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="body1">
+                  <strong>Postal Code:</strong> {user.postalCode}
+                </Typography>
+              </Grid>
+            </Grid>
+
+            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+              Additional Information
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1">
+                  <strong>ID Type:</strong> {user.idType}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1">
+                  <strong>ID Number:</strong> {user.idNumber}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1">
+                  <strong>Citizenship Status:</strong> {user.citizenshipStatus}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1">
+                  <strong>Race:</strong> {user.race}
+                </Typography>
+              </Grid>
+            </Grid>
           </Box>
         )}
 

@@ -8,16 +8,6 @@ import {
   IconButton,
   Grid,
   Avatar,
-  Divider,
-  Button,
-  ListItemText,
-  ListItem,
-  List,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Dialog,
-  DialogContentText,
 } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -31,6 +21,7 @@ const Profile = () => {
   const { user: loggedInUser } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const { id } = loggedInUser;
+  const options = { year: "numeric", month: "long", day: "numeric" };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -47,8 +38,8 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
-  const handleBack = () => {
-    navigate(-1);
+  const handleEdit = () => {
+    navigate("/profile/edit");
   };
 
   return (
@@ -73,10 +64,10 @@ const Profile = () => {
                 top: 8,
                 right: 8,
                 bgcolor: "rgba(255,255,255,0.8)",
-                borderRadius: "50%",
+                borderRadius: "25%",
                 gap: 1,
               }}
-              onClick={handleBack}
+              onClick={handleEdit}
             >
               <Edit />
               <Typography>Edit</Typography>
@@ -114,7 +105,11 @@ const Profile = () => {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="body1">
-                    <strong>Date of Birth:</strong> {user.dateOfBirth}
+                    <strong>Date of Birth:</strong>{" "}
+                    {new Date(user.dateOfBirth).toLocaleDateString(
+                      "en-US",
+                      options
+                    )}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={6}>
