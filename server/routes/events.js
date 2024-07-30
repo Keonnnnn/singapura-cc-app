@@ -169,6 +169,7 @@ router.post("/eventrequests", async (req, res) => {
 
         // Log the mailOptions object for debugging
         console.log('Mail Options:', mailOptions);
+        await sendMailWithPromise(mailOptions);
 
         res.json(result);
     } catch (err) {

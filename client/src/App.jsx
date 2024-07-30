@@ -152,7 +152,7 @@ function App() {
             <Route path="/profile/:userId" element={<ProtectedRoute element={PostProfile} />} />
 
             <Route path="/events" element={<ProtectedRoute element={Events} allowedRoles={["Admin", "Staff"]} />} />
-            <Route path={"/customer-events"} element={<CustomerEvent />} />
+            <Route path={"/customer-events"} element={<ProtectedRoute element={CustomerEvent} allowedRoles={["Customer"]} />} />
             <Route path={"/register/:id"} element={<RegisterEvent />} />
             <Route path="/feedbackform" element={<ProtectedRoute element={FeedbackForm} />} />
             <Route path="/posts" element={<ProtectedRoute element={Posts} />} />
@@ -160,8 +160,8 @@ function App() {
             <Route path="/notes" element={<Notes />} />
             <Route path="/addnote" element={<AddNote />} />
             <Route path="/editnote/:id" element={<EditNote />} />
-            <Route path="/Membership" element={<Membership/>}/>
-            <Route path="/ClaimRewards" element={<ClaimRewards/>}/>
+            <Route path="/Membership" element={<ProtectedRoute element={Membership} allowedRoles={["Customer"]} />} />
+            <Route path="/ClaimRewards" element={<ProtectedRoute element={ClaimRewards} allowedRoles={["Customer"]} />}/>
             <Route path="/admin/notifications" element={<ProtectedRoute element={NotificationList}  />} />
               <Route path="/notifications/:id" element={<NotificationDetail />} />
             
@@ -178,8 +178,8 @@ function App() {
             <Route path="/editevent/:id" element={<EditEvent />} />
             <Route path="/editpost/:id" element={user ? <EditPost /> : <Navigate to="/login" />} />
             <Route path="/admin/rewards" element={<ProtectedRoute element={Rewards} />} />
-            <Route path="/admin/edit-rewards" element={<ProtectedRoute element={EditRewards} />} />
-            <Route path="/admin/update-rewards/:id" element={<ProtectedRoute element={UpdateReward} />} />
+            <Route path="/admin/edit-rewards" element={<ProtectedRoute element={EditRewards} allowedRoles={["Admin", "Staff"]}/>} />
+            <Route path="/admin/update-rewards/:id" element={<ProtectedRoute element={UpdateReward} allowedRoles={["Admin", "Staff"]} />} />
             <Route path="/admin/notifications/add" element={<ProtectedRoute element={AddNotification} allowedRoles={['Admin']} />} />
             {/* routes not listed above */}
             <Route path="*" element={<Navigate to="/" />} />

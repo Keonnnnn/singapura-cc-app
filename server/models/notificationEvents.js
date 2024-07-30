@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-    const notificationEvents = sequelize.define("Notification", {
+    const notificationEvents = sequelize.define("notificationEvents", {
         title: {
             type: DataTypes.STRING,
             allowNull: false

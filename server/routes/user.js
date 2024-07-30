@@ -523,26 +523,29 @@ router.get("/profile/:id", validateToken, async (req, res) => {
 // FOLLOW USER
 router.post("/:id/follow", validateToken, async (req, res) => {
   const { id } = req.params;
+  const parsedId = parseInt(id)
 
-  if (req.user.id === parseInt(id)) {
+  if (req.user.id === parsedId) {
       return res.status(400).json({ message: "You cannot follow yourself." });
   }
 
+
   try {
+      // follow the user
       const [follower, created] = await Follower.findOrCreate({
-          where: { followerId: req.user.id, followedId: id },
-          defaults: { followerId: req.user.id, followedId: id }
+          where: { followerId: req.user.id, followedId: parsedId },
+          defaults: { followerId: req.user.id, followedId: parsedId }
       });
 
       if (!created) {
           return res.status(400).json({ message: "You are already following this user." });
       }
 
-      // Create a notification for the followed user
+      
       await Notification.create({
           type: 'follow',
           message: `${req.user.username} started following you.`,
-          userId: id,
+          userId: parsedId,
           fromUserId: req.user.id
       });
 
@@ -689,38 +692,6 @@ router.put("/profile/:id", validateToken, async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(400).json({ errors: err.errors });
-  }
-});
-
-// FOLLOW USER
-router.post("/:id/follow", validateToken, async (req, res) => {
-  const { id } = req.params;
-
-  if (req.user.id === parseInt(id)) {
-      return res.status(400).json({ message: "You cannot follow yourself." });
-  }
-
-  try {
-      const [follower, created] = await Follower.findOrCreate({
-          where: { followerId: req.user.id, followedId: id },
-          defaults: { followerId: req.user.id, followedId: id }
-      });
-
-      if (!created) {
-          return res.status(400).json({ message: "You are already following this user." });
-      }
-
-      // Create a notification for the followed user
-      await Notification.create({
-          type: 'follow',
-          message: `${req.user.username} started following you.`,
-          userId: id,
-          fromUserId: req.user.id
-      });
-
-      res.json({ message: "Followed successfully." });
-  } catch (err) {
-      res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

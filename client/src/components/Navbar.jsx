@@ -134,7 +134,7 @@ const Navbar = () => {
 
             {!isAdmin && (
               <>
-                <Link to="">
+                <Link to="/customer-events">
                   <Typography>Events</Typography>
                 </Link>
 

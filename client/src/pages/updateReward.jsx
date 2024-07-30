@@ -8,7 +8,7 @@ import * as yup from 'yup';
 function updateReward() {
 
     const handleCancel = () => {
-        navigate('/editrewards'); // Replace '/editrewards' with the correct path
+        navigate('/admin/rewards'); // Replace '/editrewards' with the correct path
     };
 
     const navigate = useNavigate();
@@ -44,7 +44,7 @@ function updateReward() {
             http.put(`/reward/${id}`, data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/rewards");
+                    navigate("/admin/rewards");
                 });
         }
     });

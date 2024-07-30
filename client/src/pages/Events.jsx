@@ -33,7 +33,7 @@ function Events() {
             <Grid container spacing={2} sx={{ mt: 0.5 }}>
                 {eventList.map((event, i) => (
                     <Grid item xs={12} md={6} lg={4} key={event.id}>
-                        <Card sx={{ display: 'flex', flexDirection: 'column', p: 2,width: 400 }}>
+                        <Card sx={{ display: 'flex', flexDirection: 'column', p: 2}}>
                             <IconButton color="primary"
                                 component={Link}
                                 to={`/editevent/${event.id}`}

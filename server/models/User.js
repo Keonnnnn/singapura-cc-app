@@ -105,7 +105,7 @@ module.exports = (sequelize, DataTypes) => {
       profileDescription: {
         type: DataTypes.STRING(255),
         allowNull: true
-    },
+      },
       role: {
         type: DataTypes.ENUM("Customer", "Staff", "Admin"),
         defaultValue: "Customer",

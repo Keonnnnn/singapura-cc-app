@@ -79,10 +79,10 @@ const sideMenuOptions = [
         name: "View All Rewards",
         path: "/admin/rewards",
       },
-      // {
-      //   name: "Add Rewards",
-      //   path: "/admin/add-rewards",
-      // },
+      {
+        name: "Add Rewards",
+        path: "/admin/edit-rewards",
+      },
     ],
   },
   {
