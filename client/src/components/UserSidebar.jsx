@@ -48,7 +48,7 @@ const UserSidebar = () => {
         <Box sx={{ textAlign: "center", mb: 3 }}>
           <Avatar
             src="/path/to/avatar.jpg"
-            alt="Keon Shu"
+            alt={`${user.firstName} ${user.lastName}`}
             sx={{ width: 100, height: 100, mx: "auto" }}
           />
           <Typography variant="h6" sx={{ mt: 2 }}>

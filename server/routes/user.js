@@ -503,8 +503,7 @@ router.post("/verify-otp", async (req, res) => {
   });
 });
 
-// KEON'S CODES 
-// fetch user proifle by id
+// fetch user profile by id
 router.get("/profile/:id", validateToken, async (req, res) => {
   const { id } = req.params;
 
@@ -604,6 +603,237 @@ router.get("/:id/following", validateToken, async (req, res) => {
   } catch (err) {
       console.error("Error fetching following:", err);
       res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// update profile
+router.put("/profile/:id", validateToken, async (req, res) => {
+  const { id } = req.params;
+  let data = req.body;
+
+  // Validation
+  let validationSchema = yup.object({
+    salutations: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(10)
+      .required("Salutations is required")
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "Salutations only allow letters, spaces and characters: ' - , ."
+      ),
+    firstName: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(50)
+      .required("First name is required")
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "First name only allow letters, spaces and characters: ' - , ."
+      ),
+    lastName: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(50)
+      .required("Last name is required")
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "Last name only allow letters, spaces and characters: ' - , ."
+      ),
+    email: yup
+      .string()
+      .trim()
+      .lowercase()
+      .email("Enter a valid email")
+      .max(50)
+      .required("Email is required"),
+    dateOfBirth: yup.date().required("Date of Birth is required"),
+    gender: yup.string().required("Gender is required"),
+    mobileNumber: yup
+      .string()
+      .trim()
+      .matches(/^\d{8}$/, "Mobile number must be exactly 8 digits")
+      .required("Mobile number is required"),
+    blockNo: yup.string().trim().required("Block No. is required"),
+    unitNo: yup.string().trim().required("Unit No. is required"),
+    streetName: yup.string().trim().required("Street Name is required"),
+    postalCode: yup
+      .string()
+      .trim()
+      .matches(/^\d{6}$/, "Postal Code must be exactly 6 digits")
+      .required("Postal Code is required"),
+    idType: yup.string().required("ID Type is required"),
+    idNumber: yup.string().trim().required("ID Number is required"),
+    citizenshipStatus: yup.string().required("Citizenship Status is required"),
+    race: yup.string().required("Race is required"),
+  });
+
+  try {
+    data = await validationSchema.validate(data, { abortEarly: false });
+
+    // Check if user exists
+    let user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
+
+    // Update user data
+    await User.update(data, { where: { id } });
+
+    // Return updated user data
+    user = await User.findByPk(id);
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ errors: err.errors });
+  }
+});
+
+// FOLLOW USER
+router.post("/:id/follow", validateToken, async (req, res) => {
+  const { id } = req.params;
+
+  if (req.user.id === parseInt(id)) {
+      return res.status(400).json({ message: "You cannot follow yourself." });
+  }
+
+  try {
+      const [follower, created] = await Follower.findOrCreate({
+          where: { followerId: req.user.id, followedId: id },
+          defaults: { followerId: req.user.id, followedId: id }
+      });
+
+      if (!created) {
+          return res.status(400).json({ message: "You are already following this user." });
+      }
+
+      // Create a notification for the followed user
+      await Notification.create({
+          type: 'follow',
+          message: `${req.user.username} started following you.`,
+          userId: id,
+          fromUserId: req.user.id
+      });
+
+      res.json({ message: "Followed successfully." });
+  } catch (err) {
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// UNFOLLOW USER
+router.delete("/:id/unfollow", validateToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      const result = await Follower.destroy({
+          where: { followerId: req.user.id, followedId: id }
+      });
+
+      if (result === 0) {
+          return res.status(400).json({ message: "You are not following this user." });
+      }
+
+      res.json({ message: "Unfollowed successfully." });
+  } catch (err) {
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// GET FOLLOWERS
+router.get("/:id/followers", validateToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      const followers = await Follower.findAll({
+          where: { followedId: id },
+          include: [{ model: User, as: 'followerUser', attributes: ['id', 'firstName', 'lastName', 'username'] }]
+      });
+
+      res.json(followers.map(f => f.followerUser));
+  } catch (err) {
+      console.error("Error fetching followers:", err);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+// GET FOLLOWING
+router.get("/:id/following", validateToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      const following = await Follower.findAll({
+          where: { followerId: id },
+          include: [{ model: User, as: 'followedUser', attributes: ['id', 'firstName', 'lastName', 'username'] }]
+      });
+
+      res.json(following.map(f => f.followedUser));
+  } catch (err) {
+      console.error("Error fetching following:", err);
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// update profile
+router.put("/profile/:id", validateToken, async (req, res) => {
+  const { id } = req.params;
+  let data = req.body;
+
+  // Validation
+  let validationSchema = yup.object({
+    firstName: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(50)
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "First name only allow letters, spaces and characters: ' - , ."
+      ),
+    lastName: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(50)
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "Last name only allow letters, spaces and characters: ' - , ."
+      ),
+    email: yup.string().trim().lowercase().email().max(50),
+    username: yup
+      .string()
+      .trim()
+      .min(1)
+      .max(50)
+      .matches(
+        /^[a-zA-Z0-9_.-]+$/,
+        "Username only allows letters, numbers, underscores, periods, and hyphens."
+      ),
+    // profileDescription: yup.string().trim().max(255).optional()
+  });
+
+  try {
+    userData = await validationSchema.validate(userData, { abortEarly: false });
+
+    // Check if user exists
+    let user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
+
+    // Update user data
+    await User.update(data, { where: { id } });
+
+    // Return updated user data
+    user = await User.findByPk(id);
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ errors: err.errors });
   }
 });
 

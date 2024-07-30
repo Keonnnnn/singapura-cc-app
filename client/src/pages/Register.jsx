@@ -88,8 +88,22 @@ const secondFormValidationSchema = yup.object({
     .trim()
     .matches(/^\d{8}$/, "Mobile number must be exactly 8 digits")
     .required("Mobile number is required"),
-  blockNo: yup.string().trim().required("Block No. is required"),
-  unitNo: yup.string().trim().required("Unit No. is required"),
+  blockNo: yup
+    .string()
+    .trim()
+    .required("Block No. is required")
+    .matches(
+      /^\d+[a-zA-Z]?$/,
+      "Block No. must be numbers and can have a letter at the end"
+    ),
+  unitNo: yup
+    .string()
+    .trim()
+    .required("Unit No. is required")
+    .matches(
+      /^\d{2}-?\d{2,3}$/,
+      "Unit No. must be in the format 08-238, 08238, or 08-23"
+    ),
   streetName: yup.string().trim().required("Street Name is required"),
   postalCode: yup
     .string()
@@ -181,7 +195,6 @@ function Register() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    margin="dense"
                     type="date"
                     label="Date of Birth"
                     name="dateOfBirth"
@@ -195,9 +208,8 @@ function Register() {
                     helperText={
                       formik2.touched.dateOfBirth && formik2.errors.dateOfBirth
                     }
-                    sx={{
-                      mt: 0,
-                    }}
+                    InputLabelProps={{ shrink: true }}
+                    variant="outlined"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -558,6 +570,7 @@ function Register() {
                 <Grid item xs={12} sm={4}>
                   <FormControl
                     fullWidth
+                    margin="dense"
                     sx={{}}
                     error={
                       formik1.touched.salutations &&

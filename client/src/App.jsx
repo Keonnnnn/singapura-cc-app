@@ -60,6 +60,7 @@ import UpdateReward from "./pages/updateReward";
 import Membership from './pages/Membership.jsx';
 import ClaimRewards from './pages/claimRewards.jsx';
 import Dashboard from "./pages/Dashboard.jsx";
+import EditProfile from "./pages/EditProfile.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -145,6 +146,7 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/otp-verification" element={<OtpVerification />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/edit" element={<EditProfile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/comments/:postId" element={user ? <Comments /> : <Navigate to="/login" />} />
             <Route path="/profile/:userId" element={<ProtectedRoute element={PostProfile} />} />
