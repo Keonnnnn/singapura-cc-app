@@ -28,7 +28,16 @@ module.exports = (sequelize, DataTypes) => {
         updatedAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
+        },
+        imageFile: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        likes: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
         }
+        
     }, {
         tableName: 'feedback',
         timestamps: true

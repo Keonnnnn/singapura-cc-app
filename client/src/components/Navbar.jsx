@@ -142,6 +142,10 @@ const Navbar = () => {
                   <Typography>Facilities</Typography>
                 </Link>
 
+                <Link to="/notifications" >
+                  <Typography>Notification</Typography>
+                </Link>
+
                 <Link to="/posts">
                   <Typography>Connect</Typography>
                 </Link>

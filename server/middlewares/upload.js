@@ -17,6 +17,9 @@ const upload = multer({
     limits: {fileSize: 1024 * 1024}
 }).single('file');
 
+const uploadEvent = multer({ storage: storage });
 
-module.exports = {upload};
+
+
+module.exports = {upload, uploadEvent};
 

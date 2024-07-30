@@ -47,6 +47,9 @@ import ChatBot from "react-chatbotify";
 import FeedbackForm from "./pages/FeedbackForm";
 import FeedbackList from "./pages/FeedbackList";
 import FeedbackDetail from "./pages/FeedbackDetail";
+import AddNotification from './pages/AddNotification';
+import NotificationList from './pages/NotificationList';
+import NotificationDetail from './pages/NotificationDetail';
 
 // Ayura
 import Rewards from "./pages/Rewards";
@@ -124,6 +127,10 @@ function App() {
             <Route path="/addnote" element={<AddNote />} />
             <Route path="/editnote/:id" element={<EditNote />} />
 
+            <Route path="/admin/notifications" element={<ProtectedRoute element={NotificationList}  />} />
+              <Route path="/notifications/:id" element={<NotificationDetail />} />
+            
+
             {/* admin routes */}
             <Route path="/admin/dashboard" element={<ProtectedRoute element={Dashboard} allowedRoles={["Admin", "Staff"]} />} />
             <Route path="/admin/register-staff" element={<ProtectedRoute element={CreateStaff} allowedRoles={["Admin"]} />} />
@@ -138,6 +145,7 @@ function App() {
             <Route path="/admin/rewards" element={<ProtectedRoute element={Rewards} />} />
             <Route path="/admin/edit-rewards" element={<ProtectedRoute element={EditRewards} />} />
             <Route path="/admin/update-rewards/:id" element={<ProtectedRoute element={UpdateReward} />} />
+            <Route path="/admin/notifications/add" element={<ProtectedRoute element={AddNotification} allowedRoles={['Admin']} />} />
             {/* routes not listed above */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

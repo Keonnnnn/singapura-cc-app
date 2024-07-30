@@ -13,6 +13,7 @@ import {
   ChevronRight,
   ExpandLess,
   ExpandMore,
+  Notifications as NotificationsIcon
 } from "@mui/icons-material";
 import { Link, useLocation } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
@@ -23,6 +24,7 @@ import usersIcon from "../assets/users.svg";
 import blogIcon from "../assets/blog.svg";
 import eventsIcon from "../assets/events.svg";
 import rewardsIcon from "../assets/rewards.svg";
+
 
 // Sidebar menu options
 const sideMenuOptions = [
@@ -83,6 +85,20 @@ const sideMenuOptions = [
       // },
     ],
   },
+  {
+    name: "Notifications",
+    icon: NotificationsIcon,
+    subOptions: [
+      {
+        name: "View All Notifications",
+        path: "/admin/notifications",
+      },
+      {
+        name: "Add Notification",
+        path: "/admin/notifications/add",
+      },
+    ],
+  }
 ];
 
 function Sidebar() {
