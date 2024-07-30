@@ -57,10 +57,10 @@ import Dashboard from "./pages/Dashboard.jsx";
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const localS = localStorage.getItem("accessToken");
   useEffect(() => {
     const fetchUser = async () => {
-      if (localStorage.getItem("accessToken")) {
+      if (localS) {
         try {
           const res = await http.get("/user/auth");
           setUser(res.data.user);
@@ -71,7 +71,7 @@ function App() {
       setLoading(false);
     };
     fetchUser();
-  }, []);
+  }, [localS]);
 
   if (loading) {
     return <div>Loading...</div>;

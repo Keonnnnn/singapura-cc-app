@@ -11,7 +11,7 @@ import {
   Menu,
   Divider,
 } from "@mui/material";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../logo.png";
 import UserContext from "../contexts/UserContext";
@@ -24,6 +24,12 @@ const Navbar = () => {
   const [anchorElCustomer, setAnchorElCustomer] = useState(null);
   const open = Boolean(anchorEl);
   const openCustomer = Boolean(anchorElCustomer);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // ... (fetch user data or utilize user context)
+    setIsLoggedIn(user !== undefined);
+  }, [user]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);

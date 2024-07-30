@@ -25,6 +25,7 @@ import "react-toastify/dist/ReactToastify.css";
 function EditUser() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [loading, setLoading] = useState(true);
 
   const [user, setUser] = useState({
     salutations: "",
@@ -45,11 +46,12 @@ function EditUser() {
     race: "",
   });
 
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     http.get(`/user/${id}`).then((res) => {
-      setUser(res.data);
+      setUser({
+        ...res.data,
+        password: "**********",
+      });
       setLoading(false);
     });
   }, [id]);
@@ -132,6 +134,20 @@ function EditUser() {
 
   const handleCancel = () => {
     navigate("/admin/users"); // Redirect to users list
+  };
+
+  const handleResetPassword = async () => {
+    setLoading(true);
+    try {
+      const response = await http.post("/user/admin/reset-password", {
+        userId: id,
+      });
+      toast.success(response.data.message);
+    } catch (error) {
+      toast.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -369,7 +385,12 @@ function EditUser() {
                   alignItems: "center",
                 }}
               >
-                <Button variant="contained" color="primary" fullWidth>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={() => handleResetPassword()}
+                >
                   Reset Password
                 </Button>
               </Grid>
