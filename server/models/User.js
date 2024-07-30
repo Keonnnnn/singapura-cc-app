@@ -22,7 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       username: {
         type: DataTypes.STRING(50),
         allowNull: true,
-      },
+        defaultValue: function() {
+            return this.firstName + this.lastName;
+        }
+    },
       password: {
         type: DataTypes.STRING(100),
         allowNull: false,
@@ -99,6 +102,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      profileDescription: {
+        type: DataTypes.STRING(255),
+        allowNull: true
+    },
       role: {
         type: DataTypes.ENUM("Customer", "Staff", "Admin"),
         defaultValue: "Customer",
@@ -106,6 +113,13 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       tableName: "users",
+      hooks: {
+        beforeCreate: (user) => {
+            if (!user.username) {
+                user.username = `${user.firstName}${user.lastName}`;
+            }
+        }
+    }
     }
   );
 
@@ -114,7 +128,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId",
       onDelete: "cascade",
     });
-  };
+    User.hasMany(models.Follower, { as: 'followers', foreignKey: 'followedId' });
+    User.hasMany(models.Follower, { as: 'following', foreignKey: 'followerId' });
+};
 
   return User;
 };

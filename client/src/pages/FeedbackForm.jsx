@@ -5,232 +5,198 @@ import {
   Button,
   Container,
   Typography,
-  FormControl,
-  FormHelperText,
+  Slider,
+  Box,
+  Paper,
 } from "@mui/material";
 import ecorun from "../assets/ecorun.png";
-import http from '../http'
-
-
-// {
-//   const [FeedbackList, setFeedbacklist] = useState([])
-//   useEffect(() => {
-//       http.get('/Feedback').then((res) => {
-//           console.log(res.data);
-//           setEventList(res.data);
-//       });
-//   }, []);
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FeedbackForm = () => {
-    const [userId, setUserId] = useState('');
-    const [eventId, setEventId] = useState('');
-    const [content, setContent] = useState('');
-    const [userIdError, setUserIdError] = useState('');
-    const [eventIdError, setEventIdError] = useState('');
-    const [contentError, setContentError] = useState('');
-    
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-  
-      // Check if any field is empty
-      if (!userId) setUserIdError("Please fill in this field AAAAAAAAAAA");
-      if (!eventId) setEventIdError("Please fill in this field");
-      if (!content) setContentError("Please fill in this field");
-  
-      // If there are errors, do not proceed with the submission
-      if (
-        !userId ||
-        !eventId ||
-        !content ||
-        userIdError ||
-        eventIdError ||
-        contentError
-      ) {
+  const [userId, setUserId] = useState('');
+  const [eventId, setEventId] = useState(5);
+  const [content, setContent] = useState('');
+  const [userIdError, setUserIdError] = useState('');
+  const [contentError, setContentError] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+
+  const onFileChange = (e) => {
+    let file = e.target.files[0];
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        toast.error('Maximum file size is 1MB');
         return;
       }
-  
-       
-        // http.post('/feedbackController',{
-        //   userId: parseInt(userId),
-        //   eventId: parseInt(eventId),
-        //   content,
-        // } ).then((res)=> {
-        //   if (response.status === 201) {
-        //     setUserId('');
-        //     setEventId('');
-        //     setContent('');
-        //     alert('Feedback submitted successfully');
-        //   } else {
-        //     alert('Failed to submit feedback');
-        //   }
-          
+      let formData = new FormData();
+      formData.append('file', file);
 
-        // } )
-        const response = await axios.post("http://localhost:3001/feedback", {
-          userId: parseInt(userId),
-          eventId: parseInt(eventId),
-          content,
-        });
-        if (response.status === 201) {
-          setUserId('');
-          setEventId('');
-          setContent('');
-          alert('Feedback submitted successfully');
-        } else {
-          alert('Failed to submit feedback');
+      axios.post('http://localhost:3001/feedback/file/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
         }
-      
+      })
+        .then((res) => {
+          setImageFile(res.data.filename);
+        })
+        .catch((error) => {
+          console.log(error.response);
+          toast.error('Failed to upload file');
+        });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!userId) setUserIdError("Please fill in this field");
+    if (!content) setContentError("Please fill in this field");
+
+    if (!userId || !content || userIdError || contentError) {
+      return;
+    }
+
+    const feedbackData = {
+      userId: parseInt(userId),
+      eventId,
+      content,
+      imageFile
     };
-  
-    const handleUserIdChange = (e) => {
-      const value = e.target.value;
-      setUserId(value);
-      if (/^\d*$/.test(value)) {
-        setUserIdError('');
+
+    try {
+      const response = await axios.post("http://localhost:3001/feedback", feedbackData);
+      if (response.status === 201) {
+        setUserId('');
+        setEventId(5);
+        setContent('');
+        setImageFile(null);
+        alert('Feedback submitted successfully');
       } else {
-        setUserIdError('User ID must be a number.');
+        alert('Failed to submit feedback');
       }
-    };
-  
-    const handleEventIdChange = (e) => {
-      const value = e.target.value;
-      setEventId(value);
-      if (/^\d*$/.test(value) && parseInt(value) >= 1 && parseInt(value) <= 10) {
-        setEventIdError('');
-      } else {
-        setEventIdError('Rating must be a number between 1 and 10.');
-      }
-    };
-  
-    const handleContentChange = (e) => {
-      const value = e.target.value;
-      setContent(value);
-      if (value) {
-        setContentError('');
-      } else {
-        setContentError('Please fill in this field');
-      }
-    };
-  
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
-        <div
-          style={{
-            padding: '20px',
-            maxWidth: '600px',
-            width: '100%',
-            position: 'relative',
-            borderRadius: '12px',
-            border: '1px solid #ddd',
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-          }}
-        >
-          <button
-            style={{
-              position: 'absolute',
-              top: '8px',
-              right: '8px',
-              backgroundColor: 'rgba(255,255,255,0.8)',
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+      alert('Failed to submit feedback');
+    }
+  };
+
+  const handleUserIdChange = (e) => {
+    const value = e.target.value;
+    setUserId(value);
+    if (/^\d*$/.test(value)) {
+      setUserIdError('');
+    } else {
+      setUserIdError('User ID must be a number.');
+    }
+  };
+
+  const handleContentChange = (e) => {
+    const value = e.target.value;
+    setContent(value);
+    if (value) {
+      setContentError('');
+    } else {
+      setContentError('Please fill in this field');
+    }
+  };
+
+  return (
+    <Container maxWidth="sm" sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Paper elevation={3} sx={{ p: 3, borderRadius: '12px', width: '100%' }}>
+        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold', color: '#b71c1c' }}>
+          Feedback Submission
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{
+              width: '48px',
+              height: '48px',
+              overflow: 'hidden',
               borderRadius: '50%',
-              border: 'none',
-            }}
-            onClick={() => {
-              setUserId('');
-              setEventId('');
-              setContent('');
+              mr: 2,
+              backgroundColor: '#b71c1c',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#ffffff',
             }}
           >
-            &times;
-          </button>
-  
-          <h5 style={{ flex: 1, marginBottom: '10px' }}>Feedback Submission</h5>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-            <div
-              style={{
-                width: '48px',
-                height: '48px',
-                overflow: 'hidden',
-                borderRadius: '50%',
-                marginRight: '12px',
-                backgroundColor: '#b71c1c',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '24px',
-                fontWeight: 'bold',
-                color: '#ffffff',
-              }}
-            >
-              {userId ? userId.charAt(0) : 'U'}
-            </div>
-            <div>
-              <img src={ecorun} width={480} alt="img" />
-            </div>
-          </div>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="User ID"
+            
+          </Box>
+          <img src={ecorun} width={480} alt="Event" />
+        </Box>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
+            <Typography gutterBottom>User ID*</Typography>
+            <TextField
               value={userId}
               onChange={handleUserIdChange}
-              style={{
-                width: '100%',
-                padding: '10px',
-                marginBottom: '10px',
-                borderRadius: '8px',
-                border: '1px solid #ddd',
-              }}
+              fullWidth
+              required
+              error={!!userIdError}
+              helperText={userIdError}
+              sx={{ backgroundColor: '#fff', borderRadius: '4px' }}
             />
-            {userIdError && <small style={{ color: 'red' }}>{userIdError}</small>}
-            <input
-              type="text"
-              placeholder="Rating (1 to 10)*"
+          </Box>
+          <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
+            <Typography gutterBottom>Rating* (1 to 10)</Typography>
+            <Slider
               value={eventId}
-              onChange={handleEventIdChange}
-              style={{
-                width: '100%',
-                padding: '10px',
-                marginBottom: '10px',
-                borderRadius: '8px',
-                border: '1px solid #ddd',
-              }}
+              onChange={(e, value) => setEventId(value)}
+              aria-labelledby="rating-slider"
+              valueLabelDisplay="auto"
+              step={1}
+              marks
+              min={1}
+              max={10}
+              sx={{ color: '#b71c1c' }}
             />
-            {eventIdError && <small style={{ color: 'red' }}>{eventIdError}</small>}
-            <textarea
-              placeholder="How was the Event?"
+          </Box>
+          <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
+            <Typography gutterBottom>Feedback* </Typography>
+            <TextField
               value={content}
               onChange={handleContentChange}
-              style={{
-                width: '100%',
-                padding: '10px',
-                marginBottom: '10px',
-                borderRadius: '8px',
-                border: '1px solid #ddd',
-              }}
-              rows="4"
-            ></textarea>
-            {contentError && <small style={{ color: 'red' }}>{contentError}</small>}
-            <button
-              type="submit"
-              style={{
-                width: '100%',
-                padding: '10px',
-                borderRadius: '24px',
-                backgroundColor: '#b71c1c',
-                color: 'white',
-                border: 'none',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
-            >
-              Submit Feedback
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  };
-  
-  export default FeedbackForm;
+              fullWidth
+              required
+              multiline
+              rows={4}
+              error={!!contentError}
+              helperText={contentError}
+              sx={{ backgroundColor: '#fff', borderRadius: '4px' }}
+            />
+          </Box>
+          <Button variant="contained" component="label">
+            Upload Image
+            <input hidden accept="image/*" type="file" onChange={onFileChange} />
+          </Button>
+          {imageFile && (
+            <div className="aspect-ratio-container" style={{ marginTop: '10px' }}>
+              <img alt="feedback" src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}>
+              </img>
+            </div>
+          )}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ mt: 2, py: 1.5, borderRadius: '24px', backgroundColor: '#b71c1c', color: 'white', fontWeight: 'bold' }}
+          >
+            Submit Feedback
+          </Button>
+          <ToastContainer />
+        </form>
+      </Paper>
+    </Container>
+  );
+};
+
+export default FeedbackForm;
+
+
+
+
+

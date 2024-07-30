@@ -3,65 +3,111 @@ import { useParams, useNavigate } from 'react-router-dom';
 import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { Box, Typography, TextField, Button } from '@mui/material';
-import {
-  Dialog, DialogTitle, DialogContent, DialogContentText,
-  DialogActions
-} from '@mui/material';
+import { Box, Typography, TextField, Button, Dialog, DialogTitle, 
+DialogContent, DialogContentText, DialogActions,FormControl, 
+InputLabel, Select, MenuItem } from '@mui/material';
+import moment from 'moment';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function EditEvent() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [event, setEvent] = useState({
+  const [imageFile, setImageFile] = useState(null);
+  const [initialValues, setInitialValues] = useState({
     name: "",
     description: "",
+    type: "",
     date: "",
-    time: "",
-    venue: ""
+    startTime: "",
+    endTime: "",
+    venue: "",
+    points: ""
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     http.get(`/events/${id}`).then((res) => {
-      setEvent(res.data);
+      setInitialValues(res.data);
+      setImageFile(res.data.imageFile);
       setLoading(false);
     });
-  }, []);
+  }, [id]);
+
+  const onFileChange = (e) => {
+    let file = e.target.files[0];
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        toast.error('Maximum file size is 1MB');
+        return;
+      }
+
+      let formData = new FormData();
+      formData.append('file', file);
+
+      http.post('/file/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+        .then((res) => {
+          setImageFile(res.data.filename);
+        })
+        .catch(function (error) {
+          toast.error('Failed to upload image');
+        });
+    }
+  };
 
   const formik = useFormik({
-    initialValues: event,
+    initialValues: initialValues,
     enableReinitialize: true,
     validationSchema: yup.object({
       name: yup.string().trim().min(3).max(100).required(),
       description: yup.string().trim().min(3).max(500).required(),
+      type: yup.string().required(),
       date: yup.date().required(),
-      time: yup.string().trim().required(),
-      venue: yup.string().trim().min(3).max(100).required()
+      startTime: yup.string().trim().required(),
+      endTime: yup.string().trim().required()
+        .test("is-greater", "End time should be greater", function (value) {
+          const { startTime } = this.parent;
+          return moment(value, "HH:mm").isAfter(moment(startTime, "HH:mm"));
+        }),
+      venue: yup.string().trim().min(3).max(100).required(),
+      points: yup.number().min(100).max(1000).required(),
     }),
 
     onSubmit: (data) => {
+      if (imageFile) {
+        data.imageFile = imageFile;
+      }
       data.name = data.name.trim();
       data.description = data.description.trim();
-      data.date = data.date.trim();
-      data.time = data.time.trim();
+      data.date = moment(data.date).format('DD-MMM-YYYY');
+      data.startTime = moment(data.startTime, 'HH:mm').format('HH:mm');
+      data.endTime = moment(data.endTime, 'HH:mm').format('HH:mm');
       data.venue = data.venue.trim();
-      http.put(`/events/${id}`, data)
-        .then((res) => {
-          console.log(res.data);
-          navigate("/events");
+      data.points = parseInt(data.points);
+
+      http.put(`/events/${id}`, data).then((res) => {
+        toast.success('Event updated successfully');
+        navigate('/events');
+      })
+        .catch((err) => {
+          toast.error('Failed to update event');
         });
     }
   });
 
+  const [open, setOpen] = useState(false);
   const deleteEvent = () => {
     http.delete(`/events/${id}`)
       .then((res) => {
-        console.log(res.data);
         navigate("/events");
       }
       );
   }
-  const [open, setOpen] = useState(false);
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -100,6 +146,29 @@ function EditEvent() {
               helperText={formik.touched.description && formik.errors.description}
             />
 
+            <FormControl fullWidth margin="dense">
+              <InputLabel>Type</InputLabel>
+              <Select
+                name="type"
+                label="Type of Event"
+                value={formik.values.type}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.type && Boolean(formik.errors.type)}
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value="Workshop">Workshop</MenuItem>
+                <MenuItem value="Leisure">Leisure</MenuItem>
+                <MenuItem value="Volunteer Work">Volunteer Work</MenuItem>
+              </Select>
+              {formik.touched.type && formik.errors.type ? (
+                <Typography color="error" variant="caption">{formik.errors.type}</Typography>
+              ) : null}
+            </FormControl>
+
+
             <TextField
               fullWidth margin="dense" autoComplete="off"
               label="Date"
@@ -111,16 +180,28 @@ function EditEvent() {
               error={formik.touched.date && Boolean(formik.errors.date)}
               helperText={formik.touched.date && formik.errors.date} />
 
+            <Typography variant='caption'>Start Time</Typography>
             <TextField
               fullWidth margin="dense" autoComplete="off"
-              label="Time"
-              name="time"
+              name="startTime"
               type="time"
-              value={formik.values.time}
+              value={formik.values.startTime}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              error={formik.touched.time && Boolean(formik.errors.time)}
-              helperText={formik.touched.time && formik.errors.time}
+              error={formik.touched.startTime && Boolean(formik.errors.startTime)}
+              helperText={formik.touched.startTime && formik.errors.startTime}
+            />
+
+            <Typography variant='caption'>End Time</Typography>
+            <TextField
+              fullWidth margin="dense" autoComplete="off"
+              name="endTime"
+              type="time"
+              value={formik.values.endTime}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.endTime && Boolean(formik.errors.endTime)}
+              helperText={formik.touched.endTime && formik.errors.endTime}
             />
 
             <TextField
@@ -135,14 +216,43 @@ function EditEvent() {
               helperText={formik.touched.venue && formik.errors.venue}
             />
 
+            <TextField
+              fullWidth margin="dense" autoComplete="off"
+              multiline minRows={2}
+              label="Points"
+              name="points"
+              value={formik.values.points}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.points && Boolean(formik.errors.points)}
+              helperText={formik.touched.points && formik.errors.points}
+            />
+
+            <Box sx={{ mt: 2 }}>
+              <Button variant="contained" component="label">
+                Change Image
+                <input hidden accept="image/*" multiple type="file"
+                  onChange={onFileChange} />
+              </Button>{
+                imageFile && (
+                  <Box className="aspect-ratio-container" sx={{ mt: 2 }}>
+                    <img alt="tutorial"
+                      src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}>
+                    </img>
+                  </Box>
+                )
+              }
+              <ToastContainer />
+            </Box>
+
             <Box sx={{ mt: 2 }}>
               <Button variant="contained" type="submit">
                 Update
               </Button>
+
               <Button variant="contained" sx={{ ml: 2 }} color="error" onClick={handleOpen}>
                 Delete
               </Button>
-
             </Box>
           </Box>
         )
@@ -169,6 +279,7 @@ function EditEvent() {
       </Dialog>
     </Box>
   );
+
 }
 
 export default EditEvent;

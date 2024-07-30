@@ -1,34 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const { Like } = require('../models');
+const { Like, Post, Notification, User } = require('../models');
 const { validateToken } = require('../middlewares/auth');
 
-router.post("/:postId/like", validateToken, async (req, res) => {
-    const postId = req.params.postId;
-    const userId = req.user.id;
-
+// Like a post
+router.post('/:postId/like', validateToken, async (req, res) => {
     try {
-        const like = await Like.create({ postId, userId });
+        const { postId } = req.params;
+        const like = await Like.create({ postId, userId: req.user.id });
+        
+        // Find the post owner
+        const post = await Post.findByPk(postId);
+        if (post.userId !== req.user.id) {
+            // Create a notification for the post owner
+            await Notification.create({
+                type: 'like',
+                message: `${req.user.username} liked your post.`,
+                userId: post.userId,
+                fromUserId: req.user.id
+            });
+        }
+
         res.json(like);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        res.status(500).json({ error: 'Failed to like post' });
     }
 });
 
-router.post("/:postId/unlike", validateToken, async (req, res) => {
-    const postId = req.params.postId;
-    const userId = req.user.id;
-
+// Unlike a post
+router.post('/:postId/unlike', validateToken, async (req, res) => {
     try {
-        const like = await Like.findOne({ where: { postId, userId } });
-        if (like) {
-            await like.destroy();
-            res.json({ message: "Post unliked successfully" });
-        } else {
-            res.status(404).json({ message: "Like not found" });
-        }
+        const { postId } = req.params;
+        await Like.destroy({ where: { postId, userId: req.user.id } });
+        res.json({ message: 'Unliked successfully' });
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        res.status(500).json({ error: 'Failed to unlike post' });
     }
 });
 

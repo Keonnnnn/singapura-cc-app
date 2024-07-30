@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { User, Post, Like } = require('../models');
+const { User, Post, Like, Comment, Follower } = require('../models');
 const { Op } = require("sequelize");
 const yup = require("yup");
-const { validateToken } = require('../middlewares/auth');
+const { validateToken, isAdmin } = require('../middlewares/auth');
 const multer = require('multer');
 const path = require('path');
 
@@ -48,9 +48,12 @@ router.post("/", validateToken, upload.single('imageFile'), async (req, res) => 
 });
 
 // Get all posts
-router.get("/", async (req, res) => {
+router.get("/", validateToken, async (req, res) => {
     let condition = {};
     let search = req.query.search;
+    let userId = req.query.userId;
+    let filter = req.query.filter;
+
     if (search) {
         condition[Op.or] = [
             { title: { [Op.like]: `%${search}%` } },
@@ -58,12 +61,26 @@ router.get("/", async (req, res) => {
         ];
     }
 
+    if (userId) {
+        condition.userId = userId;
+    }
+
+    if (filter === "following") {
+        const followingUsers = await Follower.findAll({ 
+            where: { followerId: req.user.id }, 
+            attributes: ['followedId'] 
+        });
+        const followingIds = followingUsers.map(f => f.followedId);
+        condition.userId = { [Op.in]: followingIds };
+    }
+
     let list = await Post.findAll({
         where: condition,
         order: [['createdAt', 'DESC']],
         include: [
-            { model: User, as: "user", attributes: ['firstName', 'lastName'] },
-            { model: Like, attributes: ['userId'] }
+            { model: User, as: "user", attributes: ['firstName', 'lastName', 'username'] },
+            { model: Like, attributes: ['userId'] },
+            { model: Comment, attributes: ['id'] }  // Include comments
         ]
     });
 
@@ -74,7 +91,7 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
     let id = req.params.id;
     let post = await Post.findByPk(id, {
-        include: { model: User, as: "user", attributes: ['firstName', 'lastName'] }
+        include: { model: User, as: "user", attributes: ['firstName', 'lastName', 'username'] }
     });
     // Check if post is not found
     if (!post) {
@@ -94,9 +111,8 @@ router.put("/:id", validateToken, upload.single('imageFile'), async (req, res) =
         return;
     }
 
-    // Check request user id
     let userId = req.user.id;
-    if (post.userId != userId) {
+    if (post.userId !== userId && req.user.role !== 'Admin') {
         res.sendStatus(403);
         return;
     }
@@ -146,9 +162,8 @@ router.delete("/:id", validateToken, async (req, res) => {
         return;
     }
 
-    // Check request user id
     let userId = req.user.id;
-    if (post.userId != userId) {
+    if (post.userId !== userId && req.user.role !== 'Admin') {
         res.sendStatus(403);
         return;
     }

@@ -38,9 +38,18 @@ app.use('/post', postRoute);
 const likeRoute = require('./routes/likes'); 
 app.use("/like", likeRoute);
 
+const commentRoute = require('./routes/comment');
+app.use('/comment', commentRoute);
+
+const notificationRoute = require('./routes/notification');
+app.use('/notifications', notificationRoute); ///
+
 // Ahmed's Feedback API route
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/feedback', feedbackRoutes);
+const notificationEventsRoute = require('./routes/NotificationRoutes'); // Added this line
+app.use('/notificationEvents', notificationEventsRoute); // Added this line (ERROR)
+
 
 const db = require('./models');
 const createAdminUser = require('./scripts/createAdmin'); 

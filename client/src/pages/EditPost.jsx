@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, TextField, Button, Grid, Paper, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { Box, Typography, TextField, Button, Paper, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { PhotoCamera, Delete, Close } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import http from '../http';
+import UserContext from '../contexts/UserContext';
 
 function EditPost() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const { user } = useContext(UserContext);  // Get the logged-in user
 
     const [post, setPost] = useState({
         title: "",
@@ -19,6 +22,9 @@ function EditPost() {
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = useState(false);
+
+    // Retrieve the redirect URL from the state or fallback to the posts page
+    const redirectTo = location.state?.redirectTo || "/posts";
 
     useEffect(() => {
         http.get(`/post/${id}`)
@@ -55,7 +61,7 @@ function EditPost() {
             http.put(`/post/${id}`, data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/posts");
+                    navigate(redirectTo);
                 })
                 .catch((error) => {
                     console.error("Failed to update post:", error);
@@ -76,7 +82,7 @@ function EditPost() {
         http.delete(`/post/${id}`)
             .then((res) => {
                 console.log(res.data);
-                navigate("/posts");
+                navigate(redirectTo);
             })
             .catch((error) => {
                 console.error("Failed to delete post:", error);
@@ -108,6 +114,9 @@ function EditPost() {
                 });
         }
     };
+
+    // Check if the user is authorized to edit or delete the post
+    const isAuthorized = user && (user.id === post.userId || user.role === 'Admin');
 
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -167,9 +176,11 @@ function EditPost() {
                             <Button variant="contained" type="submit" sx={{ borderRadius: '24px', bgcolor: '#1976d2', color: '#ffffff' }}>
                                 Update
                             </Button>
-                            <IconButton color="error" onClick={handleOpen} sx={{ borderRadius: '8px' }}>
-                                <Delete />
-                            </IconButton>
+                            {isAuthorized && (
+                                <IconButton color="error" onClick={handleOpen} sx={{ borderRadius: '8px' }}>
+                                    <Delete />
+                                </IconButton>
+                            )}
                         </Box>
                     </Box>
                 )}
