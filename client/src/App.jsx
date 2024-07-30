@@ -43,6 +43,7 @@ import Rewards from './pages/Rewards';
 import Sidebar from './pages/Sidebar';
 import EditRewards from './pages/EditRewards';
 import UpdateReward from './pages/updateReward';
+import Membership from './pages/Membership.jsx';
 
 // Ayura
 
@@ -147,6 +148,9 @@ function App() {
                 <Link to="/posts">
                   <Typography>Connect</Typography>
                 </Link>
+                <Link to="/Membership">
+                  <Typography>Membership</Typography>
+                </Link>
 
                 <Box sx={{ flexGrow: 1 }} />
                 {user && (
@@ -199,6 +203,7 @@ function App() {
               <Route path="/UpdateReward/:id" element={<UpdateReward />} />
               <Route path={"/"} />
               <Route path={"/rewards"} />
+              <Route path="/Membership" element={<Membership/>}/>
             </Routes>
           </Container>
         </ThemeProvider>
