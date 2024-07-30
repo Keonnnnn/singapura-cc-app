@@ -149,6 +149,9 @@ const Navbar = () => {
                 <Link to="/posts">
                   <Typography>Connect</Typography>
                 </Link>
+                <Link to="/Membership">
+                  <Typography>Membership</Typography>
+                </Link>
               </>
             )}
           </Box>
