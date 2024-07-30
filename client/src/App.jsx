@@ -1,6 +1,5 @@
 import "./App.css";
 import { useState, useEffect } from "react";
-import {} from "@mui/material";
 import {
   BrowserRouter as Router,
   Routes,
@@ -9,7 +8,6 @@ import {
 } from "react-router-dom";
 import http from "./http";
 import { ThemeProvider } from "@mui/material/styles";
-
 import Navbar from "./components/Navbar.jsx";
 
 // Francine
@@ -36,6 +34,8 @@ import Settings from "./pages/Settings";
 import Posts from "./pages/Posts";
 import CreatePost from "./pages/CreatePost";
 import EditPost from "./pages/EditPost";
+import Comments from './pages/Comments';
+import PostProfile from './pages/PostProfile';
 
 // Amelia
 import Events from "./pages/Events";
@@ -58,6 +58,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const localS = localStorage.getItem("accessToken");
+
   useEffect(() => {
     const fetchUser = async () => {
       if (localS) {
@@ -77,6 +78,7 @@ function App() {
     return <div>Loading...</div>;
   }
 
+  // Amelia's codes
   const flow = {
     start: {
       message: "Greetings to you! How can I help you today?",
@@ -94,6 +96,7 @@ function App() {
       storageKey: "example_theming",
     },
   };
+
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <Router>
@@ -110,113 +113,31 @@ function App() {
             <Route path="/otp-verification" element={<OtpVerification />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/comments/:postId" element={user ? <Comments /> : <Navigate to="/login" />} />
+            <Route path="/profile/:userId" element={<ProtectedRoute element={PostProfile} />} />
 
-            <Route path="/events" element={<ProtectedRoute element={Events} allowedRoles={["Admin", "Staff"]}/>} />
-            <Route
-              path="/feedbackform"
-              element={<ProtectedRoute element={FeedbackForm} />}
-            />
-
-            {/* <Route
-              path="/posts"
-              element={user ? <Posts /> : <Navigate to="/login" />}
-            /> */}
-
-            <Route
-              path="/posts"
-              element={<ProtectedRoute element={Posts} />}
-            />
-
-            <Route
-              path="/createpost"
-              element={user ? <CreatePost /> : <Navigate to="/login" />}
-            />
-
-            <Route path={"/rewards"}/>
-
+            <Route path="/events" element={<ProtectedRoute element={Events} allowedRoles={["Admin", "Staff"]} />} />
+            <Route path="/feedbackform" element={<ProtectedRoute element={FeedbackForm} />} />
+            <Route path="/posts" element={<ProtectedRoute element={Posts} />} />
+            <Route path="/createpost" element={user ? <CreatePost /> : <Navigate to="/login" />} />
             <Route path="/notes" element={<Notes />} />
-            <Route
-              path="/addnote"
-              element={<AddNote />} />
-            <Route
-              path="/editnote/:id"
-              element={<EditNote />} />
+            <Route path="/addnote" element={<AddNote />} />
+            <Route path="/editnote/:id" element={<EditNote />} />
 
             {/* admin routes */}
-            <Route
-              path={"/admin/dashboard"}
-              element={
-                <ProtectedRoute
-                  element={Dashboard}
-                  allowedRoles={["Admin", "Staff"]}
-                />
-              }
-            />
-
-            <Route
-              path="/admin/register-staff"
-              element={
-                <ProtectedRoute
-                  element={CreateStaff}
-                  allowedRoles={["Admin"]}
-                />
-              }
-            />
-            <Route
-              path="/admin/users"
-              element={
-                <ProtectedRoute
-                  element={ViewUsers}
-                  allowedRoles={["Admin", "Staff"]}
-                />
-              }
-            />
-            <Route
-              path="/admin/users/:id/edit"
-              element={
-                <ProtectedRoute
-                  element={EditUser}
-                  allowedRoles={["Admin", "Staff"]}
-                />
-              }
-            />
-            <Route
-              path="/admin/users/:id/view"
-              element={
-                <ProtectedRoute
-                  element={ViewUser}
-                  allowedRoles={["Admin", "Staff"]}
-                />
-              }
-            />
-
-            <Route
-              path="/feedbacklist"
-              element={<ProtectedRoute element={FeedbackList} />}
-            />
+            <Route path="/admin/dashboard" element={<ProtectedRoute element={Dashboard} allowedRoles={["Admin", "Staff"]} />} />
+            <Route path="/admin/register-staff" element={<ProtectedRoute element={CreateStaff} allowedRoles={["Admin"]} />} />
+            <Route path="/admin/users" element={<ProtectedRoute element={ViewUsers} allowedRoles={["Admin", "Staff"]} />} />
+            <Route path="/admin/users/:id/edit" element={<ProtectedRoute element={EditUser} allowedRoles={["Admin", "Staff"]} />} />
+            <Route path="/admin/users/:id/view" element={<ProtectedRoute element={ViewUser} allowedRoles={["Admin", "Staff"]} />} />
+            <Route path="/feedbacklist" element={<ProtectedRoute element={FeedbackList} />} />
             <Route path="/feedback/:id" element={<FeedbackDetail />} />
-
             <Route path="/addevent" element={<AddEvent />} />
             <Route path="/editevent/:id" element={<EditEvent />} />
-
-            <Route
-              path="/editpost/:id"
-              element={user ? <EditPost /> : <Navigate to="/login" />}
-            />
-
-            <Route
-              path="/admin/rewards"
-              element={<ProtectedRoute element={Rewards} />}
-            />
-            <Route
-              path="/admin/edit-rewards"
-              element={<ProtectedRoute element={EditRewards} />}
-            />
-            <Route
-              path="/admin/update-rewards/:id"
-              element={<ProtectedRoute element={UpdateReward} />}
-            />
-
+            <Route path="/editpost/:id" element={user ? <EditPost /> : <Navigate to="/login" />} />
+            <Route path="/admin/rewards" element={<ProtectedRoute element={Rewards} />} />
+            <Route path="/admin/edit-rewards" element={<ProtectedRoute element={EditRewards} />} />
+            <Route path="/admin/update-rewards/:id" element={<ProtectedRoute element={UpdateReward} />} />
             {/* routes not listed above */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
