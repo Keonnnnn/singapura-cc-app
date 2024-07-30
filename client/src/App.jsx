@@ -57,10 +57,10 @@ import Dashboard from "./pages/Dashboard.jsx";
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const localS = localStorage.getItem("accessToken");
   useEffect(() => {
     const fetchUser = async () => {
-      if (localStorage.getItem("accessToken")) {
+      if (localS) {
         try {
           const res = await http.get("/user/auth");
           setUser(res.data.user);
@@ -71,7 +71,7 @@ function App() {
       setLoading(false);
     };
     fetchUser();
-  }, []);
+  }, [localS]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -111,31 +111,36 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
 
-            <Route path="/events" element={<Events />} />
+            <Route path="/events" element={<ProtectedRoute element={Events} allowedRoles={["Admin", "Staff"]}/>} />
             <Route
               path="/feedbackform"
               element={<ProtectedRoute element={FeedbackForm} />}
             />
 
-            <Route
+            {/* <Route
               path="/posts"
               element={user ? <Posts /> : <Navigate to="/login" />}
+            /> */}
+
+            <Route
+              path="/posts"
+              element={<ProtectedRoute element={Posts} />}
             />
+
             <Route
               path="/createpost"
               element={user ? <CreatePost /> : <Navigate to="/login" />}
             />
 
-            <Route path={"/rewards"} />
-            <Route path="/notes" element={<ProtectedRoute element={Notes} />} />
+            <Route path={"/rewards"}/>
+
+            <Route path="/notes" element={<Notes />} />
             <Route
               path="/addnote"
-              element={<ProtectedRoute element={AddNote} />}
-            />
+              element={<AddNote />} />
             <Route
               path="/editnote/:id"
-              element={<ProtectedRoute element={EditNote} />}
-            />
+              element={<EditNote />} />
 
             {/* admin routes */}
             <Route

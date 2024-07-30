@@ -11,10 +11,12 @@ import {
   Menu,
   Divider,
 } from "@mui/material";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../logo.png";
 import UserContext from "../contexts/UserContext";
+import SearchIcon from "@mui/icons-material/Search";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 const Navbar = () => {
   const { user } = useContext(UserContext);
@@ -22,6 +24,12 @@ const Navbar = () => {
   const [anchorElCustomer, setAnchorElCustomer] = useState(null);
   const open = Boolean(anchorEl);
   const openCustomer = Boolean(anchorElCustomer);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // ... (fetch user data or utilize user context)
+    setIsLoggedIn(user !== undefined);
+  }, [user]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -59,7 +67,23 @@ const Navbar = () => {
     >
       <Container>
         <Toolbar disableGutters={true}>
-          <Link to="/">
+          {/* <Link to="/">
+            <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justifyContent="center"
+              paddingTop={"10px"}
+            >
+              <Avatar src={logo} sx={{ width: 60, height: 60 }} />
+              <Typography variant="h6" component="div">
+                SINGAPURA CC
+              </Typography>
+            </Grid>
+          </Link> */}
+
+          <Link to={isAdmin ? "/admin/dashboard" : "/"}>
             <Grid
               container
               spacing={0}
@@ -75,6 +99,7 @@ const Navbar = () => {
             </Grid>
           </Link>
 
+
           <Box
             sx={{
               flexGrow: 1,
@@ -83,20 +108,36 @@ const Navbar = () => {
               gap: 10,
             }}
           >
-            <Link to="/events">
-              <Typography>Events</Typography>
-            </Link>
 
-            <Link to="/facilities">
-              <Typography>Facilities</Typography>
-            </Link>
+            {!user && (
+              <Link to="/about">
+                <Typography>About Us</Typography>
+              </Link>
+            )}
 
-            <Link to="/posts">
-              <Typography>Connect</Typography>
-            </Link>
+            {!isAdmin && (
+              <>
+                <Link to="">
+                  <Typography>Events</Typography>
+                </Link>
+
+                <Link to="/facilities">
+                  <Typography>Facilities</Typography>
+                </Link>
+
+                <Link to="/posts">
+                  <Typography>Connect</Typography>
+                </Link>
+              </>
+            )}
           </Box>
           {user ? (
             <>
+              {isAdmin && (
+                <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                  Admin Management Portal
+                </Typography>
+              )}
               <IconButton
                 id="account-button"
                 aria-controls={open ? "account-menu" : undefined}
@@ -108,6 +149,16 @@ const Navbar = () => {
                   {getInitials(user.firstName)}
                 </Avatar>
               </IconButton>
+              <Typography 
+                sx={{ cursor: 'pointer' }}
+                aria-controls={open ? "account-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+                onClick={isAdmin ? handleClick : handleClickCustomer}>
+                  {user.firstName} {user.lastName}
+              </Typography>
+
+
               <Menu
                 id="account-menu"
                 anchorEl={anchorEl}
@@ -140,17 +191,35 @@ const Navbar = () => {
                   <Typography color={"textSecondary"}>{user.email}</Typography>
                 </Box>
                 <Divider />
+
+                {/* my notes */}
                 <Link
-                  to="/admin/dashboard"
+                  to="/notes"
                   style={{
                     textDecoration: "none",
                     color: "inherit",
                   }}
                 >
                   <MenuItem>
-                    <Typography>Dashboard</Typography>
+                    <Typography>My Notes</Typography>
                   </MenuItem>
                 </Link>
+
+
+                {/* {isAdmin && (
+                  <Link
+                    to="/admin/dashboard"
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                    }}
+                  >
+                    <MenuItem>
+                      <Typography>Dashboard</Typography>
+                    </MenuItem>
+                  </Link>
+                )} */}
+
                 <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
               <Menu
@@ -186,6 +255,21 @@ const Navbar = () => {
                 </Box>
 
                 <Divider />
+
+                {/* my notes */}
+                <Link
+                  to="/notes"
+                  style={{
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                >
+                  <MenuItem>
+                    <Typography>My Notes</Typography>
+                  </MenuItem>
+                </Link>
+
+
                 <Link
                   to="/profile"
                   style={{

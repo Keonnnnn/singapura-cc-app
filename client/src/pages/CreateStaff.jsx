@@ -11,6 +11,7 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  IconButton,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -18,6 +19,7 @@ import http from "../http";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { Close } from "@mui/icons-material";
 
 function CreateStaff() {
   const navigate = useNavigate();
@@ -98,6 +100,10 @@ function CreateStaff() {
     },
   });
 
+  const handleCancel = () => {
+    navigate("/admin/users"); // Redirect to users list
+  };
+
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
       <Paper
@@ -110,6 +116,21 @@ function CreateStaff() {
           borderRadius: "12px",
         }}
       >
+        {/* <Tooltip title="Cancel">
+          <IconButton
+            color="secondary"
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              bgcolor: "rgba(255,255,255,0.8)",
+              borderRadius: "50%",
+            }}
+            onClick={handleCancel}
+          >
+            <Close />
+          </IconButton>
+        </Tooltip> */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Typography variant="h5" sx={{ flex: 1 }}>
             Add Staff
@@ -286,30 +307,30 @@ function CreateStaff() {
           </Grid>
 
           <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mt: 2,
-            }}
-          >
-            <Button
-              variant="contained"
-              type="submit"
-              color="secondary"
-              sx={{ borderRadius: "24px" }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mt: 2,
+              }}
             >
-              Add
-            </Button>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => navigate("/admin/users")}
-              sx={{ borderRadius: "24px" }}
-            >
-              Cancel
-            </Button>
-          </Box>
+              <Button
+                variant="contained"
+                type="submit"
+                color="secondary"
+                sx={{ borderRadius: "24px" }}
+              >
+                Update
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleCancel}
+                sx={{ borderRadius: "24px" }}
+              >
+                Cancel
+              </Button>
+            </Box>
         </Box>
 
         <ToastContainer />

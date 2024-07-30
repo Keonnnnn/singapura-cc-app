@@ -25,6 +25,7 @@ import "react-toastify/dist/ReactToastify.css";
 function EditUser() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [loading, setLoading] = useState(true);
 
   const [user, setUser] = useState({
     salutations: "",
@@ -45,11 +46,12 @@ function EditUser() {
     race: "",
   });
 
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     http.get(`/user/${id}`).then((res) => {
-      setUser(res.data);
+      setUser({
+        ...res.data,
+        password: "**********",
+      });
       setLoading(false);
     });
   }, [id]);
@@ -134,6 +136,20 @@ function EditUser() {
     navigate("/admin/users"); // Redirect to users list
   };
 
+  const handleResetPassword = async () => {
+    setLoading(true);
+    try {
+      const response = await http.post("/user/admin/reset-password", {
+        userId: id,
+      });
+      toast.success(response.data.message);
+    } catch (error) {
+      toast.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
       <Paper
@@ -146,19 +162,21 @@ function EditUser() {
           borderRadius: "12px",
         }}
       >
-        <IconButton
-          color="secondary"
-          sx={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            bgcolor: "rgba(255,255,255,0.8)",
-            borderRadius: "50%",
-          }}
-          onClick={handleCancel}
-        >
-          <Close />
-        </IconButton>
+        {/* <Tooltip title="Cancel">
+          <IconButton
+            color="secondary"
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              bgcolor: "rgba(255,255,255,0.8)",
+              borderRadius: "50%",
+            }}
+            onClick={handleCancel}
+          >
+            <Close />
+          </IconButton>
+        </Tooltip> */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Typography variant="h5" sx={{ flex: 1 }}>
             Edit User
@@ -367,7 +385,12 @@ function EditUser() {
                   alignItems: "center",
                 }}
               >
-                <Button variant="contained" color="primary" fullWidth>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={() => handleResetPassword()}
+                >
                   Reset Password
                 </Button>
               </Grid>

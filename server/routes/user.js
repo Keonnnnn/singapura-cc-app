@@ -76,7 +76,7 @@ router.post("/register", async (req, res) => {
       .max(50)
       .required("Password is required")
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        /^(?=.*?[a-zA-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
         "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character."
       ),
     confirmPassword: yup
@@ -207,7 +207,7 @@ router.post("/login", async (req, res) => {
       .max(50)
       .required()
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        /^(?=.*?[a-zA-Z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
         "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character."
       ),
     otp: yup.string().trim().length(6).nullable(), // Adjust length based on OTP requirements
@@ -246,6 +246,7 @@ router.post("/login", async (req, res) => {
       email: user.email,
       username: user.username,
       role: user.role,
+      otpEnabled: user.otpEnabled,
     };
 
     let accessToken = sign(userInfo, process.env.APP_SECRET, {
@@ -300,6 +301,86 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
+function generateSecurePassword(length) {
+  const lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+  const upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+  const specialCharacters = "!@#$%^&*_-+=";
+
+  // Ensure at least one of each character type
+  const getRandomChar = (charSet) => {
+    const randomIndex = Math.floor(Math.random() * charSet.length);
+    return charSet[randomIndex];
+  };
+
+  let password = "";
+
+  // Generate alphanumeric part
+  const alphanumericLength = Math.floor(length * 0.8); // Adjust percentage as needed
+  for (let i = 0; i < alphanumericLength; i++) {
+    const charSet = [lowerCaseLetters, upperCaseLetters, numbers][
+      Math.floor(Math.random() * 3)
+    ];
+    password += getRandomChar(charSet);
+  }
+
+  // Generate special character part
+  for (let i = 0; i < length - alphanumericLength; i++) {
+    password += getRandomChar(specialCharacters);
+  }
+
+  // Shuffle the password for better randomness
+  password = password
+    .split("")
+    .sort(() => 0.5 - Math.random())
+    .join("");
+
+  return password;
+}
+// Admin Reset Password
+router.post("/admin/reset-password", async (req, res) => {
+  const { userId } = req.body;
+
+  // Find the user by ID
+  let user = await User.findByPk(userId);
+  if (!user) {
+    return res.status(404).json({ message: "User not found." });
+  }
+
+  // Generate a password that meets the criteria
+  const randomPassword = generateSecurePassword(10);
+
+  // Hash the new password
+  const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+  // Update the user's password
+  await User.update({ password: hashedPassword }, { where: { id: user.id } });
+
+  // Optionally, you can send the new password to the user via email
+  const mailOptions = {
+    from: process.env.ADMIN_EMAIL,
+    to: user.email,
+    subject: "Your Password Has Been Reset",
+    html: `
+      <p>Your password has been reset. Your new password is:</p>
+      <p><strong>${randomPassword}</strong></p>
+      <p>Please change it as soon as you log in.</p>
+    `,
+  };
+
+  try {
+    await sendMailWithPromise(mailOptions);
+    res.json({
+      message:
+        "Password has been reset successfully. The new password has been sent to the user.",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Password reset successful but could not send email." });
+  }
+});
+
 // Reset Password
 router.post("/reset-password", async (req, res) => {
   const { token, newPassword } = req.body;
@@ -311,7 +392,7 @@ router.post("/reset-password", async (req, res) => {
     },
   });
 
-  if (user.tokenExpiry < Date.now()) {
+  if (user.resetTokenExpiry < Date.now()) {
     return res.status(400).json({ message: "Invalid or expired token." });
   }
 
@@ -340,6 +421,7 @@ router.get("/auth", validateToken, (req, res) => {
     email: req.user.email,
     username: req.user.username,
     role: req.user.role,
+    otpEnabled: req.user.otpEnabled,
   };
   res.json({ user: userInfo });
 });
@@ -401,6 +483,16 @@ router.post("/verify-otp", async (req, res) => {
   // Clear OTP after successful verification
   await User.update({ otp: null, otpExpiry: null }, { where: { email } });
 
+  const userInfo = {
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    username: user.username,
+    role: user.role,
+    otpEnabled: user.otpEnabled,
+  };
+
   let accessToken = sign(userInfo, process.env.APP_SECRET, {
     expiresIn: process.env.TOKEN_EXPIRES_IN,
   });
@@ -454,15 +546,15 @@ router.put("/:id", validateToken, async (req, res) => {
         "Last name only allow letters, spaces and characters: ' - , ."
       ),
     email: yup.string().trim().lowercase().email().max(50),
-    username: yup
-      .string()
-      .trim()
-      .min(1)
-      .max(50)
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Username only allows letters, numbers, underscores, periods, and hyphens."
-      ),
+    // username: yup
+    //   .string()
+    //   .trim()
+    //   .min(1)
+    //   .max(50)
+    //   .matches(
+    //     /^[a-zA-Z0-9_.-]+$/,
+    //     "Username only allows letters, numbers, underscores, periods, and hyphens."
+    //   ),
   });
 
   try {
