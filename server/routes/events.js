@@ -161,7 +161,7 @@ router.post("/eventrequests", async (req, res) => {
             from: process.env.ADMIN_EMAIL,
             to: data.email,
             subject: 'Event Request Confirmation',
-            text: `
+            html: `
                 <p>Dear ${data.firstName} ${data.lastName},</p>
                 <p>Thank you for submitting your event request. We will review it and get back to you shortly.</p>
             `,

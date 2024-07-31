@@ -88,21 +88,50 @@ function App() {
   }
 
   // Amelia's codes
+
   const flow = {
     start: {
       message: "Greetings to you! How can I help you today?",
-      options: ["Tell me about the events", "Help me with something else"],
+      options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!"],
       path: "process_options",
     },
+    
     process_options: {
       message: (params) => {
         let link = "";
         switch (params.userInput) {
           case "Tell me about the events":
-            link = "events";
+            link = "customer-events";
+            params.userInput = "our events";
             break;
+
+          case "I want to view my membership details":
+            if (user) {
+              link = "Membership";
+              params.userInput = "your membership details";
+            }
+            else {
+              link = "login";
+              params.userInput = "login or sign up before you can view your membership details";
+            }
+            break;
+
+          case "I want to connect with other people!":
+            if (user) {
+              link = "posts";
+              params.userInput = "bond with fellow members";
+            }
+            else {
+              link = "posts";
+              params.userInput = "login or sign up before you can view your membership details";
+            }
+            break;
+
           case "Help me with something else":
-            return "Please describe your inquiry, and we will get back to you soon.";
+            return {
+              path: "handle_inquiry"
+            };
+
           default:
             return "unknown_input";
         }
@@ -113,6 +142,14 @@ function App() {
       },
     },
 
+    handle_inquiry: {
+      message: "Thank you for your inquiry. We will review it and get back to you soon.",
+      path: "end",
+      processInput: (params) => {
+        // Here you can handle the user's inquiry, e.g., send it to a backend service or store it.
+        console.log("User inquiry:", params.userInput);
+      }
+    },
     end: {
       message: "Thank you for using our service!",
       end: true,
@@ -121,7 +158,7 @@ function App() {
 
   const options = {
     theme: {
-      primaryColor: "#f9a99e",
+      primaryColor: "#6667AB",
       secondaryColor: "#e2160f",
       showFooter: false,
     },
