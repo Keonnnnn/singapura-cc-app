@@ -204,12 +204,7 @@ function App() {
             />
             <Route
               path={"/customer-events"}
-              element={
-                <ProtectedRoute
-                  element={CustomerEvent}
-                  allowedRoles={["Customer"]}
-                />
-              }
+              element={<CustomerEvent/>}
             />
             <Route path={"/register/:id"} element={<RegisterEvent />} />
             <Route

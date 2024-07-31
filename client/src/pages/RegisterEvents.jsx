@@ -23,6 +23,7 @@ function RegisterEvent() {
             http.post(`/events/${eventId}/register`, data)
                 .then((res) => {
                     console.log(res.data);
+                    alert("You've successfully registered for the event!");
                     navigate("/customer-events");
                 })
                 .catch((err) => {
