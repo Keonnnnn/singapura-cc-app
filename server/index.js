@@ -42,19 +42,20 @@ const commentRoute = require('./routes/comment');
 app.use('/comment', commentRoute);
 
 const notificationRoute = require('./routes/notification');
-app.use('/notifications', notificationRoute); ///
+app.use('/notifications', notificationRoute);
 
 // Ahmed's Feedback API route
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/feedback', feedbackRoutes);
-const notificationEventsRoute = require('./routes/NotificationRoutes'); // Added this line
-app.use('/notificationEvents', notificationEventsRoute); // Added this line (ERROR)
 
+// Add the notificationEvents route
+const notificationEventsRoute = require('./routes/NotificationRoutes');
+app.use('/notificationEvents', notificationEventsRoute);
 
 const db = require('./models');
 const createAdminUser = require('./scripts/createAdmin'); 
 
-//ayura routes 
+// Ayura routes 
 const rewardRoute = require('./routes/reward');
 app.use("/reward", rewardRoute);
 

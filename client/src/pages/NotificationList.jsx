@@ -10,9 +10,9 @@ const NotificationList = () => {
     const [pinnedNotificationId, setPinnedNotificationId] = useState(null);
 
     useEffect(() => {
-        http.get('/notificationEvents')
+        http.get('/notificationEvents') // Ensure this matches the endpoint
             .then((res) => {
-                console.log(res.data); // Debugging: Log the data
+                console.log('Response data:', res.data); // Log response data
                 setNotifications(res.data);
             })
             .catch((error) => {
@@ -144,3 +144,6 @@ const NotificationList = () => {
 };
 
 export default NotificationList;
+
+
+

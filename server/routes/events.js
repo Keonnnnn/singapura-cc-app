@@ -152,7 +152,6 @@ router.post('/:eventId/register', async (req, res) => {
 // Event request routes
 router.post("/eventrequests", async (req, res) => {
     let data = req.body;
-    console.log("Received data: ", data);  // Log the data received
     try {
         data = await eventRequestValidationSchema.validate(data, { abortEarly: false });
         let result = await EventRequest.create(data);
@@ -167,8 +166,6 @@ router.post("/eventrequests", async (req, res) => {
             `,
         };
 
-        // Log the mailOptions object for debugging
-        console.log('Mail Options:', mailOptions);
         await sendMailWithPromise(mailOptions);
 
         res.json(result);
