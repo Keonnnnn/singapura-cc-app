@@ -60,7 +60,7 @@ function EditRewards() {
             http.post("/reward", data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/rewards");
+                    navigate("/admin/rewards");
                 });
         }
     });
@@ -181,7 +181,7 @@ function EditRewards() {
                                 <TableCell>
                                         {reward && (
                                             
-                                            <Link to={`/updatereward/${reward.id}`}>
+                                            <Link to={`/admin/update-rewards/${reward.id}`}>
                                                 <Button color="primary" sx={{ padding: '4px', backgroundColor: 'blue', color: 'white', margin: '0px 5px 0px 0px' }}>
                                                     Edit
                                                 </Button>

@@ -1,129 +1,235 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import http from '../http';
-import { Box, Typography, TextField, Button, Paper, IconButton } from '@mui/material';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
-import { Close } from '@mui/icons-material';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import http from "../http";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Paper,
+  IconButton,
+  Grid,
+} from "@mui/material";
+import { useFormik } from "formik";
+import * as yup from "yup";
+import { Close, ArrowBack, Edit } from "@mui/icons-material";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ViewUser() {
-    const navigate = useNavigate();
-    const { id } = useParams();
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-    const [userDetails, setUserDetails] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
+  const [user, setUser] = useState({
+    salutations: "",
+    firstName: "",
+    lastName: "",
+    dateOfBirth: "",
+    gender: "",
+    email: "",
+    password: "",
+    mobileNumber: "",
+    blockNo: "",
+    unitNo: "",
+    streetName: "",
+    postalCode: "",
+    idType: "",
+    idNumber: "",
+    citizenshipStatus: "",
+    race: "",
+  });
+
+  useEffect(() => {
+    http.get(`/user/${id}`).then((res) => {
+      setUser({
+        ...res.data,
+        password: "**********",
+      });
+      setLoading(false);
     });
+  }, [id]);
 
-    const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  const handleEdit = () => {
+    navigate(`/admin/users/${id}/edit`); // Redirect to edit user page
+  };
 
-    useEffect(() => {
-        http.get(`/user/${id}`).then((res) => {
-            setUserDetails(res.data);
-            setLoading(false);
-        }).catch(err => {
-            console.error("Error fetching user:", err);
-            if (err.response && err.response.status === 404) {
-                navigate('/users'); // Redirect to users list if user is not found
-            }
-        });
-    }, [id, navigate]);
+  const handleCancel = () => {
+    navigate("/admin/users"); // Redirect to users list
+  };
 
-    const formik = useFormik({
-        initialValues: {
-            firstName: userDetails.firstName,
-            lastName: userDetails.lastName,
-            email: userDetails.email,
-        },
-        enableReinitialize: true,
-        validationSchema: yup.object({
-            firstName: yup.string().trim().min(2).max(50)
-                .matches(/^[a-zA-Z '-,.]+$/, "First name only allows letters, spaces and characters: ' - , .")
-                .required('First name is required.'),
-            lastName: yup.string().trim().min(2).max(50)
-                .matches(/^[a-zA-Z '-,.]+$/, "Last name only allows letters, spaces and characters: ' - , .")
-                .required('Last name is required.'),
-            email: yup.string().trim().lowercase().email().max(50).required('Email is required.'),
-        }),
-        onSubmit: async (values) => {
-            navigate(`/users/${id}/edit`); // Redirect to edit user page
-        },
-    });
-
-    const handleCancel = () => {
-        navigate('/users'); // Redirect to users list
-    };
-
-    return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-            <Paper elevation={3} sx={{ p: 3, maxWidth: 600, width: '100%', position: 'relative', borderRadius: '12px' }}>
-                <IconButton
-                    color="secondary"
-                    sx={{ position: 'absolute', top: 8, right: 8, bgcolor: 'rgba(255,255,255,0.8)', borderRadius: '50%' }}
-                    onClick={handleCancel}
-                >
-                    <Close />
-                </IconButton>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="h5" sx={{ flex: 1 }}>
-                        View User
-                    </Typography>
-                </Box>
-
-                {!loading && (
-                    <Box component="form" onSubmit={formik.handleSubmit}>
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="First Name"
-                            name="firstName"
-                            value={formik.values.firstName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.firstName && Boolean(formik.errors.firstName)}
-                            helperText={formik.touched.firstName && formik.errors.firstName}
-                            variant="outlined"
-                        />
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Last Name"
-                            name="lastName"
-                            value={formik.values.lastName}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.lastName && Boolean(formik.errors.lastName)}
-                            helperText={formik.touched.lastName && formik.errors.lastName}
-                            variant="outlined"
-                        />
-                        <TextField
-                            fullWidth
-                            margin="normal"
-                            label="Email"
-                            name="email"
-                            value={formik.values.email}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.email && Boolean(formik.errors.email)}
-                            helperText={formik.touched.email && formik.errors.email}
-                            variant="outlined"
-                        />
-
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-                            <Button variant="contained" type="submit" color="secondary" sx={{ borderRadius: '24px' }}>
-                                Edit
-                            </Button>
-                        </Box>
-                    </Box>
-                )}
-
-                <ToastContainer />
-            </Paper>
+  return (
+    <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          maxWidth: 800,
+          width: "100%",
+          position: "relative",
+          borderRadius: "12px",
+        }}
+      >
+        {/* <Tooltip title="Cancel">
+          <IconButton
+            color="secondary"
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              bgcolor: "rgba(255,255,255,0.8)",
+              borderRadius: "50%",
+            }}
+            onClick={handleCancel}
+          >
+            <Close />
+          </IconButton>
+        </Tooltip> */}
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Typography variant="h5" sx={{ flex: 1 }}>
+            View User
+          </Typography>
+          <IconButton
+            color="secondary"
+            sx={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              bgcolor: "rgba(255,255,255,0.8)",
+              borderRadius: "25%",
+              gap: 1,
+            }}
+            onClick={handleEdit}
+          >
+            <Edit />
+            <Typography>Edit</Typography>
+          </IconButton>
         </Box>
-    );
+
+        {!loading && (
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Basic Information
+            </Typography>
+            <Grid container spacing={2}>
+              {user.role !== "Admin" && (
+                <Grid item xs={12} sm={4}>
+                  <Typography variant="body1">
+                    <strong>Salutations:</strong> {user.salutations}
+                  </Typography>
+                </Grid>
+              )}
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body1">
+                  <strong>First Name:</strong> {user.firstName}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Typography variant="body1">
+                  <strong>Last Name:</strong> {user.lastName}
+                </Typography>
+              </Grid>
+              {user.role !== "Admin" && (
+                <>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Date of Birth:</strong>{" "}
+                      {new Date(user.dateOfBirth).toLocaleDateString(
+                        "en-US",
+                        options
+                      )}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Gender:</strong> {user.gender}
+                    </Typography>
+                  </Grid>
+                </>
+              )}
+
+              <Grid item xs={12} sm={6}>
+                <Typography variant="body1">
+                  <strong>Email:</strong> {user.email}
+                </Typography>
+              </Grid>
+              {user.role !== "Admin" && (
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="body1">
+                    <strong>Mobile Number:</strong> {user.mobileNumber}
+                  </Typography>
+                </Grid>
+              )}
+            </Grid>
+
+            {user.role === "Customer" && (
+              <>
+                <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                  Residential Address
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Block No.:</strong> {user.blockNo}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Unit No.:</strong> {user.unitNo}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="body1">
+                      <strong>Street Name:</strong> {user.streetName}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Typography variant="body1">
+                      <strong>Postal Code:</strong> {user.postalCode}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+
+            {user.role === "Customer" && (
+              <>
+                <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                  Additional Information
+                </Typography>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>ID Type:</strong> {user.idType}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>ID Number:</strong> {user.idNumber}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Citizenship Status:</strong>{" "}
+                      {user.citizenshipStatus}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Race:</strong> {user.race}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </>
+            )}
+          </Box>
+        )}
+
+        <ToastContainer />
+      </Paper>
+    </Box>
+  );
 }
 
 export default ViewUser;

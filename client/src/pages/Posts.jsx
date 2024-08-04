@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { Box, Typography, Card, CardContent, Button, IconButton, Avatar, Divider, TextField, MenuItem, ListItemText } from '@mui/material';
-import { Edit, ThumbUp, Comment, Save, ArrowBack } from '@mui/icons-material';
+import { Link, useNavigate } from 'react-router-dom';
+import { Box, Typography, Card, CardContent, Button, IconButton, Avatar, Divider, TextField, MenuItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import { Edit, ThumbUp, Comment, Delete, ThumbUpAltOutlined } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
 import UserContext from '../contexts/UserContext';
@@ -9,14 +9,15 @@ import global from '../global';
 
 function Posts() {
     const [postList, setPostList] = useState([]);
-    const { user, setUser } = useContext(UserContext);
-    const [isEditingProfile, setIsEditingProfile] = useState(false);
-    const [newUsername, setNewUsername] = useState(user?.username || '');
+    const { user } = useContext(UserContext);
     const [filter, setFilter] = useState('all');
     const [userColors, setUserColors] = useState({});
+    const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
+    const [selectedPostId, setSelectedPostId] = useState(null);
 
-    const getPosts = () => {
-        http.get('/post').then((res) => {
+    const getPosts = (filter = 'all') => {
+        http.get(`/post?filter=${filter}`).then((res) => {
             setPostList(res.data);
             console.log("Fetched Posts: ", res.data);
         }).catch(err => {
@@ -27,6 +28,12 @@ function Posts() {
     useEffect(() => {
         getPosts();
     }, []);
+
+    const handleFilterChange = (event) => {
+        const newFilter = event.target.value;
+        setFilter(newFilter);
+        getPosts(newFilter);
+    };
 
     const getRandomColor = () => {
         const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
@@ -49,7 +56,7 @@ function Posts() {
 
     const likePost = (postId) => {
         http.post(`/like/${postId}/like`).then(() => {
-            getPosts(); // Refresh posts after liking
+            getPosts(filter); // Refresh posts after liking
         }).catch(err => {
             console.error("Error liking post:", err);
         });
@@ -57,31 +64,31 @@ function Posts() {
 
     const unlikePost = (postId) => {
         http.post(`/like/${postId}/unlike`).then(() => {
-            getPosts(); // Refresh posts after unliking
+            getPosts(filter); // Refresh posts after unliking
         }).catch(err => {
             console.error("Error unliking post:", err);
         });
     };
 
-    const handleEditProfile = () => {
-        setIsEditingProfile(true);
+    const handleOpen = (postId) => {
+        setSelectedPostId(postId);
+        setOpen(true);
     };
 
-    const handleSaveProfile = () => {
-        console.log('Updating user profile with:', { username: newUsername }); // Log the data being sent
-
-        http.put(`/user/${user.id}`, { username: newUsername }).then((res) => {
-            console.log('Profile update response:', res.data); // Log the response
-            setUser(res.data);
-            setIsEditingProfile(false);
-        }).catch(err => {
-            console.error("Error updating profile:", err); // Log the error
-        });
+    const handleClose = () => {
+        setOpen(false);
+        setSelectedPostId(null);
     };
 
-    const handleCancelEditProfile = () => {
-        setNewUsername(user?.username || '');
-        setIsEditingProfile(false);
+    const handleDeletePost = () => {
+        if (selectedPostId) {
+            http.delete(`/post/${selectedPostId}`).then(() => {
+                getPosts(filter); // Refresh posts after deleting
+                handleClose();
+            }).catch(err => {
+                console.error("Error deleting post:", err);
+            });
+        }
     };
 
     return (
@@ -100,45 +107,25 @@ function Posts() {
                 {user && (
                     <Card sx={{ mb: 3, boxShadow: 2, borderRadius: 2 }}>
                         <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar sx={{ bgcolor: getUserColor(user.id), mr: 2 }}>
+                            <Avatar
+                                component={Link}
+                                to={`/profile/${user.id}`}
+                                sx={{ bgcolor: getUserColor(user.id), mr: 2, textDecoration: 'none' }}
+                            >
                                 {user.firstName.charAt(0).toUpperCase()}
                             </Avatar>
-                            <Box sx={{ flexGrow: 1 }}>
-                                {isEditingProfile ? (
-                                    <>
-                                        <TextField
-                                            variant="outlined"
-                                            size="small"
-                                            fullWidth
-                                            value={newUsername}
-                                            onChange={(e) => setNewUsername(e.target.value)}
-                                            sx={{ mb: 1 }}
-                                        />
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <IconButton color="primary" onClick={handleSaveProfile}>
-                                                <Save />
-                                            </IconButton>
-                                            <IconButton color="secondary" onClick={handleCancelEditProfile}>
-                                                <ArrowBack />
-                                            </IconButton>
-                                        </Box>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                            {user.firstName} {user.lastName}
-                                        </Typography>
-                                        <Typography variant="body2" color="textSecondary">
-                                            @{user.username}
-                                        </Typography>
-                                    </>
-                                )}
+                            <Box
+                                component={Link}
+                                to={`/profile/${user.id}`}
+                                sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}
+                            >
+                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                    {user.firstName} {user.lastName}
+                                </Typography>
+                                <Typography variant="body2" color="textSecondary">
+                                    @{user.username}
+                                </Typography>
                             </Box>
-                            {!isEditingProfile && (
-                                <IconButton color="primary" onClick={handleEditProfile}>
-                                    <Edit />
-                                </IconButton>
-                            )}
                         </CardContent>
                     </Card>
                 )}
@@ -151,14 +138,14 @@ function Posts() {
                         label="Filter by"
                         size="small"
                         value={filter}
-                        onChange={(e) => setFilter(e.target.value)}
+                        onChange={handleFilterChange}
                         sx={{ borderRadius: 2 }}
                     >
                         <MenuItem value="all">
                             <ListItemText primary="All Posts" />
                         </MenuItem>
-                        <MenuItem value="friends">
-                            <ListItemText primary="Friends' Posts" />
+                        <MenuItem value="following">
+                            <ListItemText primary="Following" />
                         </MenuItem>
                     </TextField>
                 </Box>
@@ -172,23 +159,37 @@ function Posts() {
                     <Card key={post.id} sx={{ mb: 3, boxShadow: 3, borderRadius: 2, padding: 2, border: '1px solid #ddd', backgroundColor: 'white' }}>
                         <CardContent>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                <Avatar sx={{ bgcolor: getUserColor(post.userId), mr: 2 }}>
+                                <Avatar
+                                    component={Link}
+                                    to={`/profile/${post.userId}`}
+                                    sx={{ bgcolor: getUserColor(post.userId), mr: 2, textDecoration: 'none' }}
+                                >
                                     {post.user?.firstName.charAt(0).toUpperCase()}
                                 </Avatar>
                                 <Box sx={{ flexGrow: 1 }}>
-                                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                        {post.user?.firstName} {post.user?.lastName}
+                                    <Typography
+                                        component={Link}
+                                        to={`/profile/${post.userId}`}
+                                        variant="subtitle1"
+                                        sx={{ fontWeight: 'bold', textDecoration: 'none', color: 'inherit' }}
+                                    >
+                                        {post.user?.username}
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary">
                                         {dayjs(post.createdAt).format(global.datetimeFormat)}
                                     </Typography>
                                 </Box>
-                                {user && user.id === post.userId && (
-                                    <Link to={`/editpost/${post.id}`}>
-                                        <IconButton color="primary" sx={{ padding: '4px' }}>
-                                            <Edit />
+                                {user && (user.id === post.userId || user.role === 'Admin') && (
+                                    <>
+                                        <Link to={`/editpost/${post.id}`}>
+                                            <IconButton color="primary" sx={{ padding: '4px' }}>
+                                                <Edit />
+                                            </IconButton>
+                                        </Link>
+                                        <IconButton color="secondary" sx={{ padding: '4px' }} onClick={() => handleOpen(post.id)}>
+                                            <Delete />
                                         </IconButton>
-                                    </Link>
+                                    </>
                                 )}
                             </Box>
                             <Divider sx={{ mb: 2 }} />
@@ -212,24 +213,21 @@ function Posts() {
                                     <IconButton
                                         color="primary"
                                         sx={{ padding: '4px', mr: 1 }}
-                                        onClick={() => {
-                                            post.Likes.some(like => like.userId === user.id)
-                                                ? unlikePost(post.id)
-                                                : likePost(post.id)
-                                        }}
+                                        onClick={() => post.Likes.some(like => like.userId === user.id) ? unlikePost(post.id) : likePost(post.id)}
                                     >
-                                        <ThumbUp />
+                                        {post.Likes.some(like => like.userId === user.id)
+                                                ? <ThumbUp /> : <ThumbUpAltOutlined />}
                                     </IconButton>
                                     <Typography variant="body2">
                                         {post.Likes.length || 0} Likes
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <IconButton color="primary" sx={{ padding: '4px', mr: 1 }}>
+                                    <IconButton color="primary" sx={{ padding: '4px', mr: 1 }} onClick={() => navigate(`/comments/${post.id}`)}>
                                         <Comment />
                                     </IconButton>
                                     <Typography variant="body2">
-                                        {post.comments?.length || 0} Comments
+                                        {post.Comments?.length || 0} Comments
                                     </Typography>
                                 </Box>
                             </Box>
@@ -237,6 +235,23 @@ function Posts() {
                     </Card>
                 ))}
             </Box>
+
+            <Dialog open={open} onClose={handleClose}>
+                <DialogTitle>Delete Post</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to delete this post?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} variant="contained" color="inherit">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleDeletePost} variant="contained" color="error">
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }

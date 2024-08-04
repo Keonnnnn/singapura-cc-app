@@ -38,14 +38,24 @@ app.use('/post', postRoute);
 const likeRoute = require('./routes/likes'); 
 app.use("/like", likeRoute);
 
+const commentRoute = require('./routes/comment');
+app.use('/comment', commentRoute);
+
+const notificationRoute = require('./routes/notification');
+app.use('/notifications', notificationRoute);
+
 // Ahmed's Feedback API route
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/feedback', feedbackRoutes);
 
+// Add the notificationEvents route
+const notificationEventsRoute = require('./routes/NotificationRoutes');
+app.use('/notificationEvents', notificationEventsRoute);
+
 const db = require('./models');
 const createAdminUser = require('./scripts/createAdmin'); 
 
-//ayura routes 
+// Ayura routes 
 const rewardRoute = require('./routes/reward');
 app.use("/reward", rewardRoute);
 
