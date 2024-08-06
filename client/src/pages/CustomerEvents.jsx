@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Button, Chip, Container } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Button, Chip, Container, TextField, MenuItem} from '@mui/material';
 import http from '../http';
 import dayjs from 'dayjs';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
@@ -17,6 +20,42 @@ function CustomerEvents() {
             setEventList(res.data);
         });
     }, []);
+    const formik = useFormik({
+        initialValues: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            organisation: "",
+            eventTitle: "",
+            eventType: "",
+            eventDescription: "",
+        },
+        validationSchema: yup.object({
+            firstName: yup.string().trim().required("First Name is required"),
+            lastName: yup.string().trim().required("Last Name is required"),
+            email: yup.string().trim().email("Invalid email format").required("Email is required"),
+            organisation: yup.string().trim().required("Organisation is required"),
+            eventTitle: yup.string().trim().required("Event Title is required"),
+            eventType: yup.string().trim().required("Event Type is required"),
+            eventDescription: yup.string().trim().required("Event Description is required"),
+        }),
+        onSubmit: (data, { resetForm }) => {
+            console.log('Submitting data: ', data); // Logging the data being submitted
+            setIsSubmitting(true);
+            http.post('/events/eventrequests', data)
+                .then((res) => {
+                    alert('Program shared successfully!');
+                    resetForm();
+                })
+                .catch((err) => {
+                    console.error(err);
+                    alert('Error sharing program.');
+                })
+                .finally(() => {
+                    setIsSubmitting(false);
+                });
+        }
+    });
 
     const handleRegister = (eventId) => {
         const token = localStorage.getItem('accessToken');
@@ -99,6 +138,111 @@ function CustomerEvents() {
                     </Grid>
                 ))}
             </Grid>
+
+            <Box sx={{ mt: 6, borderRadius: 1, backgroundColor: "#f9f9f9", p: 4 }}>
+                <Typography variant="h5" sx={{ mb: 2, textAlign:"center" }}>Share Your Program</Typography>
+                <Typography variant="body1" sx={{ mb: 4 }}>
+                    Do you have an exciting sporting programme coming up that you’d like to share with us? Simply submit your event below, and we’ll carefully review it. Please keep in mind that all submissions are subject to approval by our Editorial Team.
+                </Typography>
+                <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} md={6}>
+                            <TextField
+                                fullWidth
+                                label="First Name"
+                                name="firstName"
+                                value={formik.values.firstName}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.firstName && Boolean(formik.errors.firstName)}
+                                helperText={formik.touched.firstName && formik.errors.firstName}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <TextField
+                                fullWidth
+                                label="Last Name"
+                                name="lastName"
+                                value={formik.values.lastName}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.lastName && Boolean(formik.errors.lastName)}
+                                helperText={formik.touched.lastName && formik.errors.lastName}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <TextField
+                                fullWidth
+                                label="Email"
+                                name="email"
+                                value={formik.values.email}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.email && Boolean(formik.errors.email)}
+                                helperText={formik.touched.email && formik.errors.email}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <TextField
+                                fullWidth
+                                label="Organisation"
+                                name="organisation"
+                                value={formik.values.organisation}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.organisation && Boolean(formik.errors.organisation)}
+                                helperText={formik.touched.organisation && formik.errors.organisation}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <TextField
+                                fullWidth
+                                label="Event Title"
+                                name="eventTitle"
+                                value={formik.values.eventTitle}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.eventTitle && Boolean(formik.errors.eventTitle)}
+                                helperText={formik.touched.eventTitle && formik.errors.eventTitle}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <TextField
+                                fullWidth
+                                select
+                                label="Type"
+                                name="eventType"
+                                value={formik.values.eventType}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.eventType && Boolean(formik.errors.eventType)}
+                                helperText={formik.touched.eventType && formik.errors.eventType}
+                            >
+                                <MenuItem value="Volunteer Work">Volunteer Work</MenuItem>
+                                <MenuItem value="Leisure">Leisure</MenuItem>
+                                <MenuItem value="Sustainability">Sustainability</MenuItem>
+                            </TextField>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                fullWidth
+                                multiline
+                                minRows={3}
+                                label="Event Description"
+                                name="eventDescription"
+                                value={formik.values.eventDescription}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.eventDescription && Boolean(formik.errors.eventDescription)}
+                                helperText={formik.touched.eventDescription && formik.errors.eventDescription}
+                            />
+                        </Grid>
+                    </Grid>
+                    <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
+                        Submit
+                    </Button>
+                </Box>
+            </Box>
         </Container>
     );
 }
