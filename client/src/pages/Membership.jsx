@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Container, Button, Menu, MenuItem, Fade, Avatar, Typography } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -7,20 +7,23 @@ import UserContext from '../contexts/UserContext';
 
 function Membership() {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { user: loggedInUser } = useContext(UserContext);
+  const { id } = loggedInUser;
 
   useEffect(() => {
-    const fetchUser = async () => {
-      if (localStorage.getItem('accessToken')) {
+    const fetchPoints = async () => {
+      if (localStorage.getItem("accessToken")) {
         try {
-          const res = await http.get('/user/auth');
-          setUser(res.data.user);
-          console.log("Fetched User: ", res.data.user);
+          const res = await http.get(`/reward/Membership/${id}`);
+          setUser(res.data);
         } catch (error) {
           console.error(error);
         }
       }
+      setLoading(false);
     };
-    fetchUser();
+    fetchPoints();
   }, []);
 
 
@@ -53,6 +56,7 @@ function Membership() {
           {user && (
             <>
               <Typography sx={{ marginLeft: 1 }}>{user.firstName} {user.lastName}</Typography>
+              <Typography>{user.totalPoints}</Typography>
             </>
           )}
           <div>

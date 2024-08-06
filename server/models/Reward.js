@@ -19,5 +19,9 @@ module.exports = (sequelize, DataTypes) => {
     }, {
         tableName: 'rewards'
     });
+
+    Reward.associate = (models) => {
+        Reward.belongsToMany(models.User, { through: 'UserRewards', foreignKey: 'rewardId' });
+      };
     return Reward;
 }

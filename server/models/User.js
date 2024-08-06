@@ -135,6 +135,7 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.Follower, { as: 'followers', foreignKey: 'followedId' });
     User.hasMany(models.Follower, { as: 'following', foreignKey: 'followerId' });
     User.hasMany(models.Registration, { foreignKey: 'userId' });
+    User.belongsToMany(models.Reward, { through: 'UserRewards', foreignKey: 'userId' });
   };
 
   return User;

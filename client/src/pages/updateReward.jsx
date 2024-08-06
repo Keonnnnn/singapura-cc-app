@@ -40,7 +40,7 @@ function updateReward() {
             data.description = data.description.trim();
             data.Points = data.Points;
             data.description = data.description.trim();
-            data.description = data.Tier.trim();
+            data.Tier = data.Tier.trim();
             http.put(`/reward/${id}`, data)
                 .then((res) => {
                     console.log(res.data);
