@@ -43,7 +43,7 @@ import AddEvent from "./pages/AddEvent";
 import EditEvent from "./pages/EditEvent";
 import ChatBot from "react-chatbotify";
 import CustomerEvent from "./pages/CustomerEvents"; //page
-import RegisterEvent from "./pages/RegisterEvents"; //page
+import StaffEventConfirmation from "./pages/StaffEventConfirmation.jsx";
 
 // Ahmed
 import FeedbackForm from "./pages/FeedbackForm";
@@ -207,7 +207,7 @@ function App() {
               path={"/customer-events"}
               element={<CustomerEvent/>}
             />
-            <Route path={"/register/:id"} element={<RegisterEvent />} />
+            
             <Route
               path="/feedbackform"
               element={<ProtectedRoute element={FeedbackForm} />}
@@ -296,6 +296,7 @@ function App() {
             />
             <Route path="/feedback/:id" element={<FeedbackDetail />} />
             <Route path="/addevent" element={<AddEvent />} />
+            <Route path="/eventsregistrations/:id" element={<StaffEventConfirmation />}/>
             <Route path="/editevent/:id" element={<EditEvent />} />
             <Route
               path="/editpost/:id"

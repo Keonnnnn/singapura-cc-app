@@ -16,15 +16,15 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATEONLY,
             allowNull: true
         },
-        startTime:{
+        startTime: {
             type: DataTypes.TIME,
             allowNull: false
         },
-        endTime:{
+        endTime: {
             type: DataTypes.TIME,
             allowNull: false
         },
-        venue:{
+        venue: {
             type: DataTypes.STRING(100),
             allowNull: false
         },
@@ -44,7 +44,9 @@ module.exports = (sequelize, DataTypes) => {
         tableName: 'events'
     }
 
-
-);
+    );
+    Event.associate = function (models) {
+        Event.hasMany(models.Registration, { foreignKey: 'eventId' });
+    };
     return Events;
 }
