@@ -56,8 +56,8 @@ function AddEvent() {
             description: yup.string().trim().min(3).max(500).required(),
             type: yup.string().required(),
             date: yup.date().required().min(new Date(), "Event date cannot be in the past"),
-            startTime: yup.string().trim().matches(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/).required(),
-            endTime: yup.string().trim().matches(/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/).required()
+            startTime: yup.string().trim().required(),
+            endTime: yup.string().trim().required()
                 .test("is-greater", "End time should be greater", function (value) {
                     const { startTime } = this.parent;
                     return moment(value, "HH:mm").isAfter(moment(startTime, "HH:mm"));

@@ -27,7 +27,8 @@ module.exports = (sequelize, DataTypes) => {
         eventDescription: {
             type: DataTypes.TEXT,
             allowNull: false
-        }
+        },
+        
     });
 
     return EventRequest;

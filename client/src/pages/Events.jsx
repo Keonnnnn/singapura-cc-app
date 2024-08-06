@@ -51,13 +51,13 @@ function Events() {
                                     <AccessTime sx={{ mr: 1 }} />
                                     <Typography variant='subtitle2'>Happening on: &nbsp;</Typography>
                                     <Typography variant="subtitle2">
-                                        {dayjs(event.date).format('DD MMM YYYY')},
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        &nbsp;
-                                        {dayjs(event.startTime, 'HH:mm').format('hh:mm A')} - {dayjs(event.endTime, 'HH:mm').format('hh:mm A')}
+                                        {dayjs(event.date).format('DD MMM YYYY')}
                                     </Typography>
                                 </Box>
+                                
+                                <Typography variant="body2">
+                                    {dayjs(event.startTime, 'HH:mm').format('hh:mm A')} - {dayjs(event.endTime, 'HH:mm').format('hh:mm A')}
+                                </Typography>
                                 <Typography variant='subtitle2' sx={{ color: "text.secondary", mt: 2 }}>Details</Typography>
                                 <Typography sx={{ whiteSpace: 'pre-wrap' }}>
                                     {event.description}
@@ -70,7 +70,11 @@ function Events() {
                                 <Typography sx={{ whiteSpace: 'pre-wrap' }}>
                                     {event.points}
                                 </Typography>
-                                
+                                <Link to={`/eventsregistrations/${event.id}`} style={{ textDecoration: 'none' }}>
+                                    <Button variant='contained' color='secondary' sx={{ mt: 2 }}>
+                                        View Registrations
+                                    </Button>
+                                </Link>
                             </CardContent>
                         </Card>
                     </Grid>
