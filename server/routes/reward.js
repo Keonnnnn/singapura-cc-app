@@ -176,16 +176,49 @@ router.put('/updateMembershipType/:userId', validateToken, async (req, res) => {
     }
 });
 
+// routes/reward.js
 router.post('/claim', validateToken, async (req, res) => {
     const { userId, rewardId } = req.body;
-
+  
     try {
-        const userReward = await UserRewards.create({ userId, rewardId });
-        res.status(201).json({ message: 'Reward claimed successfully', userReward });
+      // Check if the user-reward pair already exists
+      const existingUserReward = await UserRewards.findOne({ where: { userId, rewardId } });
+  
+      if (existingUserReward) {
+        return res.status(409).json({ message: 'Reward already claimed' });
+      }
+  
+      // Create the user-reward pair if it does not exist
+      const userReward = await UserRewards.create({ userId, rewardId });
+      res.status(201).json({ message: 'Reward claimed successfully', userReward });
     } catch (error) {
-        console.error('Error claiming reward:', error);
-        res.status(500).json({ error: 'An error occurred while claiming the reward' });
+      console.error('Error claiming reward:', error);
+      res.status(500).json({ error: 'An error occurred while claiming the reward' });
     }
-});
+  });
+
+  // routes/reward.js
+
+// Route to fetch claimed rewards for a user
+router.get('/claimed/:userId', validateToken, async (req, res) => {
+    const { userId } = req.params;
+  
+    try {
+      const claimedRewards = await UserRewards.findAll({
+        where: { userId },
+        include: {
+          model: Reward,
+          as: 'reward',
+        },
+      });
+  
+      res.status(200).json(claimedRewards);
+    } catch (error) {
+      console.error('Error fetching claimed rewards:', error);
+      res.status(500).json({ error: 'An error occurred while fetching claimed rewards' });
+    }
+  });
+  
+  
 
 module.exports = router;

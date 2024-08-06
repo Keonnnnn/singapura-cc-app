@@ -15,7 +15,7 @@ function ClaimRewards() {
   const { user: loggedInUser } = useContext(UserContext);
   const { id } = loggedInUser;
   const [rewardList, setRewardList] = useState([]);
-  const [claimedRewards, setClaimedRewards] = useState([]); // NEW: State to track claimed rewards
+  const [claimedRewards, setClaimedRewards] = useState([]); // State to track claimed rewards
 
   const USE_TESTING_POINTS = false; // Toggle this to true for testing points, false for actual points
 
@@ -27,14 +27,19 @@ function ClaimRewards() {
       await http.put(`/reward/updatePoints/${id}`, { totalPoints: newPoints });
 
       // Associate the user with the claimed reward
-      await http.post('/reward/claim', { userId: id, rewardId });
+      const claimResponse = await http.post('/reward/claim', { userId: id, rewardId });
+
+      if (claimResponse.status === 409) {
+        console.warn('Reward already claimed');
+        return;
+      }
 
       setPoints(newPoints);
       setUser(prevUser => ({
         ...prevUser,
         totalPoints: newPoints
       }));
-      setClaimedRewards([...claimedRewards, rewardId]); // NEW: Track claimed rewards
+      setClaimedRewards([...claimedRewards, rewardId]); // Track claimed rewards
     } catch (error) {
       console.error('Error claiming reward:', error);
     }
@@ -64,7 +69,8 @@ function ClaimRewards() {
     const fetchPoints = async () => {
       if (localStorage.getItem("accessToken")) {
         try {
-          const res = await http.get(`/reward/Membership/${id}`); // Ensure this endpoint matches the backend route
+          const res = await http.get(`/reward/Membership/${id}`);
+          const claimedRes = await http.get(`/reward/claimed/${id}`);
           setUser(res.data.user);
           
           const actualPoints = res.data.user.totalPoints;
@@ -77,6 +83,9 @@ function ClaimRewards() {
           const initialTier = calculateUserTier(pointsToUse);
           setUserTier(initialTier);
           updateMembershipType(initialTier);
+
+          // Set claimed rewards
+          setClaimedRewards(claimedRes.data.map(reward => reward.rewardId));
         } catch (error) {
           console.error(error);
         }
@@ -160,27 +169,30 @@ function ClaimRewards() {
           </div>
 
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, marginTop: 5 }}>
-            {rewardList.filter(reward => reward.Tier === userTier).map((reward) => {
-              const isClaimable = canClaimReward(reward.Tier, reward.Points);
-              return (
-                <Paper key={reward.id} elevation={3} sx={{ padding: 2, width: '600px', textAlign: 'center' }}>
-                  <Typography variant="h5">{reward.rewardName} <span style={{ marginLeft: '100px' }}>{reward.description}</span> <span style={{ marginLeft: '100px' }}><Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => handleClaim(reward.id, reward.Points)} // UPDATED: Pass rewardId and rewardPoints
-                    disabled={!isClaimable || claimedRewards.includes(reward.id)} // NEW: Disable button if reward is claimed
-                    sx={{
-                      backgroundColor: isClaimable ? 'green' : 'grey',
-                      '&:hover': { backgroundColor: isClaimable ? 'darkgreen' : 'grey' }
-                    }}
-                  >
-                    Claim
-                  </Button></span></Typography>
-                  <Typography variant="body1">Points: {reward.Points}</Typography>
-                  <Typography variant="body2">Tier: {reward.Tier}</Typography>
-                </Paper>
-              );
-            })}
+            {rewardList
+              .filter(reward => reward.Tier === userTier)
+              .filter(reward => !claimedRewards.includes(reward.id)) // Filter out claimed rewards
+              .map((reward) => {
+                const isClaimable = canClaimReward(reward.Tier, reward.Points);
+                return (
+                  <Paper key={reward.id} elevation={3} sx={{ padding: 2, width: '600px', textAlign: 'center' }}>
+                    <Typography variant="h5">{reward.rewardName} <span style={{ marginLeft: '100px' }}>{reward.description}</span> <span style={{ marginLeft: '100px' }}><Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => handleClaim(reward.id, reward.Points)} // Pass rewardId and rewardPoints
+                      disabled={!isClaimable} // Disable button if reward is claimed
+                      sx={{
+                        backgroundColor: isClaimable ? 'green' : 'grey',
+                        '&:hover': { backgroundColor: isClaimable ? 'darkgreen' : 'grey' }
+                      }}
+                    >
+                      Claim
+                    </Button></span></Typography>
+                    <Typography variant="body1">Points: {reward.Points}</Typography>
+                    <Typography variant="body2">Tier: {reward.Tier}</Typography>
+                  </Paper>
+                );
+              })}
           </Box>
           <Box sx={{ marginTop: 5 }}>
             <Typography variant="h6">Claimed Rewards:</Typography>
