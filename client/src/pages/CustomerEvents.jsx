@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Button, TextField, MenuItem, Chip, Container } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Button, Chip, Container, TextField, MenuItem} from '@mui/material';
 import http from '../http';
 import dayjs from 'dayjs';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
+
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { Link } from 'react-router-dom';
 dayjs.extend(customParseFormat);
 
 function CustomerEvents() {
     const [eventList, setEventList] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         http.get('/events').then((res) => {
@@ -18,7 +20,6 @@ function CustomerEvents() {
             setEventList(res.data);
         });
     }, []);
-
     const formik = useFormik({
         initialValues: {
             firstName: "",
@@ -56,13 +57,46 @@ function CustomerEvents() {
         }
     });
 
+    const handleRegister = (eventId) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            navigate('/login');
+        } else {
+            setIsSubmitting(true);
+            http.post(`/events/${eventId}/register`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then((res) => {
+                alert("You've successfully registered for the event!");
+                // Optionally update the UI or eventList here to reflect the registration
+            })
+            .catch((err) => {
+                if (err.response && err.response.data && err.response.data.error) {
+                    if (err.response.data.error === 'User already registered for this event') {
+                        alert("You are already registered for this event.");
+                    } else {
+                        alert(err.response.data.error);
+                    }
+                } else {
+                    console.error('Failed to register:', err);
+                    alert("An error occurred while registering. Please try again.");
+                }
+            })
+            .finally(() => {
+                setIsSubmitting(false);
+            });
+        }
+    };
+
     eventList.sort((a, b) => (a.date < b.date) ? 1 : -1);
+
     return (
         <Container sx={{ flexGrow: 1, py: 4 }}>
             <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', color: '#e2160f', mb: 4 }}>
                 Events
             </Typography>
-
             <Grid container spacing={4}>
                 {eventList.map((event, index) => (
                     <Grid item xs={12} md={12} key={index}>
@@ -84,10 +118,17 @@ function CustomerEvents() {
                                         {event.description}
                                     </Typography>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Button variant="contained" color="primary" component={Link} to={`/register/${event.id}`} sx={{ mr: 2 }}>
+                                        <Button 
+                                            variant="contained" 
+                                            color="primary" 
+                                            onClick={() => handleRegister(event.id)} 
+                                            sx={{ mr: 2 }}
+                                            disabled={isSubmitting}
+                                        >
                                             Register
-                                        </Button>
+                                        </Button> 
                                     </Box>
+                                    <Typography sx={{mt:2}} variant="body2" color="text.secondary">Only members can register. Walk-ins are available for non-members.</Typography>
                                     <Box sx={{ position: 'absolute', top: 0, right: 0, padding: '8px', backgroundColor: '#ff0000', color: '#fff', borderRadius: '4px', fontWeight: 'bold', fontSize: 'small' }}>
                                         + {event.points} points
                                     </Box>
