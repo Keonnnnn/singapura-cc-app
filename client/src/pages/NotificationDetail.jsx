@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import http from '../http';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Button, TextField, Box, Paper, IconButton } from '@mui/material';
+import { Container, Typography, Button, TextField, Box, Paper, IconButton, CircularProgress } from '@mui/material';
 import UserContext from '../contexts/UserContext';
 import { ArrowBack } from '@mui/icons-material';
 
@@ -12,6 +12,7 @@ const NotificationDetail = () => {
     const [notification, setNotification] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchNotification = async () => {
@@ -20,8 +21,10 @@ const NotificationDetail = () => {
                 setNotification(res.data);
                 setTitle(res.data.title);
                 setDescription(res.data.description);
+                setLoading(false);
             } catch (error) {
                 console.error('Failed to fetch notification:', error);
+                setLoading(false);
             }
         };
 
@@ -65,8 +68,20 @@ const NotificationDetail = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
+
     if (!notification) {
-        return <Typography>Loading...</Typography>;
+        return (
+            <Typography align="center" sx={{ mt: 4, color: '#757575' }}>
+                Notification not found
+            </Typography>
+        );
     }
 
     const isAdmin = user.id === 1;
@@ -75,7 +90,7 @@ const NotificationDetail = () => {
         <Container maxWidth="md" sx={{ mt: 4 }}>
             <Paper elevation={3} sx={{ p: 3, borderRadius: '12px' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <IconButton onClick={() => navigate('/notifications')}>
+                    <IconButton onClick={() => navigate(isAdmin ? '/admin/notifications' : '/notifications')}>
                         <ArrowBack />
                     </IconButton>
                     <Typography variant="h4" sx={{ flexGrow: 1, textAlign: 'center', fontWeight: 'bold' }}>

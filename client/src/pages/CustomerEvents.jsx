@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Card, CardContent, Button, TextField, MenuItem, Chip } from '@mui/material';
+import { Box, Typography, Grid, Card, CardContent, Button, Chip, Container, TextField, MenuItem} from '@mui/material';
 import http from '../http';
 import dayjs from 'dayjs';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
+
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { Link } from 'react-router-dom';
 dayjs.extend(customParseFormat);
 
 function CustomerEvents() {
     const [eventList, setEventList] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         http.get('/events').then((res) => {
@@ -18,7 +20,6 @@ function CustomerEvents() {
             setEventList(res.data);
         });
     }, []);
-
     const formik = useFormik({
         initialValues: {
             firstName: "",
@@ -56,17 +57,50 @@ function CustomerEvents() {
         }
     });
 
+    const handleRegister = (eventId) => {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            navigate('/login');
+        } else {
+            setIsSubmitting(true);
+            http.post(`/events/${eventId}/register`, {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then((res) => {
+                alert("You've successfully registered for the event!");
+                // Optionally update the UI or eventList here to reflect the registration
+            })
+            .catch((err) => {
+                if (err.response && err.response.data && err.response.data.error) {
+                    if (err.response.data.error === 'User already registered for this event') {
+                        alert("You are already registered for this event.");
+                    } else {
+                        alert(err.response.data.error);
+                    }
+                } else {
+                    console.error('Failed to register:', err);
+                    alert("An error occurred while registering. Please try again.");
+                }
+            })
+            .finally(() => {
+                setIsSubmitting(false);
+            });
+        }
+    };
+
     eventList.sort((a, b) => (a.date < b.date) ? 1 : -1);
+
     return (
-        <Box sx={{ flexGrow: 1, p: 2 }}>
-            <Typography variant="h4" sx={{ mt: 2, mb: 2, fontWeight: 'bold', textAlign: 'center', color: '#e2160f' }}>
+        <Container sx={{ flexGrow: 1, py: 4 }}>
+            <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', color: '#e2160f', mb: 4 }}>
                 Events
             </Typography>
-
-            <Grid container spacing={2}>
+            <Grid container spacing={4}>
                 {eventList.map((event, index) => (
-                    <Grid item xs={12} key={index}>
-                        <Card sx={{ display: 'flex', alignItems: 'center', p: 2 }}>
+                    <Grid item xs={12} md={12} key={index}>
+                        <Card sx={{ display: 'flex', alignItems: 'center', p: 2, borderRadius: 2 }}>
                             <Box component="img" src={`${import.meta.env.VITE_FILE_BASE_URL}${event.imageFile}`} alt={event.name} sx={{ width: 240, height: 200, mr: 2, borderRadius: 1 }} />
                             <Box sx={{ flexGrow: 1, position: 'relative' }}>
                                 <CardContent sx={{ p: 0 }}>
@@ -84,12 +118,19 @@ function CustomerEvents() {
                                         {event.description}
                                     </Typography>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Button variant="contained" color="primary" component={Link} to={`/register/${event.id}`} sx={{ mr: 2 }}>
+                                        <Button 
+                                            variant="contained" 
+                                            color="primary" 
+                                            onClick={() => handleRegister(event.id)} 
+                                            sx={{ mr: 2 }}
+                                            disabled={isSubmitting}
+                                        >
                                             Register
-                                        </Button>
+                                        </Button> 
                                     </Box>
-                                    <Box sx={{ position: 'absolute', top: 0, right: 0, padding: '8px', backgroundColor: '#ff0000', color: '#fff', borderRadius: '4px', fontWeight: 'bold', fontSize:'small' }}>
-                                        {event.points} points
+                                    <Typography sx={{mt:2}} variant="body2" color="text.secondary">Only members can register. Walk-ins are available for non-members.</Typography>
+                                    <Box sx={{ position: 'absolute', top: 0, right: 0, padding: '8px', backgroundColor: '#ff0000', color: '#fff', borderRadius: '4px', fontWeight: 'bold', fontSize: 'small' }}>
+                                        + {event.points} points
                                     </Box>
                                 </CardContent>
                             </Box>
@@ -98,13 +139,12 @@ function CustomerEvents() {
                 ))}
             </Grid>
 
-            <Box sx={{ mt: 4, borderRadius: 1, backgroundColor:"#EEEEEE" }}>
-                <Typography>&nbsp;</Typography>
-                <Typography variant="h5" sx={{ mb: 2, ml:6, mr:6}}>Share Your Program</Typography>
-                <Typography variant="body1" sx={{ mb: 2 ,ml:6, mr:6}}>
+            <Box sx={{ mt: 6, borderRadius: 1, backgroundColor: "#f9f9f9", p: 4 }}>
+                <Typography variant="h5" sx={{ mb: 2, textAlign:"center" }}>Share Your Program</Typography>
+                <Typography variant="body1" sx={{ mb: 4 }}>
                     Do you have an exciting sporting programme coming up that you’d like to share with us? Simply submit your event below, and we’ll carefully review it. Please keep in mind that all submissions are subject to approval by our Editorial Team.
                 </Typography>
-                <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, mr:6, ml:6}}>
+                <Box component="form" onSubmit={formik.handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                             <TextField
@@ -197,15 +237,13 @@ function CustomerEvents() {
                                 helperText={formik.touched.eventDescription && formik.errors.eventDescription}
                             />
                         </Grid>
-                        
                     </Grid>
                     <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
                         Submit
                     </Button>
                 </Box>
-                <Typography>&nbsp;</Typography>
             </Box>
-        </Box>
+        </Container>
     );
 }
 
