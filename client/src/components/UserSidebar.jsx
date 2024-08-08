@@ -78,20 +78,20 @@ const UserSidebar = () => {
           </ListItem>
           <ListItem
             button
-            onClick={() => navigate("/membership")}
+            onClick={() => navigate("/Membership")}
             sx={{
               borderRadius: 2,
-              backgroundColor: location.pathname === "/membership" && "#e2160f",
+              backgroundColor: location.pathname === "/Membership" && "#e2160f",
             }}
           >
             <ListItemText primary="Membership" />
           </ListItem>
           <ListItem
             button
-            onClick={() => navigate("/history")}
+            onClick={() => navigate("/user-registration-history")}
             sx={{
               borderRadius: 2,
-              backgroundColor: location.pathname === "/history" && "#e2160f",
+              backgroundColor: location.pathname === "/user-registration-history" && "#e2160f",
             }}
           >
             <ListItemText primary="History" />

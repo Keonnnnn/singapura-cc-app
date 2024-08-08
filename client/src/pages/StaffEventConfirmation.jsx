@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Container, Paper, List, ListItem, ListItemText, Grid } from '@mui/material';
 import http from '../http'; 
 import { useNavigate, useParams } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function StaffEventConfirmation() {
     const { id: eventId } = useParams();
@@ -16,6 +18,7 @@ function StaffEventConfirmation() {
         })
         .catch((err) => {
             console.error("Failed to fetch registrations", err);
+            toast.error("Failed to fetch registrations");
         })
         .finally(() => {
             setLoading(false);
@@ -29,15 +32,15 @@ function StaffEventConfirmation() {
             }
         })
         .then((res) => {
-            alert(res.data.message);
+            toast.success(res.data.message);
             setRegistrations(registrations.map(reg => reg.userId === userId ? { ...reg, present: true } : reg));
         })
         .catch((err) => {
             console.error("Failed to mark user as present", err);
             if (err.response && err.response.data && err.response.data.error) {
-                alert(err.response.data.error);
+                toast.error(err.response.data.error);
             } else {
-                alert("An error occurred while marking user as present. Please try again.");
+                toast.error("An error occurred while marking user as present. Please try again.");
             }
         });
     };
@@ -48,6 +51,7 @@ function StaffEventConfirmation() {
 
     return (
         <Container component={Paper} sx={{ p: 4, mt: 4 }}>
+            <ToastContainer />
             <Typography variant="h4" sx={{ mb: 4, textAlign: 'center' }}>
                 Event Registrations
             </Typography>

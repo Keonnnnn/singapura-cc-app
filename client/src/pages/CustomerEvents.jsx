@@ -5,21 +5,41 @@ import dayjs from 'dayjs';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 dayjs.extend(customParseFormat);
 
 function CustomerEvents() {
     const [eventList, setEventList] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [userRegistrations, setUserRegistrations] = useState([]);
     const navigate = useNavigate();
-
+    const token = localStorage.getItem('accessToken');
+    const userId = token ? JSON.parse(atob(token.split('.')[1])).id : null;
+    
     useEffect(() => {
-        http.get('/events').then((res) => {
-            console.log(res.data);
-            setEventList(res.data);
-        });
-    }, []);
+        const fetchEventsAndRegistrations = async () => {
+            try {
+                const eventResponse = await http.get('/events', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                setEventList(eventResponse.data);
+
+                if (userId) {
+                    const registrationResponse = await http.get(`/events/user/${userId}/registrations`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    setUserRegistrations(registrationResponse.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch events or registrations:', error);
+            }
+        };
+
+        fetchEventsAndRegistrations();
+    }, [token, userId]);
+    
     const formik = useFormik({
         initialValues: {
             firstName: "",
@@ -57,43 +77,41 @@ function CustomerEvents() {
         }
     });
 
-    const handleRegister = (eventId) => {
-        const token = localStorage.getItem('accessToken');
+    const handleRegister = async (eventId) => {
         if (!token) {
             navigate('/login');
         } else {
             setIsSubmitting(true);
-            http.post(`/events/${eventId}/register`, {}, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-            .then((res) => {
-                alert("You've successfully registered for the event!");
-                // Optionally update the UI or eventList here to reflect the registration
-            })
-            .catch((err) => {
-                if (err.response && err.response.data && err.response.data.error) {
-                    if (err.response.data.error === 'User already registered for this event') {
-                        alert("You are already registered for this event.");
-                    } else {
-                        alert(err.response.data.error);
-                    }
+            try {
+                const response = await http.post(`/events/${eventId}/register`, {}, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                toast.success("You've successfully registered for the event!");
+                setUserRegistrations([...userRegistrations, response.data]);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } catch (error) {
+                if (error.response && error.response.data && error.response.data.error) {
+                    toast.error(error.response.data.error);
                 } else {
-                    console.error('Failed to register:', err);
-                    alert("An error occurred while registering. Please try again.");
+                    toast.error("An error occurred while registering. Please try again.");
                 }
-            })
-            .finally(() => {
+            } finally {
                 setIsSubmitting(false);
-            });
+            }
         }
+    };
+
+    const isRegistered = (eventId) => {
+        return userRegistrations.some(registration => registration.eventId === eventId);
     };
 
     eventList.sort((a, b) => (a.date < b.date) ? 1 : -1);
 
     return (
         <Container sx={{ flexGrow: 1, py: 4 }}>
+            <ToastContainer />
             <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', color: '#e2160f', mb: 4 }}>
                 Events
             </Typography>
@@ -118,17 +136,29 @@ function CustomerEvents() {
                                         {event.description}
                                     </Typography>
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Button 
-                                            variant="contained" 
-                                            color="primary" 
-                                            onClick={() => handleRegister(event.id)} 
-                                            sx={{ mr: 2 }}
-                                            disabled={isSubmitting}
-                                        >
-                                            Register
-                                        </Button> 
+                                        {token && (
+                                            isRegistered(event.id) ? (
+                                                <Button variant="contained" color="primary" disabled>
+                                                    Registered
+                                                </Button>
+                                            ) : (
+                                                <Button 
+                                                    variant="contained" 
+                                                    color="primary" 
+                                                    onClick={() => handleRegister(event.id)} 
+                                                    sx={{ mr: 2 }}
+                                                    disabled={isSubmitting}
+                                                >
+                                                    Register
+                                                </Button>
+                                            )
+                                        )}
                                     </Box>
-                                    <Typography sx={{mt:2}} variant="body2" color="text.secondary">Only members can register. Walk-ins are available for non-members.</Typography>
+                                    {!token && (
+                                        <Typography sx={{ mt: 2 }} variant="body2" color="text.secondary">
+                                            Only members can register for events. Walk-ins are available for non-members.
+                                        </Typography>
+                                    )}
                                     <Box sx={{ position: 'absolute', top: 0, right: 0, padding: '8px', backgroundColor: '#ff0000', color: '#fff', borderRadius: '4px', fontWeight: 'bold', fontSize: 'small' }}>
                                         + {event.points} points
                                     </Box>

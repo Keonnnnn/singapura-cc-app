@@ -292,10 +292,6 @@ router.post('/:eventId/mark-present', validateToken, async (req, res) => {
             return res.status(404).json({ error: 'Registration not found' });
         }
 
-        if (registration.present) {
-            return res.status(400).json({ error: 'User already marked as present' });
-        }
-
         registration.present = true;
         await registration.save();
 
@@ -303,8 +299,7 @@ router.post('/:eventId/mark-present', validateToken, async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-
-        user.totalPoints += event.points; // Assuming you have a points field in the User model
+        user.totalPoints += event.points; 
         await user.save();
 
         res.status(200).json({ message: 'User marked as present and points credited' });
@@ -319,6 +314,17 @@ router.get('/:eventId/registrations', async (req, res) => {
     const { eventId } = req.params;
     const registrations = await Registration.findAll({ where: { eventId } });
     res.json(registrations);
+});
+
+router.get('/user/:userId/registrations', validateToken, async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const registrations = await Registration.findAll({ where: { userId },
+            include: [Event] });
+        res.json(registrations);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching user registrations' });
+    }
 });
 
 
