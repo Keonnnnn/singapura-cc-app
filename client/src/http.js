@@ -53,4 +53,15 @@ export const fetchUsers = async () => {
     }
 };
 
+// Subscription example
+export const subscribe = async (name, email) => {
+    try {
+        const response = await instance.post('/subscribe', { name, email });
+        return response.data;
+    } catch (error) {
+        // Handle any errors that occurred during the request
+        throw error;
+    }
+};
+
 export default instance;

@@ -9,6 +9,7 @@ import {
 import http from "./http";
 import { ThemeProvider } from "@mui/material/styles";
 import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/Footer.jsx"; // Import Footer component
 
 // Francine
 import MyTheme from "./themes/MyTheme";
@@ -339,7 +340,7 @@ function App() {
         </ThemeProvider>
       </Router>
       <ToastContainer />
-
+      <Footer /> {/* Place Footer at the bottom */}
       <ChatBot flow={flow} options={options} />
     </UserContext.Provider>
   );
