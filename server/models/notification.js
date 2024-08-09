@@ -12,12 +12,21 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
+    pinned: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     postId: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     }
   }, {
-    tableName: 'notifications'
+    tableName: 'notifications',
+    timestamps: true, // This will automatically handle createdAt and updatedAt
   });
 
   Notification.associate = (models) => {
@@ -37,4 +46,3 @@ module.exports = (sequelize, DataTypes) => {
 
   return Notification;
 };
-

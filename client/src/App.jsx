@@ -10,8 +10,6 @@ import http from "./http";
 import { ThemeProvider } from "@mui/material/styles";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx"; // Import Footer component
-
-// Francine
 import MyTheme from "./themes/MyTheme";
 import Register from "./pages/Register";
 import UserContext from "./contexts/UserContext";
@@ -206,10 +204,7 @@ function App() {
               path="/comments/:postId"
               element={user ? <Comments /> : <Navigate to="/login" />}
             />
-            <Route
-              path="/profile/:userId"
-              element={<ProtectedRoute element={PostProfile} />}
-            />
+            <Route path="/profile/:userId" element={<PostProfile />} />
 
             <Route
               path="/events"
@@ -220,17 +215,17 @@ function App() {
                 />
               }
             />
-            <Route
-              path={"/customer-events"}
-              element={<CustomerEvent />}
-            />
+            <Route path="/customer-events" element={<CustomerEvent />} />
             <Route path={"/user-registration-history"} element={<UserRegistrationHistory />} />
-
             <Route
               path="/feedbackform"
               element={<ProtectedRoute element={FeedbackForm} />}
             />
-            <Route path="/posts" element={<ProtectedRoute element={Posts} />} />
+            <Route
+              path="/feedbacklist"
+              element={<ProtectedRoute element={FeedbackList} />}
+            />
+            <Route path="/posts" element={<Posts />} />
             <Route
               path="/createpost"
               element={user ? <CreatePost /> : <Navigate to="/login" />}
@@ -260,7 +255,10 @@ function App() {
               path="/admin/notifications"
               element={<ProtectedRoute element={NotificationList} />}
             />
-            <Route path="/notifications/:id" element={<NotificationDetail />} />
+            <Route
+              path="/notifications/:id"
+              element={<NotificationDetail />}
+            />
 
             {/* admin routes */}
             <Route
@@ -314,12 +312,19 @@ function App() {
             />
             <Route path="/feedback/:id" element={<FeedbackDetail />} />
             <Route path="/addevent" element={<AddEvent />} />
-            <Route path="/eventsregistrations/:id" element={<StaffEventConfirmation />} />
+            <Route
+              path="/eventsregistrations/:id"
+              element={<StaffEventConfirmation />}
+            />
+
+
+
             <Route path="/editevent/:id" element={<EditEvent />} />
             <Route
               path="/editpost/:id"
               element={user ? <EditPost /> : <Navigate to="/login" />}
             />
+
             <Route
               path="/admin/rewards"
               element={<ProtectedRoute element={Rewards} />}
