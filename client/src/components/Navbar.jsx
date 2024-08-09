@@ -163,6 +163,8 @@ const Navbar = () => {
     }
   };
 
+
+
   return (
     <AppBar
       position="static"
@@ -195,11 +197,7 @@ const Navbar = () => {
               gap: 5,
             }}
           >
-            {!user && (
-              <Link to="/about">
-                <Typography>About Us</Typography>
-              </Link>
-            )}
+            
 
             {!isAdmin && (
               <>
@@ -234,14 +232,19 @@ const Navbar = () => {
                   <Typography>Notification</Typography>
                 </Link>
 
-                <Link to="/posts">
-                  <Typography>Connect</Typography>
-                </Link>
-                <Link to="/Membership">
+
+                {user && user.role === 'Customer' && (
+                  <Link to="/posts">
+                    <Typography>Connect</Typography>
+                  </Link>
+                )}
+                {/* <Link to="/Membership">
                   <Typography>Membership</Typography>
-                </Link>
+                </Link> */}
               </>
             )}
+
+            
           </Box>
 
           {user ? (
@@ -443,6 +446,23 @@ const Navbar = () => {
                 </Box>
 
                 <Divider />
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    paddingX: 2,
+                    paddingY: 1,
+                  }}
+                >
+                  <Typography fontWeight={"medium"}>
+                    Total Points: {user.totalPoints}
+                  </Typography>
+                </Box>
+
+                <Divider />
+
 
                 <Link
                   to="/notes"

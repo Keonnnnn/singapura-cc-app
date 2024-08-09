@@ -19,6 +19,8 @@ function Footer() {
     try {
       await axios.post('/api/subscribe', { name, email });
       setMessage('Subscription successful');
+      setName('');
+      setEmail('');
     } catch (error) {
       setMessage('Failed to subscribe. Please try again.');
     }
