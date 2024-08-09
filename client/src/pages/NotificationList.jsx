@@ -10,9 +10,8 @@ const NotificationList = () => {
     const [pinnedNotificationId, setPinnedNotificationId] = useState(null);
 
     useEffect(() => {
-        http.get('/notificationEvents') // Ensure this matches the endpoint
+        http.get('/notificationEvents')
             .then((res) => {
-                console.log('Response data:', res.data); // Log response data
                 setNotifications(res.data);
             })
             .catch((error) => {
@@ -21,7 +20,7 @@ const NotificationList = () => {
     }, []);
 
     const handlePin = (e, notificationId) => {
-        e.stopPropagation(); // Prevent navigating to the notification detail
+        e.stopPropagation();
         setPinnedNotificationId(pinnedNotificationId === notificationId ? null : notificationId);
     };
 
@@ -34,14 +33,12 @@ const NotificationList = () => {
     const renderNotifications = () => {
         let sortedNotifications = notifications.slice();
 
-        // Move pinned notification to the top
         if (pinnedNotificationId) {
             const pinnedNotification = sortedNotifications.find(notification => notification.id === pinnedNotificationId);
             sortedNotifications = sortedNotifications.filter(notification => notification.id !== pinnedNotificationId);
             sortedNotifications.unshift(pinnedNotification);
         }
 
-        // Move dismissed notifications to the bottom
         sortedNotifications = sortedNotifications.sort((a, b) => {
             if (a.dismissed === b.dismissed) {
                 return 0;
@@ -144,6 +141,3 @@ const NotificationList = () => {
 };
 
 export default NotificationList;
-
-
-

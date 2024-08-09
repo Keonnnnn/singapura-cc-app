@@ -2,16 +2,14 @@ import "./App.css";
 import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
-  Routes,
-  Route,
+  Routes, 
+  Route, 
   Navigate,
 } from "react-router-dom";
 import http from "./http";
 import { ThemeProvider } from "@mui/material/styles";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx"; // Import Footer component
-
-// Francine
 import MyTheme from "./themes/MyTheme";
 import Register from "./pages/Register";
 import UserContext from "./contexts/UserContext";
@@ -43,7 +41,7 @@ import Events from "./pages/Events";
 import AddEvent from "./pages/AddEvent";
 import EditEvent from "./pages/EditEvent";
 import ChatBot from "react-chatbotify";
-import CustomerEvent from "./pages/CustomerEvents"; //page
+import CustomerEvent from "./pages/CustomerEvents"; // page
 import StaffEventConfirmation from "./pages/StaffEventConfirmation.jsx";
 
 // Ahmed
@@ -89,14 +87,17 @@ function App() {
   }
 
   // Amelia's codes
-
   const flow = {
     start: {
       message: "Greetings to you! How can I help you today?",
-      options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!"],
+      options: [
+        "Tell me about the events",
+        "I want to view my membership details",
+        "I want to connect with other people!",
+      ],
       path: "handle_inquiry",
     },
-    
+
     process_options: {
       message: (params) => {
         let link = "";
@@ -110,10 +111,10 @@ function App() {
             if (user) {
               link = "Membership";
               params.userInput = "your membership details";
-            }
-            else {
+            } else {
               link = "login";
-              params.userInput = "login or sign up before you can view your membership details";
+              params.userInput =
+                "login or sign up before you can view your membership details";
             }
             break;
 
@@ -121,16 +122,16 @@ function App() {
             if (user) {
               link = "posts";
               params.userInput = "bond with fellow members";
-            }
-            else {
-              link = "posts";
-              params.userInput = "login or sign up before you can view your membership details";
+            } else {
+              link = "login";
+              params.userInput =
+                "login or sign up before you can view your membership details";
             }
             break;
 
           case "Help me with something else":
             return {
-              path: "handle_inquiry"
+              path: "handle_inquiry",
             };
 
           default:
@@ -144,14 +145,15 @@ function App() {
     },
 
     handle_inquiry: {
-      message: "Thank you for your inquiry. We will review it and get back to you soon.",
+      message:
+        "Thank you for your inquiry. We will review it and get back to you soon.",
       path: "end",
       processInput: (params) => {
         // Here you can handle the user's inquiry, e.g., send it to a backend service or store it.
         console.log("User inquiry:", params.userInput);
-      }
+      },
     },
-    
+
     end: {
       message: "Thank you for using our service!",
       end: true,
@@ -190,10 +192,7 @@ function App() {
               path="/comments/:postId"
               element={user ? <Comments /> : <Navigate to="/login" />}
             />
-            <Route
-              path="/profile/:userId"
-              element={<ProtectedRoute element={PostProfile} />}
-            />
+            <Route path="/profile/:userId" element={<PostProfile />} />
 
             <Route
               path="/events"
@@ -204,16 +203,14 @@ function App() {
                 />
               }
             />
-            <Route
-              path={"/customer-events"}
-              element={<CustomerEvent/>}
-            />
-            
+            <Route path="/customer-events" element={<CustomerEvent />} />
+
             <Route
               path="/feedbackform"
               element={<ProtectedRoute element={FeedbackForm} />}
             />
-            <Route path="/posts" element={<ProtectedRoute element={Posts} />} />
+            <Route path="/feedbacklist" element={<ProtectedRoute element={FeedbackList} />} />
+            <Route path="/posts" element={<Posts />} />
             <Route
               path="/createpost"
               element={user ? <CreatePost /> : <Navigate to="/login" />}
@@ -243,7 +240,10 @@ function App() {
               path="/admin/notifications"
               element={<ProtectedRoute element={NotificationList} />}
             />
-            <Route path="/notifications/:id" element={<NotificationDetail />} />
+            <Route
+              path="/notifications/:id"
+              element={<NotificationDetail />}
+            />
 
             {/* admin routes */}
             <Route
@@ -297,12 +297,16 @@ function App() {
             />
             <Route path="/feedback/:id" element={<FeedbackDetail />} />
             <Route path="/addevent" element={<AddEvent />} />
-            <Route path="/eventsregistrations/:id" element={<StaffEventConfirmation />}/>
+            <Route
+              path="/eventsregistrations/:id"
+              element={<StaffEventConfirmation />}
+            />
             <Route path="/editevent/:id" element={<EditEvent />} />
             <Route
               path="/editpost/:id"
               element={user ? <EditPost /> : <Navigate to="/login" />}
             />
+
             <Route
               path="/admin/rewards"
               element={<ProtectedRoute element={Rewards} />}

@@ -9,10 +9,10 @@ router.get('/', validateToken, async (req, res) => {
     const notifications = await Notification.findAll({
       where: { userId: req.user.id },
       order: [['createdAt', 'DESC']],
-      // include: [
-      //   { model: User, as: 'fromUser', attributes: ['username'] },
-      //   { model: Post, as: 'post', attributes: ['title'] }
-      // ]
+      include: [
+        { model: User, as: 'fromUser', attributes: ['username'] },
+        { model: Post, as: 'post', attributes: ['title'] }
+      ]
     });
     res.json(notifications);
   } catch (error) {
