@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       primaryKey: true,
     },
+    counter: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1, // Start with 1 when a reward is first claimed
+    },
   });
 
   UserRewards.associate = (models) => {

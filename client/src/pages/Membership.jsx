@@ -44,7 +44,7 @@ function Membership() {
     navigate('/ClaimRewards');
   };
   const handleSpinTheWheel = () => {
-    navigate('/spin');
+    navigate('/Spin');
   };
 
 

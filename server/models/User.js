@@ -113,7 +113,11 @@ module.exports = (sequelize, DataTypes) => {
       totalPoints: {
         type: DataTypes.INTEGER,
         defaultValue: 0
-      }
+      },
+      spinsLeft: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
     },
     {
       tableName: "users",

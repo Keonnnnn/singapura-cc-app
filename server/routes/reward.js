@@ -119,7 +119,7 @@ router.get('/Membership/:userId', validateToken, async (req, res) => {
 
     try {
         const user = await User.findByPk(userId, {
-            attributes: ['id', 'firstName', 'lastName', 'totalPoints', 'email', 'membershipType'] // Include any other necessary attributes
+            attributes: ['id', 'firstName', 'lastName', 'totalPoints', 'email', 'membershipType', 'spinsLeft'] // Include any other necessary attributes
         });
 
         if (!user) {
@@ -136,7 +136,7 @@ router.get('/Membership/:userId', validateToken, async (req, res) => {
 // Route to update totalPoints of a user
 router.put('/updatePoints/:userId', validateToken, async (req, res) => {
     const { userId } = req.params;
-    const { totalPoints } = req.body;
+    const { totalPoints, spinsLeft } = req.body;
 
     try {
         const user = await User.findByPk(userId);
@@ -146,6 +146,9 @@ router.put('/updatePoints/:userId', validateToken, async (req, res) => {
         }
 
         user.totalPoints = totalPoints;
+        if (spinsLeft !== undefined) {
+            user.spinsLeft = spinsLeft; // Update spinsLeft if provided
+        }
         await user.save();
 
         res.status(200).json({ user });
@@ -218,6 +221,30 @@ router.get('/claimed/:userId', validateToken, async (req, res) => {
       res.status(500).json({ error: 'An error occurred while fetching claimed rewards' });
     }
   });
+
+  router.post('/incrementCounter', validateToken, async (req, res) => {
+    const { userId, rewardId } = req.body;
+  
+    try {
+      // Find the existing user-reward pair
+      const existingUserReward = await UserRewards.findOne({ where: { userId, rewardId } });
+  
+      if (existingUserReward) {
+        // Increment the counter if the reward has already been claimed
+        existingUserReward.counter += 1;
+        await existingUserReward.save();
+        res.status(200).json({ message: 'Reward counter incremented', userReward: existingUserReward });
+      } else {
+        // Create a new record if this is the first time the reward is claimed
+        const userReward = await UserRewards.create({ userId, rewardId, counter: 1 });
+        res.status(201).json({ message: 'Reward claimed successfully', userReward });
+      }
+    } catch (error) {
+      console.error('Error incrementing reward counter:', error);
+      res.status(500).json({ error: 'An error occurred while incrementing the reward counter' });
+    }
+  });
+  
   
   
 

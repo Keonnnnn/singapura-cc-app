@@ -74,7 +74,7 @@ function ClaimRewards() {
           setUser(res.data.user);
           
           const actualPoints = res.data.user.totalPoints;
-          const testPoints = 50001;
+          const testPoints = 80001;
 
           // Use actual points or testing points based on the toggle
           const pointsToUse = USE_TESTING_POINTS ? testPoints : actualPoints;

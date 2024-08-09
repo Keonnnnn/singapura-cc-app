@@ -1,0 +1,70 @@
+.spin-container {
+  margin: -700px 10px 0px 0px;
+}
+
+.header-container {
+  display: inline;
+  margin-bottom: 20px;
+}
+
+.wheel-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+.wheel-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 300px;
+  border-radius: 5px;
+}
+
+button:disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+#buybtn {
+  margin: 70px 0px 0px 800px;
+  color: white;
+}
+
+.spinbtn {
+  position: absolute;
+  top: -25%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+  background-color: #df3428;
+  color: white;
+  border: none;
+  padding: 13px 15px;
+  border-radius: 900px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+#textpos {
+  margin: 70px 0px 0px 800px;
+}
+
+#spincnt {
+  margin: 150px 0px 0px 150px;
+}
+
+.wheel-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}

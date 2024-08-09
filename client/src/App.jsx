@@ -62,6 +62,7 @@ import ClaimRewards from "./pages/claimRewards.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import { ToastContainer } from "react-toastify";
+import Spin from "./pages/Spin.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -95,7 +96,7 @@ function App() {
       options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!"],
       path: "handle_inquiry",
     },
-    
+
     process_options: {
       message: (params) => {
         let link = "";
@@ -150,7 +151,7 @@ function App() {
         console.log("User inquiry:", params.userInput);
       }
     },
-    
+
     end: {
       message: "Thank you for using our service!",
       end: true,
@@ -205,9 +206,9 @@ function App() {
             />
             <Route
               path={"/customer-events"}
-              element={<CustomerEvent/>}
+              element={<CustomerEvent />}
             />
-            
+
             <Route
               path="/feedbackform"
               element={<ProtectedRoute element={FeedbackForm} />}
@@ -234,6 +235,15 @@ function App() {
               element={
                 <ProtectedRoute
                   element={ClaimRewards}
+                  allowedRoles={["Customer"]}
+                />
+              }
+            />
+            <Route
+              path="/Spin"
+              element={
+                <ProtectedRoute
+                  element={Spin}
                   allowedRoles={["Customer"]}
                 />
               }
@@ -296,7 +306,7 @@ function App() {
             />
             <Route path="/feedback/:id" element={<FeedbackDetail />} />
             <Route path="/addevent" element={<AddEvent />} />
-            <Route path="/eventsregistrations/:id" element={<StaffEventConfirmation />}/>
+            <Route path="/eventsregistrations/:id" element={<StaffEventConfirmation />} />
             <Route path="/editevent/:id" element={<EditEvent />} />
             <Route
               path="/editpost/:id"
