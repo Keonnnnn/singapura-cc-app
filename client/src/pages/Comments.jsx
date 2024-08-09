@@ -30,6 +30,7 @@ function Comments() {
     const fetchComments = () => {
         http.get(`/comment/post/${postId}`).then((res) => {
             setComments(res.data);
+            console.log(res.data);
         }).catch(err => {
             console.error('Error fetching comments:', err);
         });
@@ -38,14 +39,15 @@ function Comments() {
     useEffect(() => {
         fetchPost();
         fetchComments();
-    }, [postId]);
+    }, []);
 
     const handleAddComment = () => {
         if (!newComment.trim()) return;
 
-        http.post('/comment', { content: newComment, postId }).then(() => {
+        http.post('/comment', { content: newComment, postId }).then((res) => {
             setNewComment('');
             fetchComments();
+            console.log(res.data);
         }).catch(err => {
             console.error('Error adding comment:', err);
         });

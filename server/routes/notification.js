@@ -9,14 +9,15 @@ router.get('/', validateToken, async (req, res) => {
     const notifications = await Notification.findAll({
       where: { userId: req.user.id },
       order: [['createdAt', 'DESC']],
-      include: [
-        { model: User, as: 'fromUser', attributes: ['username'] },
-        { model: Post, as: 'post', attributes: ['title'] }
-      ]
+      // include: [
+      //   { model: User, as: 'fromUser', attributes: ['username'] },
+      //   { model: Post, as: 'post', attributes: ['title'] }
+      // ]
     });
     res.json(notifications);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch notifications' });
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 });
 
@@ -26,7 +27,8 @@ router.put('/:id/read', validateToken, async (req, res) => {
     await Notification.update({ isRead: true }, { where: { id: req.params.id, userId: req.user.id } });
     res.json({ message: 'Notification marked as read' });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to mark notification as read' });
+    console.error('Error marking notification as read:', err);
+    res.status(500).json({ error: 'Failed to mark notification as read', details: err.message });
   }
 });
 

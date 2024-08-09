@@ -30,7 +30,7 @@ function PostProfile() {
             fetchFollowing(userId);
             checkIfFollowing(userId);
         }
-    }, [userId]);
+    }, [userId, isFollowing]);
 
     const fetchUserProfile = async (id) => {
         try {

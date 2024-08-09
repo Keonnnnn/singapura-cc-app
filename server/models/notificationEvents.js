@@ -1,18 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
-    const notificationEvents = sequelize.define("Notification", {
+    const notificationEvents = sequelize.define("notificationEvents", {
         title: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         description: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false
         }
-    }, );
+    });
 
     notificationEvents.associate = (models) => {
         notificationEvents.belongsTo(models.User, {
@@ -23,3 +23,4 @@ module.exports = (sequelize, DataTypes) => {
 
     return notificationEvents;
 };
+

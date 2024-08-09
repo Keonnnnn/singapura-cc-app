@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Typography, Card, CardContent, Button, IconButton, Avatar, Divider, TextField, MenuItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
-import { Edit, ThumbUp, Comment, Delete } from '@mui/icons-material';
+import { Edit, ThumbUp, Comment, Delete, ThumbUpAltOutlined } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
 import UserContext from '../contexts/UserContext';
@@ -213,13 +213,10 @@ function Posts() {
                                     <IconButton
                                         color="primary"
                                         sx={{ padding: '4px', mr: 1 }}
-                                        onClick={() => {
-                                            post.Likes.some(like => like.userId === user.id)
-                                                ? unlikePost(post.id)
-                                                : likePost(post.id)
-                                        }}
+                                        onClick={() => post.Likes.some(like => like.userId === user.id) ? unlikePost(post.id) : likePost(post.id)}
                                     >
-                                        <ThumbUp />
+                                        {post.Likes.some(like => like.userId === user.id)
+                                                ? <ThumbUp /> : <ThumbUpAltOutlined />}
                                     </IconButton>
                                     <Typography variant="body2">
                                         {post.Likes.length || 0} Likes

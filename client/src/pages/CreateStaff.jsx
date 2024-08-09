@@ -307,30 +307,30 @@ function CreateStaff() {
           </Grid>
 
           <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mt: 2,
-              }}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mt: 2,
+            }}
+          >
+            <Button
+              variant="contained"
+              type="submit"
+              color="secondary"
+              sx={{ borderRadius: "24px" }}
             >
-              <Button
-                variant="contained"
-                type="submit"
-                color="secondary"
-                sx={{ borderRadius: "24px" }}
-              >
-                Update
-              </Button>
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={handleCancel}
-                sx={{ borderRadius: "24px" }}
-              >
-                Cancel
-              </Button>
-            </Box>
+              Add
+            </Button>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleCancel}
+              sx={{ borderRadius: "24px" }}
+            >
+              Cancel
+            </Button>
+          </Box>
         </Box>
 
         <ToastContainer />

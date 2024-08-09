@@ -523,32 +523,35 @@ router.get("/profile/:id", validateToken, async (req, res) => {
 // FOLLOW USER
 router.post("/:id/follow", validateToken, async (req, res) => {
   const { id } = req.params;
+  const parsedId = parseInt(id);
 
-  if (req.user.id === parseInt(id)) {
-      return res.status(400).json({ message: "You cannot follow yourself." });
+  if (req.user.id === parsedId) {
+    return res.status(400).json({ message: "You cannot follow yourself." });
   }
 
   try {
-      const [follower, created] = await Follower.findOrCreate({
-          where: { followerId: req.user.id, followedId: id },
-          defaults: { followerId: req.user.id, followedId: id }
-      });
+    // follow the user
+    const [follower, created] = await Follower.findOrCreate({
+      where: { followerId: req.user.id, followedId: parsedId },
+      defaults: { followerId: req.user.id, followedId: parsedId },
+    });
 
-      if (!created) {
-          return res.status(400).json({ message: "You are already following this user." });
-      }
+    if (!created) {
+      return res
+        .status(400)
+        .json({ message: "You are already following this user." });
+    }
 
-      // Create a notification for the followed user
-      await Notification.create({
-          type: 'follow',
-          message: `${req.user.username} started following you.`,
-          userId: id,
-          fromUserId: req.user.id
-      });
+    await Notification.create({
+      type: "follow",
+      message: `${req.user.username} started following you.`,
+      userId: parsedId,
+      fromUserId: req.user.id,
+    });
 
-      res.json({ message: "Followed successfully." });
+    res.json({ message: "Followed successfully." });
   } catch (err) {
-      res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -557,17 +560,19 @@ router.delete("/:id/unfollow", validateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-      const result = await Follower.destroy({
-          where: { followerId: req.user.id, followedId: id }
-      });
+    const result = await Follower.destroy({
+      where: { followerId: req.user.id, followedId: id },
+    });
 
-      if (result === 0) {
-          return res.status(400).json({ message: "You are not following this user." });
-      }
+    if (result === 0) {
+      return res
+        .status(400)
+        .json({ message: "You are not following this user." });
+    }
 
-      res.json({ message: "Unfollowed successfully." });
+    res.json({ message: "Unfollowed successfully." });
   } catch (err) {
-      res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -576,33 +581,44 @@ router.get("/:id/followers", validateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-      const followers = await Follower.findAll({
-          where: { followedId: id },
-          include: [{ model: User, as: 'followerUser', attributes: ['id', 'firstName', 'lastName', 'username'] }]
-      });
+    const followers = await Follower.findAll({
+      where: { followedId: id },
+      include: [
+        {
+          model: User,
+          as: "followerUser",
+          attributes: ["id", "firstName", "lastName", "username"],
+        },
+      ],
+    });
 
-      res.json(followers.map(f => f.followerUser));
+    res.json(followers.map((f) => f.followerUser));
   } catch (err) {
-      console.error("Error fetching followers:", err);
-      res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error fetching followers:", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
 
 // GET FOLLOWING
 router.get("/:id/following", validateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-      const following = await Follower.findAll({
-          where: { followerId: id },
-          include: [{ model: User, as: 'followedUser', attributes: ['id', 'firstName', 'lastName', 'username'] }]
-      });
+    const following = await Follower.findAll({
+      where: { followerId: id },
+      include: [
+        {
+          model: User,
+          as: "followedUser",
+          attributes: ["id", "firstName", "lastName", "username"],
+        },
+      ],
+    });
 
-      res.json(following.map(f => f.followedUser));
+    res.json(following.map((f) => f.followedUser));
   } catch (err) {
-      console.error("Error fetching following:", err);
-      res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error fetching following:", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -692,54 +708,24 @@ router.put("/profile/:id", validateToken, async (req, res) => {
   }
 });
 
-// FOLLOW USER
-router.post("/:id/follow", validateToken, async (req, res) => {
-  const { id } = req.params;
-
-  if (req.user.id === parseInt(id)) {
-      return res.status(400).json({ message: "You cannot follow yourself." });
-  }
-
-  try {
-      const [follower, created] = await Follower.findOrCreate({
-          where: { followerId: req.user.id, followedId: id },
-          defaults: { followerId: req.user.id, followedId: id }
-      });
-
-      if (!created) {
-          return res.status(400).json({ message: "You are already following this user." });
-      }
-
-      // Create a notification for the followed user
-      await Notification.create({
-          type: 'follow',
-          message: `${req.user.username} started following you.`,
-          userId: id,
-          fromUserId: req.user.id
-      });
-
-      res.json({ message: "Followed successfully." });
-  } catch (err) {
-      res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
 // UNFOLLOW USER
 router.delete("/:id/unfollow", validateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-      const result = await Follower.destroy({
-          where: { followerId: req.user.id, followedId: id }
-      });
+    const result = await Follower.destroy({
+      where: { followerId: req.user.id, followedId: id },
+    });
 
-      if (result === 0) {
-          return res.status(400).json({ message: "You are not following this user." });
-      }
+    if (result === 0) {
+      return res
+        .status(400)
+        .json({ message: "You are not following this user." });
+    }
 
-      res.json({ message: "Unfollowed successfully." });
+    res.json({ message: "Unfollowed successfully." });
   } catch (err) {
-      res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -748,33 +734,44 @@ router.get("/:id/followers", validateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-      const followers = await Follower.findAll({
-          where: { followedId: id },
-          include: [{ model: User, as: 'followerUser', attributes: ['id', 'firstName', 'lastName', 'username'] }]
-      });
+    const followers = await Follower.findAll({
+      where: { followedId: id },
+      include: [
+        {
+          model: User,
+          as: "followerUser",
+          attributes: ["id", "firstName", "lastName", "username"],
+        },
+      ],
+    });
 
-      res.json(followers.map(f => f.followerUser));
+    res.json(followers.map((f) => f.followerUser));
   } catch (err) {
-      console.error("Error fetching followers:", err);
-      res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error fetching followers:", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
-
 
 // GET FOLLOWING
 router.get("/:id/following", validateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-      const following = await Follower.findAll({
-          where: { followerId: id },
-          include: [{ model: User, as: 'followedUser', attributes: ['id', 'firstName', 'lastName', 'username'] }]
-      });
+    const following = await Follower.findAll({
+      where: { followerId: id },
+      include: [
+        {
+          model: User,
+          as: "followedUser",
+          attributes: ["id", "firstName", "lastName", "username"],
+        },
+      ],
+    });
 
-      res.json(following.map(f => f.followedUser));
+    res.json(following.map((f) => f.followedUser));
   } catch (err) {
-      console.error("Error fetching following:", err);
-      res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error fetching following:", err);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -844,37 +841,58 @@ router.put("/:id", validateToken, async (req, res) => {
 
   // Validation
   let validationSchema = yup.object({
-      firstName: yup.string().trim().min(2).max(50)
-          .matches(/^[a-zA-Z '-,.]+$/, "First name only allow letters, spaces and characters: ' - , ."),
-      lastName: yup.string().trim().min(2).max(50)
-          .matches(/^[a-zA-Z '-,.]+$/, "Last name only allow letters, spaces and characters: ' - , ."),
-      email: yup.string().trim().lowercase().email().max(50),
-      username: yup.string().trim().min(1).max(50)
-          .matches(/^[a-zA-Z0-9_.-]+$/, "Username only allows letters, numbers, underscores, periods, and hyphens."),
-      // profileDescription: yup.string().trim().max(255).optional()
+    firstName: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(50)
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "First name only allow letters, spaces and characters: ' - , ."
+      ),
+    lastName: yup
+      .string()
+      .trim()
+      .min(2)
+      .max(50)
+      .matches(
+        /^[a-zA-Z '-,.]+$/,
+        "Last name only allow letters, spaces and characters: ' - , ."
+      ),
+    email: yup.string().trim().lowercase().email().max(50),
+    username: yup
+      .string()
+      .trim()
+      .min(1)
+      .max(50)
+      .matches(
+        /^[a-zA-Z0-9_.-]+$/,
+        "Username only allows letters, numbers, underscores, periods, and hyphens."
+      ),
+    // profileDescription: yup.string().trim().max(255).optional()
   });
 
   try {
-      userData = await validationSchema.validate(userData, { abortEarly: false });
+    userData = await validationSchema.validate(userData, { abortEarly: false });
 
-      // Check if user exists
-      let user = await User.findByPk(id);
-      if (!user) {
-          res.status(404).json({ message: 'User not found.' });
-          return;
-      }
+    // Check if user exists
+    let user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
 
-      // Exclude role from update data
-      delete userData.role;
+    // Exclude role from update data
+    delete userData.role;
 
-      // Update user data
-      await User.update(userData, { where: { id } });
+    // Update user data
+    await User.update(userData, { where: { id } });
 
-      // Return updated user data
-      user = await User.findByPk(id);
-      res.json(user);
+    // Return updated user data
+    user = await User.findByPk(id);
+    res.json(user);
   } catch (err) {
-      res.status(400).json({ errors: err.errors });
+    res.status(400).json({ errors: err.errors });
   }
 });
 
@@ -883,29 +901,29 @@ router.delete("/:id", validateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-      // Check if user exists
-      let user = await User.findByPk(id);
-      if (!user) {
-          res.status(404).json({ message: 'User not found.' });
-          return;
-      }
+    // Check if user exists
+    let user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
 
-      // Delete user
-      await User.destroy({ where: { id } });
+    // Delete user
+    await User.destroy({ where: { id } });
 
-      res.json({ message: `User with ID ${id} deleted successfully.` });
+    res.json({ message: `User with ID ${id} deleted successfully.` });
   } catch (err) {
-      res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 // RETRIEVE ALL USERS
 router.get("/", validateToken, isAdmin, async (req, res) => {
   try {
-      const users = await User.findAll();
-      res.json(users);
+    const users = await User.findAll();
+    res.json(users);
   } catch (err) {
-      res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
@@ -914,15 +932,15 @@ router.get("/:id", validateToken, async (req, res) => {
   const { id } = req.params;
 
   try {
-      let user = await User.findByPk(id);
-      if (!user) {
-          res.status(404).json({ message: 'User not found.' });
-          return;
-      }
+    let user = await User.findByPk(id);
+    if (!user) {
+      res.status(404).json({ message: "User not found." });
+      return;
+    }
 
-      res.json(user);
+    res.json(user);
   } catch (err) {
-      res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

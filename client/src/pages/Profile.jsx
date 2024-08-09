@@ -129,60 +129,63 @@ const Profile = () => {
                 </Grid>
               </Grid>
 
-              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                Residential Address
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Block No.:</strong> {user.blockNo}
+              {user.role == "Customer" && (
+                <>
+                  <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                    Residential Address
                   </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Unit No.:</strong> {user.unitNo}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Street Name:</strong> {user.streetName}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                  <Typography variant="body1">
-                    <strong>Postal Code:</strong> {user.postalCode}
-                  </Typography>
-                </Grid>
-              </Grid>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body1">
+                        <strong>Block No.:</strong> {user.blockNo}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body1">
+                        <strong>Unit No.:</strong> {user.unitNo}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant="body1">
+                        <strong>Street Name:</strong> {user.streetName}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Typography variant="body1">
+                        <strong>Postal Code:</strong> {user.postalCode}
+                      </Typography>
+                    </Grid>
+                  </Grid>
 
-              <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-                Additional Information
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>ID Type:</strong> {user.idType}
+                  <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                    Additional Information
                   </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>ID Number:</strong> {user.idNumber}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Citizenship Status:</strong>{" "}
-                    {user.citizenshipStatus}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Race:</strong> {user.race}
-                  </Typography>
-                </Grid>
-              </Grid>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body1">
+                        <strong>ID Type:</strong> {user.idType}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body1">
+                        <strong>ID Number:</strong> {user.idNumber}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body1">
+                        <strong>Citizenship Status:</strong>{" "}
+                        {user.citizenshipStatus}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <Typography variant="body1">
+                        <strong>Race:</strong> {user.race}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </>
+              )}
             </Box>
-            <ToastContainer />
           </Paper>
         </>
       )}
