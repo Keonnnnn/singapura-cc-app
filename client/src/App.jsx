@@ -2,8 +2,8 @@ import "./App.css";
 import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
-  Routes, 
-  Route, 
+  Routes,
+  Route,
   Navigate,
 } from "react-router-dom";
 import http from "./http";
@@ -221,7 +221,10 @@ function App() {
               path="/feedbackform"
               element={<ProtectedRoute element={FeedbackForm} />}
             />
-            <Route path="/feedbacklist" element={<ProtectedRoute element={FeedbackList} />} />
+            <Route
+              path="/feedbacklist"
+              element={<ProtectedRoute element={FeedbackList} />}
+            />
             <Route path="/posts" element={<Posts />} />
             <Route
               path="/createpost"
