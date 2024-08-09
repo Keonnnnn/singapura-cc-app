@@ -1,27 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
 import UserSidebar from "../components/UserSidebar";
 import {
-  Avatar,
   Box,
   FormControlLabel,
   Grid,
-  IconButton,
   Paper,
   Switch,
-  Typography,
 } from "@mui/material";
 import UserContext from "../contexts/UserContext";
-import { Edit } from "@mui/icons-material";
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import http from "../http";
 
 const Settings = () => {
   const { user, setUser } = useContext(UserContext);
-  const [otpEnabled, setOtpEnabled] = useState(user.otpEnabled);
-
-  const handleBack = () => {
-    window.history.back();
-  };
+  const [otpEnabled, setOtpEnabled] = useState(user?.otpEnabled || false);
 
   const handleOtpToggle = () => {
     const newOtpEnabled = !otpEnabled;
@@ -34,8 +27,7 @@ const Settings = () => {
         toast.success("OTP status updated successfully.");
       })
       .catch((error) => {
-        // Revert OTP status if there's an error
-        setOtpEnabled(!newOtpEnabled);
+        setOtpEnabled(!newOtpEnabled); // Revert OTP status if there's an error
         console.error("Error updating OTP status:", error);
         toast.error("Error updating OTP status.");
       });
@@ -55,10 +47,11 @@ const Settings = () => {
     if (user) {
       fetchUserData();
     }
-  }, []);
+  }, [user]);
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 4, gap: 5 }}>
+      <ToastContainer />
       {user && (
         <>
           <UserSidebar />
@@ -83,7 +76,6 @@ const Settings = () => {
               </Grid>
               {/* ... other settings */}
             </Grid>
-            <ToastContainer />
           </Paper>
         </>
       )}

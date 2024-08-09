@@ -159,9 +159,11 @@ function CustomerEvents() {
                                             Only members can register for events. Walk-ins are available for non-members.
                                         </Typography>
                                     )}
+                                    {token && (
                                     <Box sx={{ position: 'absolute', top: 0, right: 0, padding: '8px', backgroundColor: '#ff0000', color: '#fff', borderRadius: '4px', fontWeight: 'bold', fontSize: 'small' }}>
                                         + {event.points} points
                                     </Box>
+                                )}
                                 </CardContent>
                             </Box>
                         </Card>

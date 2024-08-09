@@ -357,8 +357,14 @@ function App() {
         </ThemeProvider>
       </Router>
       <ToastContainer />
-      <Footer /> {/* Place Footer at the bottom */}
-      <ChatBot flow={flow} options={options} />
+      
+
+      {(!user || (user && user.role !== 'Admin' && user.role !== 'Staff')) && (
+        <>
+          <Footer /> 
+          <ChatBot flow={flow} options={options} /> 
+        </>
+      )}
     </UserContext.Provider>
   );
 }
