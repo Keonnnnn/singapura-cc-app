@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
       isRead: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
+      },
+      pinned: {  // Added this field to allow event notifications to be pinned
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
       }
     }, {
       tableName: 'notificationEvents'
@@ -28,5 +32,4 @@ module.exports = (sequelize, DataTypes) => {
     };
   
     return notificationEvents;
-  };
-  
+};
