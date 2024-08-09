@@ -17,12 +17,11 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import React, { useContext, useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import logo from "../logo.png";
 import UserContext from "../contexts/UserContext";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { formatDistanceToNow, parseISO } from "date-fns";
-import http from "../http";
+import http from "../http";  // Import the http module
+import { formatDistanceToNow, parseISO } from 'date-fns';  // Import date-fns for formatting
 import {
   Notifications as NotificationsIcon,
   Comment as CommentIcon,
@@ -35,12 +34,13 @@ const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElCustomer, setAnchorElCustomer] = useState(null);
   const [anchorElAdmin, setAnchorElAdmin] = useState(null);
+  const [anchorElEvents, setAnchorElEvents] = useState(null); // Added for events dropdown
 
   const open = Boolean(anchorEl);
   const openCustomer = Boolean(anchorElCustomer);
   const openAdmin = Boolean(anchorElAdmin);
+  const openEvents = Boolean(anchorElEvents); // Events dropdown state
   const [notifications, setNotifications] = useState([]);
-  const location = useLocation();
 
   useEffect(() => {
     if (user) {
@@ -60,6 +60,10 @@ const Navbar = () => {
     setAnchorElAdmin(event.currentTarget);
   };
 
+  const handleEventsClick = (event) => {
+    setAnchorElEvents(event.currentTarget);
+  };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -70,6 +74,10 @@ const Navbar = () => {
 
   const handleCloseAdmin = () => {
     setAnchorElAdmin(null);
+  };
+
+  const handleEventsClose = () => {
+    setAnchorElEvents(null);
   };
 
   const getInitials = (firstName) => {
@@ -84,11 +92,23 @@ const Navbar = () => {
 
   const fetchNotifications = async () => {
     try {
-      const res = await http.get("/notifications");
-      const sortedNotifications = res.data.sort(
+      const [eventRes, socialRes] = await Promise.all([
+        http.get("/notificationEvents"),
+        http.get("/notifications"),
+      ]);
+      const eventNotifications = eventRes.data.map((n) => ({
+        ...n,
+        type: "event",
+      }));
+      const socialNotifications = socialRes.data.map((n) => ({
+        ...n,
+        type: n.type,
+      }));
+      const combinedNotifications = [...eventNotifications, ...socialNotifications].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
-      setNotifications(sortedNotifications);
+      console.log("Fetched notifications:", combinedNotifications); // Debugging log
+      setNotifications(combinedNotifications);
     } catch (err) {
       console.error("Failed to fetch notifications", err);
     }
@@ -102,9 +122,13 @@ const Navbar = () => {
     setAnchorEl(null);
   };
 
-  const markAsRead = async (id) => {
+  const markAsRead = async (id, type) => {
     try {
-      await http.put(`/notifications/${id}/read`);
+      if (type === 'event') {
+        await http.put(`/notificationEvents/${id}/read`);
+      } else {
+        await http.put(`/notifications/${id}/read`);
+      }
       setNotifications(
         notifications.map((notification) =>
           notification.id === id
@@ -123,6 +147,23 @@ const Navbar = () => {
   };
 
   const isAdmin = user && (user.role === "Admin" || user.role === "Staff");
+
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case "like":
+        return <ThumbUpIcon />;
+      case "comment":
+        return <CommentIcon />;
+      case "follow":
+        return <PersonAddIcon />;
+      case "event":
+        return <NotificationsIcon />;
+      default:
+        return <NotificationsIcon />;
+    }
+  };
+
+
 
   return (
     <AppBar
@@ -156,17 +197,32 @@ const Navbar = () => {
               gap: 5,
             }}
           >
-            {!user && (
-              <Link to="/about">
-                <Typography>About Us</Typography>
-              </Link>
-            )}
+            
 
             {!isAdmin && (
               <>
-                <Link to="/customer-events">
+                <Box
+                  sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+                  onClick={handleEventsClick}
+                >
                   <Typography>Events</Typography>
-                </Link>
+                </Box>
+
+                <Menu
+                  anchorEl={anchorElEvents}
+                  open={openEvents}
+                  onClose={handleEventsClose}
+                >
+                  <Link to="/customer-events" style={{ textDecoration: "none", color: "inherit" }}>
+                    <MenuItem onClick={handleEventsClose}>All Events</MenuItem>
+                  </Link>
+                  <Link to="/feedbacklist" style={{ textDecoration: "none", color: "inherit" }}>
+                    <MenuItem onClick={handleEventsClose}>View Feedback</MenuItem>
+                  </Link>
+                  <Link to="/feedbackform" style={{ textDecoration: "none", color: "inherit" }}>
+                    <MenuItem onClick={handleEventsClose}>Add Feedback</MenuItem>
+                  </Link>
+                </Menu>
 
                 <Link to="/facilities">
                   <Typography>Facilities</Typography>
@@ -176,14 +232,19 @@ const Navbar = () => {
                   <Typography>Notification</Typography>
                 </Link>
 
-                <Link to="/posts">
-                  <Typography>Connect</Typography>
-                </Link>
-                <Link to="/Membership">
+
+                {user && user.role === 'Customer' && (
+                  <Link to="/posts">
+                    <Typography>Connect</Typography>
+                  </Link>
+                )}
+                {/* <Link to="/Membership">
                   <Typography>Membership</Typography>
-                </Link>
+                </Link> */}
               </>
             )}
+
+            
           </Box>
 
           {user ? (
@@ -194,16 +255,14 @@ const Navbar = () => {
                 </Typography>
               )}
 
-              {location.pathname === "/posts" && (
-                <IconButton color="inherit" onClick={handleNotificationClick}>
-                  <Badge
-                    badgeContent={notifications.filter((n) => !n.isRead).length}
-                    color="secondary"
-                  >
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-              )}
+              <IconButton color="inherit" onClick={handleNotificationClick}>
+                <Badge
+                  badgeContent={notifications.filter((n) => !n.isRead).length}
+                  color="secondary"
+                >
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
 
               <Menu
                 anchorEl={anchorEl}
@@ -227,8 +286,8 @@ const Navbar = () => {
                     {notifications.map((notification) => (
                       <ListItem
                         button
-                        key={notification.id}
-                        onClick={() => markAsRead(notification.id)}
+                        key={notification.type + notification.id}
+                        onClick={() => markAsRead(notification.id, notification.type)}
                         sx={{
                           backgroundColor: notification.isRead
                             ? "#f0f0f0"
@@ -237,14 +296,21 @@ const Navbar = () => {
                         }}
                       >
                         <ListItemIcon>
-                          {notification.type === "like" && <ThumbUpIcon />}
-                          {notification.type === "comment" && <CommentIcon />}
-                          {notification.type === "follow" && <PersonAddIcon />}
+                          {getNotificationIcon(notification.type)}
                         </ListItemIcon>
                         <ListItemText
-                          primary={notification.message}
-                          secondary={formatNotificationTime(
-                            notification.createdAt
+                          primary={notification.title || notification.message}
+                          secondary={(
+                            <>
+                              {notification.description && (
+                                <Typography variant="body2" color="textSecondary" component="span">
+                                  {notification.description}
+                                </Typography>
+                              )}
+                              <Typography variant="body2" color="textSecondary" component="span">
+                                {formatNotificationTime(notification.createdAt)}
+                              </Typography>
+                            </>
                           )}
                         />
                       </ListItem>
@@ -380,6 +446,23 @@ const Navbar = () => {
                 </Box>
 
                 <Divider />
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    paddingX: 2,
+                    paddingY: 1,
+                  }}
+                >
+                  <Typography fontWeight={"medium"}>
+                    Total Points: {user.totalPoints}
+                  </Typography>
+                </Box>
+
+                <Divider />
+
 
                 <Link
                   to="/notes"

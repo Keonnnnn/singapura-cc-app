@@ -8,8 +8,6 @@ const basename = path.basename(__filename);
 const db = {};
 require('dotenv').config();
 
-
-// Create sequelize
 let sequelize = new Sequelize(
     process.env.DB_NAME, process.env.DB_USER, process.env.DB_PWD,
     {
@@ -21,7 +19,6 @@ let sequelize = new Sequelize(
     }
 );
 
-
 fs
     .readdirSync(__dirname)
     .filter(file => {
@@ -32,13 +29,11 @@ fs
         db[model.name] = model;
     });
 
-
 Object.keys(db).forEach(modelName => {
     if (db[modelName].associate) {
         db[modelName].associate(db);
     }
 });
-
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
