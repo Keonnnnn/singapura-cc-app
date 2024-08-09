@@ -44,6 +44,9 @@ app.use('/comment', commentRoute);
 const notificationRoute = require('./routes/notification');
 app.use('/notifications', notificationRoute);
 
+const footerSubscribeRoute = require('./routes/footersubscribe');
+app.use('/api', footerSubscribeRoute);  // Ensure this line is present
+
 // Ahmed's Feedback API route
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/feedback', feedbackRoutes);
@@ -52,12 +55,12 @@ app.use('/feedback', feedbackRoutes);
 const notificationEventsRoute = require('./routes/NotificationRoutes');
 app.use('/notificationEvents', notificationEventsRoute);
 
-const db = require('./models');
-const createAdminUser = require('./scripts/createAdmin'); 
-
 // Ayura routes 
 const rewardRoute = require('./routes/reward');
 app.use("/reward", rewardRoute);
+
+const db = require('./models');
+const createAdminUser = require('./scripts/createAdmin'); 
 
 db.sequelize.sync({ alter: true })
     .then(async () => {
