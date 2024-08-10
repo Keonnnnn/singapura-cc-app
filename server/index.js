@@ -58,6 +58,9 @@ app.use('/feedback', feedbackRoutes);
 const notificationEventsRoute = require('./routes/NotificationRoutes');
 app.use('/notificationEvents', notificationEventsRoute);
 
+const announcementRoutes = require('./routes/announcement');
+app.use('/announcements', announcementRoutes);
+
 // Ayura's routes
 const rewardRoute = require('./routes/reward');
 app.use('/reward', rewardRoute);

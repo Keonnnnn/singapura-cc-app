@@ -99,6 +99,20 @@ const sideMenuOptions = [
       },
     ],
   },
+  {
+    name: "Announcements", // New Announcements Section
+    icon: notificationsIcon, // Use an appropriate icon
+    subOptions: [
+      {
+        name: "View All Announcements",
+        path: "/announcements",
+      },
+      {
+        name: "Create Announcement",
+        path: "/announcements/new",
+      },
+    ],
+  },
 ];
 
 function Sidebar() {

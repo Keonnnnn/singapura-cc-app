@@ -61,13 +61,12 @@ exports.getNotificationById = async (req, res) => {
 };
 
 exports.getAllNotifications = async (req, res) => {
-    console.log('Received request to fetch all notifications');
+
     try {
         const notifications = await notificationEvents.findAll({
             include: [{ model: User, as: 'user', attributes: ['id', 'role'] }]
         });
 
-        console.log('Fetched notifications:', notifications);
 
         res.status(200).json(notifications);
     } catch (error) {
