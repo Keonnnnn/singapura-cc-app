@@ -3,18 +3,21 @@ require('dotenv').config();
 const cors = require('cors');
 const app = express();
 
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 
 // Enable CORS
-app.use(cors({
-    origin: process.env.CLIENT_URL
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+  })
+);
 
-// Simple route 
+// Simple route
 app.get("/", (req, res) => {
-    res.send("Welcome to Singapura CC!");
+  res.send("Welcome to Singapura CC!");
 });
 
 // Routes
@@ -31,12 +34,12 @@ app.use('/file', fileRoute);
 const eventRoute = require('./routes/events');
 app.use('/events', eventRoute);
 
-// Keon
+// Keon's routes
 const postRoute = require('./routes/post');
 app.use('/post', postRoute);
 
-const likeRoute = require('./routes/likes'); 
-app.use("/like", likeRoute);
+const likeRoute = require('./routes/likes');
+app.use('/like', likeRoute);
 
 const commentRoute = require('./routes/comment');
 app.use('/comment', commentRoute);
@@ -44,29 +47,33 @@ app.use('/comment', commentRoute);
 const notificationRoute = require('./routes/notification');
 app.use('/notifications', notificationRoute);
 
-// Ahmed's Feedback API route
+const footerSubscribeRoute = require('./routes/footersubscribe');
+app.use('/api', footerSubscribeRoute);
+
+// Ahmed's routes
 const feedbackRoutes = require('./routes/feedbackRoutes');
 app.use('/feedback', feedbackRoutes);
 
-// Add the notificationEvents route
+// Notification events route
 const notificationEventsRoute = require('./routes/NotificationRoutes');
 app.use('/notificationEvents', notificationEventsRoute);
 
-const db = require('./models');
-const createAdminUser = require('./scripts/createAdmin'); 
-
-// Ayura routes 
+// Ayura's routes
 const rewardRoute = require('./routes/reward');
-app.use("/reward", rewardRoute);
+app.use('/reward', rewardRoute);
+
+// Database and server setup
+const db = require('./models');
+const createAdminUser = require('./scripts/createAdmin');
 
 db.sequelize.sync({ alter: true })
-    .then(async () => {
-        await createAdminUser(); 
-        let port = process.env.APP_PORT;
-        app.listen(port, () => {
-            console.log(`Server running on http://localhost:${port}`);
-        });
-    })
-    .catch((err) => {
-        console.log(err);
+  .then(async () => {
+    await createAdminUser();
+    const port = process.env.APP_PORT || 3000; // Default to 3000 if APP_PORT isn't set
+    app.listen(port, () => {
+      console.log(`Server running on http://localhost:${port}`);
     });
+  })
+  .catch((err) => {
+    console.error("Error syncing database:", err);
+  });

@@ -14,6 +14,7 @@ const ProtectedRoute = ({ element: Component, allowedRoles, ...rest }) => {
      return <Navigate to="/" />; // can consider changing to 404 or login page
   }
 
+
   return (
     <ProtectedLayout>
       <Component {...rest} />

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Op } = require("sequelize");
 const yup = require("yup");
-const { Event, Registration, EventRequest, User } = require('../models');
+const { Event, Registration, EventRequest, User, FooterSubscription } = require('../models');
 const nodemailer = require('nodemailer');
 const { validateToken } = require('../middlewares/auth');
 
@@ -51,116 +51,7 @@ const eventRequestValidationSchema = yup.object({
 // CRUD routes for events
 router.post("/", async (req, res) => {
     let data = req.body;
-    try {
-        data = await validationSchema.validate(data, { abortEarly: false });
-        let result = await Event.create(data);
-        res.json(result);
-    } catch (err) {
-        res.status(400).json({ errors: err.errors });
-    }
-});
-
-router.get("/", async (req, res) => {
-    let condition = {};
-    let search = req.query.search;
-    if (search) {
-        condition[Op.or] = [
-            { name: { [Op.like]: `%${search}%` } },
-            { description: { [Op.like]: `%${search}%` } }
-        ];
-    }
-
-    let list = await Event.findAll({
-        where: condition,
-        order: [['createdAt', 'DESC']]
-    });
-    res.json(list);
-});
-
-router.get("/:id", async (req, res) => {
-    let id = req.params.id;
-    let event = await Event.findByPk(id);
-    if (!event) {
-        res.sendStatus(404);
-        return;
-    }
-    res.json(event);
-});
-
-router.put("/:id", async (req, res) => {
-    let id = req.params.id;
-    let event = await Event.findByPk(id);
-    if (!event) {
-        res.sendStatus(404);
-        return;
-    }
-    let data = req.body;
-    try {
-        data = await validationSchema.validate(data, { abortEarly: false });
-        let num = await Event.update(data, { where: { id: id } });
-        if (num == 1) {
-            res.json({ message: "Event was updated successfully." });
-        } else {
-            res.status(400).json({ message: `Cannot update event with id ${id}.` });
-        }
-    } catch (err) {
-        res.status(400).json({ errors: err.errors });
-    }
-});
-
-router.delete("/:id", async (req, res) => {
-    let id = req.params.id;
-    let num = await Event.destroy({ where: { id: id } });
-    if (!num) {
-        res.sendStatus(404);
-        return;
-    }
-    if (num == 1) {
-        res.json({ message: "Event was deleted successfully." });
-    } else {
-        res.status(400).json({ message: `Cannot delete event with id ${id}.` });
-    }
-});
-
-// Registration route
-router.post('/:eventId/register', validateToken, async (req, res) => {
-    const { eventId } = req.params;
-    const userId = req.user.id;
-    console.log('Event ID:', eventId);
-    console.log('User ID:', userId);
-    try {
-        const event = await Event.findByPk(eventId);
-        if (!event) {
-            console.log('Event not found');
-            return res.status(404).json({ error: 'Event not found' });
-        }
-
-        const user = await User.findByPk(userId);
-        if (!user) {
-            console.log('User not found');
-            return res.status(404).json({ error: 'User not found' });
-        }
-
-        const existingRegistration = await Registration.findOne({
-            where: { eventId, userId }
-        });
-
-        if (existingRegistration) {
-            console.log('User already registered for this event');
-            return res.status(400).json({ error: 'User already registered for this event' });
-        }
-
-        const registration = await Registration.create({
-            eventId,
-            userId,
-            name: `${user.firstName} ${user.lastName}`,
-            email: user.email,
-            contact: user.mobileNumber,
-            present: false
-        });
-
-
-        const htmlContent = `
+    const htmlContent = `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -240,13 +131,13 @@ router.post('/:eventId/register', validateToken, async (req, res) => {
                     <p>Welcome to our Newsletter</p>
                 </div>
                 <div class="content">
-                    <h2>${event.name}</h2>
-                    <p>${event.description}</p>
+                    <h2>${data.name}</h2>
+                    <p>${data.description}</p>
                     <div class="details">
-                        <p><strong>Date:</strong> ${event.date}</p>
-                        <p><strong>Time:</strong> ${event.startTime} - ${event.endTime}</p>
-                        <p><strong>Venue:</strong> ${event.venue}</p>
-                        <p><strong>Points upon attending:</strong> ${event.points}</p>
+                        <p><strong>Date:</strong> ${data.date}</p>
+                        <p><strong>Time:</strong> ${data.startTime} - ${data.endTime}</p>
+                        <p><strong>Venue:</strong> ${data.venue}</p>
+                        <p><strong>Points upon attending:</strong> ${data.points}</p>
                     </div>
                 </div>
                 <div class="footer">
@@ -257,12 +148,111 @@ router.post('/:eventId/register', validateToken, async (req, res) => {
         </html>
 
 `;
+    try {
+        data = await validationSchema.validate(data, { abortEarly: false });
+        let result = await Event.create(data);
+        const subscribers = await FooterSubscription.findAll();
+        for (const subscriber of subscribers) {
+            const mailOptions = {
+                from: process.env.ADMIN_EMAIL,
+                to: subscriber.email,
+                subject: `New Event: ${data.name}`,
+                html:htmlContent
+            };
+            await sendMailWithPromise(mailOptions);
+        }
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ errors: err.errors });
+    }
+});
+
+router.get("/", async (req, res) => {
+    let list = await Event.findAll();
+    res.json(list);
+});
+
+router.get("/:id", async (req, res) => {
+    let id = req.params.id;
+    let event = await Event.findByPk(id);
+    if (!event) {
+        res.sendStatus(404);
+        return;
+    }
+    res.json(event);
+});
+
+router.put("/:id", async (req, res) => {
+    let id = req.params.id;
+    let event = await Event.findByPk(id);
+    if (!event) {
+        res.sendStatus(404);
+        return;
+    }
+    let data = req.body;
+    try {
+        data = await validationSchema.validate(data, { abortEarly: false });
+        let num = await Event.update(data, { where: { id: id } });
+        if (num == 1) {
+            res.json({ message: "Event was updated successfully." });
+        } else {
+            res.status(400).json({ message: `Cannot update event with id ${id}.` });
+        }
+    } catch (err) {
+        res.status(400).json({ errors: err.errors });
+    }
+});
+
+router.delete("/:id", async (req, res) => {
+    let id = req.params.id;
+    let num = await Event.destroy({ where: { id: id } });
+    if (!num) {
+        res.sendStatus(404);
+        return;
+    }
+    if (num == 1) {
+        res.json({ message: "Event was deleted successfully." });
+    } else {
+        res.status(400).json({ message: `Cannot delete event with id ${id}.` });
+    }
+});
+
+// Registration route
+router.post('/:eventId/register', validateToken, async (req, res) => {
+    const { eventId } = req.params;
+    const userId = req.user.id;
+    console.log('Event ID:', eventId);
+    console.log('User ID:', userId);
+    try {
+        const event = await Event.findByPk(eventId);
+        if (!event) {
+            console.log('Event not found');
+            return res.status(404).json({ error: 'Event not found' });
+        }
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            console.log('User not found');
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const registration = await Registration.create({
+            eventId,
+            userId,
+            name: `${user.firstName} ${user.lastName}`,
+            email: user.email,
+            contact: user.mobileNumber,
+            present: false
+        });
+
         // Send confirmation email
         const mailOptions = {
             from: process.env.ADMIN_EMAIL,
             to: user.email,
             subject: 'Event Registration Confirmation',
-            html: htmlContent,
+            html: `<p>Dear ${user.firstName}+${user.lastName},</p>
+                <p>Thank you for registering for the event ${event.name}. We look forward to seeing you there!</p>
+`,
         };
         await sendMailWithPromise(mailOptions);
 
@@ -274,6 +264,7 @@ router.post('/:eventId/register', validateToken, async (req, res) => {
     }
 });
 
+// Mark user as present
 router.post('/:eventId/mark-present', validateToken, async (req, res) => {
     const { eventId } = req.params;
     const { userId } = req.body;
@@ -292,10 +283,6 @@ router.post('/:eventId/mark-present', validateToken, async (req, res) => {
             return res.status(404).json({ error: 'Registration not found' });
         }
 
-        if (registration.present) {
-            return res.status(400).json({ error: 'User already marked as present' });
-        }
-
         registration.present = true;
         await registration.save();
 
@@ -303,8 +290,7 @@ router.post('/:eventId/mark-present', validateToken, async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-
-        user.totalPoints += event.points; // Assuming you have a points field in the User model
+        user.totalPoints += event.points; 
         await user.save();
 
         res.status(200).json({ message: 'User marked as present and points credited' });
@@ -321,7 +307,19 @@ router.get('/:eventId/registrations', async (req, res) => {
     res.json(registrations);
 });
 
+// Get registrations for a user
+router.get('/user/:userId/registrations', validateToken, async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const registrations = await Registration.findAll({ where: { userId },
+            include: [Event] });
+        res.json(registrations);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching user registrations' });
+    }
+});
 
+// Get user information
 router.get('/user/me', validateToken, async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id);
@@ -360,11 +358,9 @@ router.post("/eventrequests", async (req, res) => {
     }
 });
 
-
+// Get all event requests
 router.get("/eventrequests", async (req, res) => {
-    let list = await EventRequest.findAll({
-        order: [['createdAt', 'DESC']]
-    });
+    let list = await EventRequest.findAll();
     res.json(list);
 });
 

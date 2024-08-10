@@ -110,10 +110,10 @@ const UserSidebar = () => {
           </Collapse>
           <ListItem
             button
-            onClick={() => navigate("/history")}
+            onClick={() => navigate("/user-registration-history")}
             sx={{
               borderRadius: 2,
-              backgroundColor: location.pathname === "/history" && "#e2160f",
+              backgroundColor: location.pathname === "/user-registration-history" && "#e2160f",
             }}
           >
             <ListItemText primary="History" />
