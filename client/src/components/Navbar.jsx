@@ -57,7 +57,7 @@ const Navbar = () => {
         });
       });
     }
-  }, [user]);
+  }, [loggedInUser, user]);
 
   useEffect(() => {
     if (user) {

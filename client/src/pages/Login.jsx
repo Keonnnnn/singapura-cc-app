@@ -59,6 +59,7 @@ function Login() {
         } else {
           localStorage.setItem("accessToken", res.data.accessToken);
           setUser(res.data.user);
+          toast.success("Logged in successfully");
           // navigate("/"); // Navigate to home after login
 
           if (
