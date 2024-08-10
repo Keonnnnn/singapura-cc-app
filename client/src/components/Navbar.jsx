@@ -33,7 +33,8 @@ import {
 } from "@mui/icons-material";
 
 const Navbar = () => {
-  const { user: loggedInUser } = useContext(UserContext);
+  const { user: loggedInUser, setUser: setLoggedInUser } =
+    useContext(UserContext);
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElCustomer, setAnchorElCustomer] = useState(null);
@@ -47,17 +48,22 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    console.log(loggedInUser);
     if (user == null && loggedInUser) {
       http.get(`/user/${loggedInUser.id}`).then((res) => {
         setUser(res.data);
+        setLoggedInUser({
+          ...loggedInUser,
+          pfpURL: res.data.pfpURL,
+        });
       });
     }
+  }, [user]);
 
+  useEffect(() => {
     if (user) {
       fetchNotifications();
     }
-  }, [loggedInUser, user]);
+  }, [user]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -99,6 +105,8 @@ const Navbar = () => {
   const logout = () => {
     localStorage.clear();
     window.location = "/";
+    setLoggedInUser(null);
+    setUser(null);
   };
 
   const fetchNotifications = async () => {

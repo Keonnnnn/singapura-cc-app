@@ -163,6 +163,7 @@ function Register() {
         .post("/user/register", finalData)
         .then((res) => {
           console.log(res.data);
+          toast.success("User registered successfully");
           navigate("/login");
         })
         .catch((err) => {
