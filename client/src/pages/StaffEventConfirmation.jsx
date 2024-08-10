@@ -84,6 +84,9 @@ function StaffEventConfirmation() {
             <Typography variant="h4" sx={{ mb: 4, textAlign: 'center' }}>
                 Event Registrations
             </Typography>
+            <Typography variant="h6" sx={{ mb: 4, textAlign: 'center' }}>
+                Total Registrations: {registrations.length}
+            </Typography>
             <List>
                 {registrations.map(registration => (
                     <ListItem key={registration.userId} sx={{ mb: 2, borderBottom: '1px solid #ddd' }}>
