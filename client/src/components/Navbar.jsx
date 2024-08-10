@@ -16,9 +16,13 @@ import {
   ListItemText,
   ListItemIcon,
   Tooltip,
+  Switch,
+  FormControlLabel,
+  useTheme,
 } from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material"; // Import icons for light/dark mode
 import React, { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../logo.png";
 import UserContext from "../contexts/UserContext";
 import http from "../http";
@@ -33,11 +37,13 @@ import {
 } from "@mui/icons-material";
 
 const Navbar = () => {
-  const { user } = useContext(UserContext);
+  const { user, darkMode, toggleDarkMode } = useContext(UserContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElCustomer, setAnchorElCustomer] = useState(null);
   const [anchorElAdmin, setAnchorElAdmin] = useState(null);
   const [anchorElEvents, setAnchorElEvents] = useState(null);
+  const location = useLocation();
+  const theme = useTheme();
 
   const open = Boolean(anchorEl);
   const openCustomer = Boolean(anchorElCustomer);
@@ -191,29 +197,31 @@ const Navbar = () => {
     }
   };
 
-  // Sort notifications: 
-  // 1. Pinned and unread notifications created by admin first
-  // 2. Pinned and read notifications created by admin
-  // 3. Unpinned and unread notifications
-  // 4. Unpinned and read notifications
+  // Sort notifications:
   const sortedNotifications = [...notifications].sort((a, b) => {
-    // Pinned notifications by admin should be at the top
-    if (a.pinned && a.user?.role === "Admin" && (!b.pinned || b.user?.role !== "Admin")) return -1;
+    if (
+      a.pinned &&
+      a.user?.role === "Admin" &&
+      (!b.pinned || b.user?.role !== "Admin")
+    )
+      return -1;
     if (!a.pinned && b.pinned && b.user?.role === "Admin") return 1;
 
-    // For pinned notifications created by the admin, sort by read/unread status
-    if (a.pinned && b.pinned && a.user?.role === "Admin" && b.user?.role === "Admin") {
+    if (
+      a.pinned &&
+      b.pinned &&
+      a.user?.role === "Admin" &&
+      b.user?.role === "Admin"
+    ) {
       if (!a.isRead && b.isRead) return -1;
       if (a.isRead && !b.isRead) return 1;
     }
 
-    // Unpinned notifications: unread first, then by date
     if (!a.pinned && !b.pinned) {
       if (!a.isRead && b.isRead) return -1;
       if (a.isRead && !b.isRead) return 1;
     }
 
-    // Finally, sort by creation date
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
@@ -238,8 +246,6 @@ const Navbar = () => {
               gap: 5,
             }}
           >
-            
-
             {!isAdmin && (
               <>
                 <Box sx={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={handleEventsClick}>
@@ -266,20 +272,38 @@ const Navbar = () => {
                   <Typography>Notification</Typography>
                 </Link>
 
-
                 {user && user.role === 'Customer' && (
                   <Link to="/posts">
                     <Typography>Connect</Typography>
                   </Link>
                 )}
-                {/* <Link to="/Membership">
-                  <Typography>Membership</Typography>
-                </Link> */}
               </>
             )}
-
-            
           </Box>
+
+          {location.pathname.startsWith('/posts') && (
+            <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={darkMode}
+                    onChange={toggleDarkMode}
+                    color="default"
+                    icon={<Brightness7 />}
+                    checkedIcon={<Brightness4 />}
+                  />
+                }
+                label={darkMode ? "Dark Mode" : "Light Mode"}
+                labelPlacement="start"
+                sx={{
+                  '& .MuiTypography-root': {
+                    fontWeight: 'bold',
+                    fontSize: '0.875rem',
+                  },
+                }}
+              />
+            </Box>
+          )}
 
           {user ? (
             <>
@@ -526,24 +550,6 @@ const Navbar = () => {
                 </Box>
 
                 <Divider />
-
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    paddingX: 2,
-                    paddingY: 1,
-                  }}
-                >
-                  <Typography fontWeight={"medium"}>
-                    Total Points: {user.totalPoints}
-                  </Typography>
-                </Box>
-
-                <Divider />
-
 
                 <Link to="/notes" style={{ textDecoration: "none", color: "inherit" }}>
                   <MenuItem>
