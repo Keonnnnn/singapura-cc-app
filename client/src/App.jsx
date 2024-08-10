@@ -52,6 +52,9 @@ import FeedbackDetail from "./pages/FeedbackDetail";
 import AddNotification from "./pages/AddNotification";
 import NotificationList from "./pages/NotificationList";
 import NotificationDetail from "./pages/NotificationDetail";
+import AnnouncementList from './pages/AnnouncementList';
+import AnnouncementForm from './pages/AnnouncementForm';
+import AnnouncementDetail from './pages/AnnouncementDetail';
 
 // Ayura
 import Rewards from "./pages/Rewards";
@@ -258,6 +261,22 @@ function App() {
             <Route
               path="/notifications/:id"
               element={<NotificationDetail />}
+            />
+            <Route
+              path="/announcements"
+              element={<AnnouncementList/>} 
+            />
+            <Route
+              path="/announcements/new"
+              element={<AnnouncementForm/>}
+            />
+            {/* <Route
+              path="/announcements/:id/edit"
+              element={AnnouncementForm}
+            /> */}
+            <Route
+              path="/announcements/:id"
+              element={<AnnouncementDetail/>}
             />
 
             {/* admin routes */}
