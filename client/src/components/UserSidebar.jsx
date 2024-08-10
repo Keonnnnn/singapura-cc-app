@@ -12,14 +12,18 @@ import {
   ListItem,
   ListItemText,
   Typography,
+  Collapse
 } from "@mui/material";
 import React, { useContext, useState } from "react";
 import UserContext from "../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
 
 const UserSidebar = () => {
   const { user } = useContext(UserContext);
   const [open, setOpen] = useState(false);
+  const [membershipOpen, setMembershipOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleClickOpen = () => {
@@ -28,6 +32,10 @@ const UserSidebar = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleMembershipClick = () => {
+    setMembershipOpen(!membershipOpen); // Toggle dropdown under Membership
   };
 
   const logout = () => {
@@ -76,16 +84,30 @@ const UserSidebar = () => {
           >
             <ListItemText primary="Account" />
           </ListItem>
-          <ListItem
-            button
-            onClick={() => navigate("/membership")}
-            sx={{
-              borderRadius: 2,
-              backgroundColor: location.pathname === "/membership" && "#e2160f",
-            }}
-          >
+          {/* Main Membership Item with Dropdown */}
+          <ListItem button onClick={handleMembershipClick} sx={{ borderRadius: 2 }}>
             <ListItemText primary="Membership" />
+            {membershipOpen ? <ExpandLess /> : <ExpandMore />}
           </ListItem>
+          {/* Subpages under Membership */}
+          <Collapse in={membershipOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItem
+                button
+                onClick={() => navigate("/claimrewards")}
+                sx={{ pl: 4, borderRadius: 2, backgroundColor: location.pathname === "/claimrewards" && "#e2160f" }}
+              >
+                <ListItemText primary="My Rewards" />
+              </ListItem>
+              <ListItem
+                button
+                onClick={() => navigate("/spin")}
+                sx={{ pl: 4, borderRadius: 2, backgroundColor: location.pathname === "/spin" && "#e2160f" }}
+              >
+                <ListItemText primary="Spin The Wheel" />
+              </ListItem>
+            </List>
+          </Collapse>
           <ListItem
             button
             onClick={() => navigate("/history")}

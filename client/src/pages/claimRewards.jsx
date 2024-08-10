@@ -5,6 +5,7 @@ import '../claimRewards.css';
 import { Paper, Box, Typography, Button } from '@mui/material';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
+import UserSidebar from "../components/UserSidebar";
 
 function ClaimRewards() {
   const [points, setPoints] = useState(0); // Initial state set to 0
@@ -143,14 +144,17 @@ function ClaimRewards() {
   };
 
   return (
+    <Box sx={{marginTop:"100px"}}>
+    <UserSidebar/>
     <UserContext.Provider value={{ user, setUser }}>
-      <Box>
-        <div>You are currently a {userTier} member</div>
+      <Box sx={{margin:"-500px 0px 0px 0px"}}>
+      
+        {/* <div>You are currently a {userTier} member</div> */}
         {user && (
           <>
-            <Typography sx={{ marginLeft: 1 }}>{user.firstName} {user.lastName}</Typography>
+            {/* <Typography sx={{ marginLeft: 1 }}>{user.firstName} {user.lastName}</Typography>
             <Typography>{user.totalPoints}</Typography>
-            <Typography>Membership Type: {user.membershipType}</Typography> {/* Display membership type */}
+            <Typography>Membership Type: {user.membershipType}</Typography> Display membership type */}
           </>
         )}
         <div style={{ width: 250, height: 250, margin: '-100px 0px 1000px 800px' }}>
@@ -208,6 +212,7 @@ function ClaimRewards() {
         </div>
       </Box>
     </UserContext.Provider>
+    </Box>
   );
 }
 

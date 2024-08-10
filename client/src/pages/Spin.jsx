@@ -7,6 +7,7 @@ import { Wheel } from 'react-custom-roulette';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import '../spin.css';
 import UserContext from '../contexts/UserContext';
+import UserSidebar from '../components/UserSidebar';
 
 function Spin() {
   const [userPoints, setUserPoints] = useState(60000); // example starting points
@@ -145,36 +146,8 @@ function Spin() {
   const filteredRewards = rewardList.filter(reward => reward.Tier !== user?.membershipType);
 
   return (
-    <Box>
-      <Container sx={{ backgroundColor: 'lightgray', width: '250px', height: '600px', marginLeft: '30px', borderRadius: '10px', marginTop: '100px' }}>
-        <AccountCircleIcon sx={{ fontSize: '200px' }} />
-        <h1 style={{ textAlign: 'center', marginTop: '-30px' }}>User</h1>
-        <p>Points: {userPoints}</p>
-        <p>Membership Tier: {user?.membershipType}</p>
-        <div>
-          <Button
-            id="basic-button"
-            aria-controls={open ? 'basic-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
-          >
-            Membership
-          </Button>
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button',
-            }}
-          >
-            <MenuItem onClick={handleClaimRewards}>My Rewards</MenuItem>
-            <MenuItem onClick={handleSpinTheWheel}>Spin The Wheel</MenuItem>
-          </Menu>
-        </div>
-      </Container>
+    <Box sx={{marginTop:"100px"}}>
+      <UserSidebar/>
       <div className="spin-container">
         <h3 id='textpos'>You are currently a {user?.membershipType} member</h3>
         <div className="header-container">

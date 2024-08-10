@@ -57,7 +57,6 @@ import NotificationDetail from "./pages/NotificationDetail";
 import Rewards from "./pages/Rewards";
 import EditRewards from "./pages/EditRewards";
 import UpdateReward from "./pages/updateReward";
-import Membership from "./pages/Membership.jsx";
 import ClaimRewards from "./pages/claimRewards.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
@@ -221,15 +220,6 @@ function App() {
             <Route path="/notes" element={<Notes />} />
             <Route path="/addnote" element={<AddNote />} />
             <Route path="/editnote/:id" element={<EditNote />} />
-            <Route
-              path="/Membership"
-              element={
-                <ProtectedRoute
-                  element={Membership}
-                  allowedRoles={["Customer"]}
-                />
-              }
-            />
             <Route
               path="/ClaimRewards"
               element={
