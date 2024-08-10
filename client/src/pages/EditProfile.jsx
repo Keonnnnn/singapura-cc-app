@@ -21,6 +21,7 @@ import UserContext from "../contexts/UserContext";
 import UserSidebar from "../components/UserSidebar";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { toast } from "react-toastify";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -72,6 +73,7 @@ const EditProfile = () => {
             ...res.data,
           });
         } catch (error) {
+          toast.error("Failed to fetch user profile");
           console.error(error);
         }
       }
@@ -233,9 +235,10 @@ const EditProfile = () => {
           }),
           setLoggedInUser(updatedValues)
         );
-
+        toast.success("Profile updated successfully");
         navigate("/profile");
       } catch (error) {
+        toast.error("Failed to update profile");
         console.error("Error updating profile:", error);
       }
     },
@@ -406,7 +409,11 @@ const EditProfile = () => {
                     type="date"
                     label="Date of Birth"
                     name="dateOfBirth"
-                    value={formik.values.dateOfBirth}
+                    value={
+                      formik.values.dateOfBirth
+                        ? formik.values.dateOfBirth.split("T")[0]
+                        : ""
+                    }
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     error={
