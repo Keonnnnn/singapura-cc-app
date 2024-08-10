@@ -37,7 +37,7 @@ import {
 } from "@mui/icons-material";
 
 const Navbar = () => {
-  const { user, darkMode, toggleDarkMode: loggedInUser, setUser: setLoggedInUser } =
+  const { user: loggedInUser, setUser: setLoggedInUser, darkMode, toggleDarkMode } =
     useContext(UserContext);
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
