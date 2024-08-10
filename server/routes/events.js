@@ -250,7 +250,7 @@ router.post('/:eventId/register', validateToken, async (req, res) => {
             from: process.env.ADMIN_EMAIL,
             to: user.email,
             subject: 'Event Registration Confirmation',
-            html: `<p>Dear ${user.firstName}+${user.lastName},</p>
+            html: `<p>Dear ${user.firstName} ${user.lastName},</p>
                 <p>Thank you for registering for the event ${event.name}. We look forward to seeing you there!</p>
 `,
         };
