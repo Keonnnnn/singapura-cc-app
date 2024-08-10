@@ -28,6 +28,7 @@
     "react-circular-progressbar": "^2.1.0",
     "react-custom-roulette": "^1.4.1",
     "react-dom": "^18.2.0",
+    "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.23.1",
     "react-toastify": "^10.0.5",
     "yup": "^1.4.0"

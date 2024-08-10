@@ -1,0 +1,92 @@
+.static-overlay {
+    position: absolute;
+    top: 30%;
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust position to be perfectly centered */
+    text-align: center;
+    z-index: 10; /* Ensure it's above other content */
+}
+
+.header-text {
+    font-size: 2.5em; /* Adjust font size as needed */
+    font-family: 'Arial';
+    text-align: left; 
+    color: white;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7); /* Add some text shadow for readability */
+}
+
+.cta-button {
+    padding: 10px 10px;
+    background-color: white;
+    color: red;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    text-transform: uppercase;
+    text-shadow: none; /* Optional: Remove text shadow from the button text */
+    transition: background-color 0.3s ease;
+    margin:0px 580px 0px 10px;
+}
+
+.cta-button:hover {
+    background-color: darkgrey;
+}
+
+.carousel-container {
+    max-width: 100%;
+    position: relative;
+    overflow: hidden; /* Prevent any overlap */
+}
+
+.carousel .slide {
+    transition: transform 0.5s ease-in-out, z-index 0.5s ease-in-out;
+    position: relative;
+    z-index: 1; /* Base z-index for all slides */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 385px; /* Set a consistent height for all slides */
+}
+
+.carousel .center-slide {
+    transform: scale(1.1); /* Slightly scale up the center slide */
+    z-index: 2; /* Ensure the center slide is above the others */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Optional: Add a subtle shadow */
+}
+
+.carousel .slide img,
+.carousel .center-slide img {
+    width: 100%;
+    max-width: 1000px;
+    height: 350px; /* Ensure uniform height for all slides */
+    object-fit: cover;
+    margin: 0; /* Remove any extra margin on the images */
+}
+
+.carousel .control-dots {
+    position: absolute;
+    bottom: 10px; /* Position the dots closer to the bottom of the carousel */
+    left: 50%;
+    transform: translateX(-50%); /* Center the dots horizontally */
+    display: flex; /* Use flexbox for easy centering */
+    justify-content: center; /* Center the dots horizontally */
+    align-items: center; /* Center the dots vertically */
+    width: 100%; /* Ensure the dots container adjusts to content */
+    pointer-events: none; /* Ensure dots do not interfere with slide interactions */
+}
+
+.carousel .control-dots .dot {
+    background-color: #fff; /* Color of the dots */
+    opacity: 0.75; /* Transparency of the dots */
+    margin: 0 5px; /* Spacing between dots */
+    box-shadow: none; /* Remove shadow */
+    width: 10px;
+    height: 10px;
+    border-radius: 50%; /* Make the dots circular */
+}
+
+.carousel .center-slide + .control-dots {
+    left: 50%; /* Ensure dots are centered relative to the center slide */
+    transform: translateX(-50%);
+    width: auto;
+}
