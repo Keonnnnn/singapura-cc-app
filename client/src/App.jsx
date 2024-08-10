@@ -229,7 +229,6 @@ function App() {
             <Route path="/addnote" element={<AddNote />} />
             <Route path="/editnote/:id" element={<EditNote />} />
             <Route
-            <Route
               path="/ClaimRewards"
               element={
                 <ProtectedRoute
@@ -355,11 +354,6 @@ function App() {
             <Route
               path="/admin/edit-event/:id"
               element={<ProtectedRoute element={EditEvent} allowedRoles={["Admin", "Staff"]} />}
-            />
-
-             <Route
-              path="/admin/rewards"
-              element={<ProtectedRoute element={Rewards} />}
             />
             <Route
               path="/admin/edit-rewards"
