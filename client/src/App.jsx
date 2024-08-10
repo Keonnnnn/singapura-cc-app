@@ -494,7 +494,6 @@ function App() {
             />
           </Routes>
           <Footer />
-          <ToastContainer />
         </ThemeProvider>
       </Router>
       <ToastContainer />

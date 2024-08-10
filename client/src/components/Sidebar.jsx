@@ -21,7 +21,6 @@ import UserContext from "../contexts/UserContext";
 // Icons for the sidebar options
 import dashboardIcon from "../assets/dashboard.svg";
 import usersIcon from "../assets/users.svg";
-import blogIcon from "../assets/blog.svg";
 import eventsIcon from "../assets/events.svg";
 import rewardsIcon from "../assets/rewards.svg";
 import notificationsIcon from "../assets/notification.svg";
@@ -47,11 +46,6 @@ const sideMenuOptions = [
         adminOnly: true,
       },
     ],
-  },
-  {
-    name: "Blogs",
-    icon: blogIcon,
-    path: "/posts",
   },
   {
     name: "Events",

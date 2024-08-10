@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Container, Paper, List, ListItem, ListItemText, Grid } from '@mui/material';
 import http from '../http'; 
 import { useNavigate, useParams } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CSVLink } from "react-csv";
 
@@ -80,7 +80,6 @@ function StaffEventConfirmation() {
 
     return (
         <Container component={Paper} sx={{ p: 4, mt: 4 }}>
-            <ToastContainer />
             <Typography variant="h4" sx={{ mb: 4, textAlign: 'center' }}>
                 Event Registrations
             </Typography>

@@ -4,7 +4,7 @@ import { Box, Typography, TextField, Button, Paper, IconButton, Dialog, DialogTi
 import { PhotoCamera, Delete, Close } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
@@ -332,7 +332,6 @@ function EditPost({ darkMode }) {
                     </Dialog>
                 </Paper>
             </Slide>
-            <ToastContainer />
         </Box>
     );
 }

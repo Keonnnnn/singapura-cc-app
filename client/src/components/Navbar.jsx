@@ -580,6 +580,21 @@ const Navbar = () => {
                     </MenuItem>
                   </Link>
                 )}
+
+
+                {isAdmin && (
+                  <Link
+                    to="/posts"
+                    style={{
+                      textDecoration: "none",
+                      color: "inherit",
+                    }}
+                  >
+                    <MenuItem>
+                      <Typography>Blog</Typography>
+                    </MenuItem>
+                  </Link>
+                )}
                 <Link
                   to="/notes"
                   style={{ textDecoration: "none", color: "inherit" }}
@@ -597,6 +612,16 @@ const Navbar = () => {
                     <Typography>Profile</Typography>
                   </MenuItem>
                 </Link>
+                <Link
+                  to="/settings"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <MenuItem>
+                    <Typography>Settings</Typography>
+                  </MenuItem>
+                </Link>
+                <Divider />
+
                 <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
 
@@ -675,6 +700,8 @@ const Navbar = () => {
                     <Typography>Settings</Typography>
                   </MenuItem>
                 </Link>
+                <Divider />
+
                 <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
             </>

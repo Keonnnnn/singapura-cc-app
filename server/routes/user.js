@@ -335,18 +335,18 @@ function generateSecurePassword(length) {
 
   let password = "";
 
-  // Generate alphanumeric part
-  const alphanumericLength = Math.floor(length * 0.8); // Adjust percentage as needed
-  for (let i = 0; i < alphanumericLength; i++) {
-    const charSet = [lowerCaseLetters, upperCaseLetters, numbers][
-      Math.floor(Math.random() * 3)
-    ];
-    password += getRandomChar(charSet);
-  }
+  // Add one character of each required type
+  password += getRandomChar(lowerCaseLetters);
+  password += getRandomChar(upperCaseLetters);
+  password += getRandomChar(numbers);
+  password += getRandomChar(specialCharacters);
 
-  // Generate special character part
-  for (let i = 0; i < length - alphanumericLength; i++) {
-    password += getRandomChar(specialCharacters);
+  // Generate remaining characters
+  const remainingLength = length - 4;
+  const allCharacters = lowerCaseLetters + upperCaseLetters + numbers + specialCharacters;
+
+  for (let i = 0; i < remainingLength; i++) {
+    password += getRandomChar(allCharacters);
   }
 
   // Shuffle the password for better randomness

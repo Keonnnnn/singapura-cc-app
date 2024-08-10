@@ -245,6 +245,9 @@ router.post('/:eventId/register', validateToken, async (req, res) => {
             present: false
         });
 
+        await User.update({ totalPoints: user.totalPoints + event.points }, { where: { id: userId } });
+        
+
         // Send confirmation email
         const mailOptions = {
             from: process.env.ADMIN_EMAIL,

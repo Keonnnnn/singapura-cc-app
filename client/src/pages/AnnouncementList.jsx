@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Typography, List, ListItem, ListItemText, Button, Box } from '@mui/material';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import http from '../http'; 
 
@@ -37,7 +37,6 @@ const AnnouncementList = () => {
 
     return (
         <Container maxWidth="md">            
-        <ToastContainer />
             <Typography variant="h4" align="center" gutterBottom>
                 Announcements
             </Typography>
