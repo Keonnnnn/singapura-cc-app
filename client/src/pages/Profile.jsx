@@ -126,15 +126,17 @@ const Profile = () => {
                     <strong>Last Name:</strong> {user.lastName}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Date of Birth:</strong>{" "}
-                    {new Date(user.dateOfBirth).toLocaleDateString(
-                      "en-US",
-                      options
-                    )}
-                  </Typography>
-                </Grid>
+                {user.role != "Admin" && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Date of Birth:</strong>{" "}
+                      {new Date(user.dateOfBirth).toLocaleDateString(
+                        "en-US",
+                        options
+                      )}
+                    </Typography>
+                  </Grid>
+                )}
                 {user.role != "Admin" && (
                   <Grid item xs={12} sm={6}>
                     <Typography variant="body1">

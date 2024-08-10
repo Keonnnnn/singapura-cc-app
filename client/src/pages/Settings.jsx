@@ -139,20 +139,24 @@ const Settings = () => {
             <Divider sx={{ my: 3 }} />
 
             {/* Delete Account */}
-            <Typography
-              variant="h6"
-              sx={{ color: "#e2160f", fontWeight: "bold" }}
-            >
-              Danger Zone
-            </Typography>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleOpenDeleteDialog}
-              sx={{ mt: 2 }}
-            >
-              Delete My Account
-            </Button>
+            {user.role != "Admin" && (
+              <>
+                <Typography
+                  variant="h6"
+                  sx={{ color: "#e2160f", fontWeight: "bold" }}
+                >
+                  Danger Zone
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleOpenDeleteDialog}
+                  sx={{ mt: 2 }}
+                >
+                  Delete My Account
+                </Button>
+              </>
+            )}
           </Paper>
         </>
       )}
