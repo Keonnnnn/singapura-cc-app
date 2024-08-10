@@ -250,7 +250,7 @@ router.post('/:eventId/register', validateToken, async (req, res) => {
             from: process.env.ADMIN_EMAIL,
             to: user.email,
             subject: 'Event Registration Confirmation',
-            html: `<p>Dear ${user.firstName}+${user.lastName},</p>
+            html: `<p>Dear ${user.firstName} ${user.lastName},</p>
                 <p>Thank you for registering for the event ${event.name}. We look forward to seeing you there!</p>
 `,
         };
@@ -316,19 +316,6 @@ router.get('/user/:userId/registrations', validateToken, async (req, res) => {
         res.json(registrations);
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while fetching user registrations' });
-    }
-});
-
-// Get user information
-router.get('/user/me', validateToken, async (req, res) => {
-    try {
-        const user = await User.findByPk(req.user.id);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        res.json(user);
-    } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching user information' });
     }
 });
 

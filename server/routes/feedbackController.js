@@ -54,7 +54,7 @@ exports.createFeedback = async (req, res) => {
                 from: process.env.EMAIL_USER,
                 to: user.email,
                 subject: 'Feedback Submitted',
-                text: `Dear ${user.firstName},\n\nThank you for your feedback on Eco Run 2023\nHope you have a Great day!\n\nBest regards,\nYour Team`
+                text: `Dear ${user.firstName},\n\nThank you for your feedback!\nHope you have a Great day!\n\nBest regards,\nYour Team`
             };
             await sendMailWithPromise(mailOptions);
         }

@@ -4,31 +4,46 @@ import http from '../http';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CSVLink } from "react-csv";
 
 function StaffEventConfirmation() {
     const { id: eventId } = useParams();
     const navigate = useNavigate();
     const [registrations, setRegistrations] = useState([]);
+    const [eventName, setEventName] = useState("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        http.get(`/events/${eventId}/registrations`)
-        .then((res) => {
-            setRegistrations(res.data);
-        })
-        .catch((err) => {
-            console.error("Failed to fetch registrations", err);
-            toast.error("Failed to fetch registrations");
-        })
-        .finally(() => {
-            setLoading(false);
-        });
+        const fetchEventDetails = async () => {
+            try {
+                const eventResponse = await http.get(`/events/${eventId}`);
+                setEventName(eventResponse.data.name);
+            } catch (error) {
+                console.error("Failed to fetch event details", error);
+                toast.error("Failed to fetch event details");
+            }
+        };
+
+        const fetchRegistrations = async () => {
+            try {
+                const registrationResponse = await http.get(`/events/${eventId}/registrations`);
+                setRegistrations(registrationResponse.data);
+            } catch (error) {
+                console.error("Failed to fetch registrations", error);
+                toast.error("Failed to fetch registrations");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEventDetails();
+        fetchRegistrations();
     }, [eventId]);
 
     const markAsPresent = (userId) => {
         http.post(`/events/${eventId}/mark-present`, { userId }, {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}` // Ensure token is sent with the request
+                Authorization: `Bearer ${localStorage.getItem('token')}` 
             }
         })
         .then((res) => {
@@ -49,11 +64,28 @@ function StaffEventConfirmation() {
         return <div>Loading...</div>;
     }
 
+    const headers = [
+        { label: "Name", key: "name" },
+        { label: "Email", key: "email" },
+        { label: "Present", key: "present" },
+    ];
+
+    const csvData = registrations.map(reg => ({
+        name: reg.name,
+        email: reg.email,
+        present: reg.present ? "Yes" : "No"
+    }));
+
+    const fileName = `${eventName.replace(/ /g, "_")}_registrations.csv`;
+
     return (
         <Container component={Paper} sx={{ p: 4, mt: 4 }}>
             <ToastContainer />
             <Typography variant="h4" sx={{ mb: 4, textAlign: 'center' }}>
                 Event Registrations
+            </Typography>
+            <Typography variant="h6" sx={{ mb: 4, textAlign: 'center' }}>
+                Total Registrations: {registrations.length}
             </Typography>
             <List>
                 {registrations.map(registration => (
@@ -87,9 +119,15 @@ function StaffEventConfirmation() {
                 <Button 
                     variant="outlined" 
                     onClick={() => navigate('/events')}
+                    sx={{ mr: 2 }}
                 >
                     Back to Events
                 </Button>
+                <CSVLink data={csvData} headers={headers} filename={fileName}>
+                    <Button variant="contained" color="secondary">
+                        Export to CSV
+                    </Button>
+                </CSVLink>
             </Box>
         </Container>
     );
