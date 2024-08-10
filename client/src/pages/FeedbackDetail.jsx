@@ -106,146 +106,72 @@ const FeedbackDetail = () => {
 
   const isEditable = userId === user.id || user.id === 1;
 
-  return (
-    <Box sx={{ display: "flex", justifyContent: "center", marginTop: "40px" }}>
-      <Paper
-        elevation={3}
-        sx={{
-          padding: "20px",
-          maxWidth: "600px",
-          width: "100%",
-          position: "relative",
-          borderRadius: "12px",
-        }}
-      >
-        <IconButton
-          color="secondary"
-          sx={{
-            position: "absolute",
-            top: "8px",
-            right: "8px",
-            bgcolor: "rgba(255,255,255,0.8)",
-            borderRadius: "50%",
-          }}
-          onClick={() => navigate("/feedbacklist")}
-        >
-          <Close />
-        </IconButton>
-        <Typography
-          variant="h5"
-          gutterBottom
-          sx={{ textAlign: "center", fontWeight: "bold", color: "#b71c1c" }}
-        >
-          Feedback Detail
-        </Typography>
-        <form>
-          <Box
-            sx={{
-              backgroundColor: "#f5f5f5",
-              p: 2,
-              borderRadius: "8px",
-              mb: 2,
-            }}
-          >
-            <Typography gutterBottom>User ID</Typography>
-            <TextField
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              fullWidth
-              required
-              variant="outlined"
-              margin="normal"
-              disabled
-              sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
-            />
-          </Box>
-          <Box
-            sx={{
-              backgroundColor: "#f5f5f5",
-              p: 2,
-              borderRadius: "8px",
-              mb: 2,
-            }}
-          >
-            <Typography gutterBottom>Rating (1 to 10)</Typography>
-            <Slider
-              value={eventId}
-              onChange={(e, value) => setEventId(value)}
-              aria-labelledby="rating-slider"
-              valueLabelDisplay="auto"
-              step={1}
-              marks
-              min={1}
-              max={10}
-              sx={{ color: "#b71c1c" }}
-              disabled={!isEditable}
-            />
-          </Box>
-          <Box
-            sx={{
-              backgroundColor: "#f5f5f5",
-              p: 2,
-              borderRadius: "8px",
-              mb: 2,
-            }}
-          >
-            <Typography gutterBottom>Feedback</Typography>
-            <TextField
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              fullWidth
-              required
-              multiline
-              rows={4}
-              variant="outlined"
-              margin="normal"
-              disabled={!isEditable}
-              sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
-            />
-          </Box>
-          <Box
-            sx={{
-              backgroundColor: "#f5f5f5",
-              p: 2,
-              borderRadius: "8px",
-              mb: 2,
-            }}
-          >
-            <Typography gutterBottom>
-              Response (reason for changing feedback)
-            </Typography>
-            <TextField
-              value={response}
-              onChange={(e) => setResponse(e.target.value)}
-              fullWidth
-              multiline
-              rows={4}
-              variant="outlined"
-              margin="normal"
-              disabled={!isEditable}
-              sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
-            />
-          </Box>
-          {imageFile && (
-            <Box
-              sx={{
-                marginTop: "20px",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <img
-                src={`${import.meta.env.VITE_FILE_BASE_URL}${
-                  feedback.imageFile
-                }`}
-                alt="feedback"
-                style={{ maxWidth: "100%", borderRadius: "8px" }}
-              />
-            </Box>
-          )}
-          {isEditable && (
-            <>
-              {/* <Button variant="contained" component="label" sx={{ marginTop: '20px' }}>
+    return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
+            <Paper elevation={3} sx={{ padding: '20px', maxWidth: '600px', width: '100%', position: 'relative', borderRadius: '12px' }}>
+                <IconButton
+                    color="secondary"
+                    sx={{ position: 'absolute', top: '8px', right: '8px', bgcolor: 'rgba(255,255,255,0.8)', borderRadius: '50%' }}
+                    onClick={() => navigate('/feedbacklist')}
+                >
+                    <Close />
+                </IconButton>
+                <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold', color: '#b71c1c' }}>
+                    Feedback Detail
+                </Typography>
+                <form>
+                    <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
+                        <Typography gutterBottom>Rating (1 to 10)</Typography>
+                        <Slider
+                            value={eventId}
+                            onChange={(e, value) => setEventId(value)}
+                            aria-labelledby="rating-slider"
+                            valueLabelDisplay="auto"
+                            step={1}
+                            marks
+                            min={1}
+                            max={10}
+                            sx={{ color: '#b71c1c' }}
+                            disabled={!isEditable}
+                        />
+                    </Box>
+                    <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
+                        <Typography gutterBottom>Feedback</Typography>
+                        <TextField
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
+                            fullWidth
+                            required
+                            multiline
+                            rows={4}
+                            variant="outlined"
+                            margin="normal"
+                            disabled={!isEditable}
+                            sx={{ backgroundColor: '#fff', borderRadius: '4px' }}
+                        />
+                    </Box>
+                    <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
+                        <Typography gutterBottom>Response (reason for changing feedback)</Typography>
+                        <TextField
+                            value={response}
+                            onChange={(e) => setResponse(e.target.value)}
+                            fullWidth
+                            multiline
+                            rows={4}
+                            variant="outlined"
+                            margin="normal"
+                            disabled={!isEditable}
+                            sx={{ backgroundColor: '#fff', borderRadius: '4px' }}
+                        />
+                    </Box>
+                    {imageFile && (
+                        <Box sx={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+                            <img src={`${import.meta.env.VITE_FILE_BASE_URL}${feedback.imageFile}`} alt="feedback" style={{ maxWidth: '100%', borderRadius: '8px' }} />
+                        </Box>
+                    )}
+                    {isEditable && (
+                        <>
+                            {/* <Button variant="contained" component="label" sx={{ marginTop: '20px' }}>
                                 Upload Image
                                 <input hidden accept="image/*" type="file" onChange={onFileChange} />
                             </Button> */}

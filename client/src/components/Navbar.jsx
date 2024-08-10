@@ -16,9 +16,13 @@ import {
   ListItemText,
   ListItemIcon,
   Tooltip,
+  Switch,
+  FormControlLabel,
+  useTheme,
 } from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material"; // Import icons for light/dark mode
 import React, { useContext, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "../logo.png";
 import UserContext from "../contexts/UserContext";
 import http from "../http";
@@ -33,13 +37,15 @@ import {
 } from "@mui/icons-material";
 
 const Navbar = () => {
-  const { user: loggedInUser, setUser: setLoggedInUser } =
+  const { user, darkMode, toggleDarkMode: loggedInUser, setUser: setLoggedInUser } =
     useContext(UserContext);
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElCustomer, setAnchorElCustomer] = useState(null);
   const [anchorElAdmin, setAnchorElAdmin] = useState(null);
   const [anchorElEvents, setAnchorElEvents] = useState(null);
+  const location = useLocation();
+  const theme = useTheme();
 
   const open = Boolean(anchorEl);
   const openCustomer = Boolean(anchorElCustomer);
@@ -233,13 +239,11 @@ const Navbar = () => {
       if (a.isRead && !b.isRead) return 1;
     }
 
-    // Unpinned notifications: unread first, then by date
     if (!a.pinned && !b.pinned) {
       if (!a.isRead && b.isRead) return -1;
       if (a.isRead && !b.isRead) return 1;
     }
 
-    // Finally, sort by creation date
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
@@ -330,12 +334,33 @@ const Navbar = () => {
                     <Typography>Connect</Typography>
                   </Link>
                 )}
-                {/* <Link to="/Membership">
-                  <Typography>Membership</Typography>
-                </Link> */}
               </>
             )}
           </Box>
+
+          {location.pathname.startsWith('/posts') && (
+            <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={darkMode}
+                    onChange={toggleDarkMode}
+                    color="default"
+                    icon={<Brightness7 />}
+                    checkedIcon={<Brightness4 />}
+                  />
+                }
+                label={darkMode ? "Dark Mode" : "Light Mode"}
+                labelPlacement="start"
+                sx={{
+                  '& .MuiTypography-root': {
+                    fontWeight: 'bold',
+                    fontSize: '0.875rem',
+                  },
+                }}
+              />
+            </Box>
+          )}
 
           {user ? (
             <>

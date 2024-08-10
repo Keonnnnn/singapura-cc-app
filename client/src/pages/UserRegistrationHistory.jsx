@@ -43,24 +43,15 @@ function UserRegistrationHistory() {
     fetchRegistrations();
   }, [token, userId]);
 
-  return (
-    <Box sx={{ display: "flex", justifyContent: "center", mt: 4, gap: 5 }}>
-      <UserSidebar />
-      <Paper
-        elevation={3}
-        sx={{ p: 3, borderRadius: "12px", minHeight: "400px" }}
-      >
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: "bold",
-            textAlign: "center",
-            color: "#e2160f",
-            mb: 4,
-          }}
-        >
-          My Event Registration History
-        </Typography>
+    return (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 5 }}>
+            <UserSidebar />
+            <Paper elevation={3} sx={{ p: 3, borderRadius: '12px', minHeight: '400px',maxWidth: 800,
+            width: "100%" }}>
+                <ToastContainer />
+                <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', color: '#e2160f', mb: 4 }}>
+                    My Event Registration History
+                </Typography>
 
         {registrations.length === 0 ? (
           <Typography
