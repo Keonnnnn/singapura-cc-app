@@ -64,6 +64,15 @@ const OtpVerification = () => {
       setError("");
       localStorage.setItem("accessToken", response.data.accessToken);
       setUser(response.data.user);
+      if (response.data.user.deleteRequested === true) {
+        // set to false
+        console.log(response.data.user);
+        http.put(`/user/${response.data.user.id}`, {
+          ...response.data.user,
+          deleteRequested: false,
+          deleteRequestedAt: null,
+        });
+      }
       navigate("/"); // Redirect to home or another page after successful verification
     } catch (err) {
       setError(err.response ? err.response.data.message : "An error occurred");

@@ -107,9 +107,12 @@ const UserSidebar = () => {
                 onClick={() => navigate(item.path)}
                 sx={{
                   borderRadius: 2,
-                  backgroundColor:
-                    location.pathname === item.path ? "#e2160f" : "transparent",
-                  color: location.pathname === item.path ? "#fff" : "inherit",
+                  backgroundColor: location.pathname.startsWith(item.path)
+                    ? "#e2160f"
+                    : "transparent",
+                  color: location.pathname.startsWith(item.path)
+                    ? "#fff"
+                    : "inherit",
                 }}
               >
                 {item.icon}

@@ -265,6 +265,8 @@ router.post("/login", async (req, res) => {
       role: user.role,
       otpEnabled: user.otpEnabled,
       pfpURL: user.pfpURL,
+      deleteRequested: user.deleteRequested,
+      deleteRequestedAt: user.deleteRequestedAt,
     };
 
     let accessToken = sign(userInfo, process.env.APP_SECRET, {
@@ -441,6 +443,8 @@ router.get("/auth", validateToken, (req, res) => {
     role: req.user.role,
     otpEnabled: req.user.otpEnabled,
     pfpURL: req.user.pfpURL,
+    deleteRequested: req.user.deleteRequested,
+    deleteRequestedAt: req.user.deleteRequestedAt,
   };
   res.json({ user: userInfo });
 });
@@ -830,6 +834,32 @@ router.put("/:id", validateToken, async (req, res) => {
   }
 });
 
+// USER DELETE REQUEST
+router.post("/:id/delete-request", validateToken, async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Check if user exists
+    let user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Get the current date and time
+    const deleteRequestedAt = new Date(); // Corrected: Use new Date() instead of new Date.now()
+
+    // Update user's deleteRequested and deleteRequestedAt fields
+    await User.update(
+      { deleteRequested: true, deleteRequestedAt: deleteRequestedAt },
+      { where: { id } }
+    );
+
+    res.json({ message: "Account deletion requested." });
+  } catch (err) {
+    console.error("Error during account deletion request:", err); // Log the error for debugging
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 // FETCH ALL USERS
 router.get("/", validateToken, async (req, res) => {
   try {

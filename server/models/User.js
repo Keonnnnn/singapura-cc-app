@@ -118,6 +118,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(255),
         allowNull: true,
       },
+      deleteRequested: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      deleteRequestedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       lastLogin: {
         // New field to track last login timestamp
         type: DataTypes.DATE,

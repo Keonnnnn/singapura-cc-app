@@ -57,6 +57,14 @@ function Login() {
             state: { email: data.email, accessToken: res.data.accessToken },
           });
         } else {
+          console.log(res.data.user);
+          if (res.data.user.deleteRequested === true) {
+            // set to false
+            http.put(`/user/${res.data.user.id}`, {
+              deleteRequested: false,
+              deleteRequestedAt: null,
+            });
+          }
           localStorage.setItem("accessToken", res.data.accessToken);
           setUser(res.data.user);
           toast.success("Logged in successfully");

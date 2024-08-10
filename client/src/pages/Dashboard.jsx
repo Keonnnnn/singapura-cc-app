@@ -38,8 +38,9 @@ const Dashboard = () => {
 
       const dailyUsage = days.map((date) => ({
         date,
-        usage: res.data.filter((user) => user.lastLogin.split("T")[0] == date)
-          .length,
+        usage: res.data.filter((user) =>
+          user.lastLogin ? user.lastLogin.split("T")[0] == date : false
+        ).length,
       }));
 
       setDailyUsage(dailyUsage);
@@ -127,7 +128,6 @@ const Dashboard = () => {
               <Grid container spacing={2}>
                 {/* Display top 5 recent customers profile picture, name, email and date created in a nice vertical list with the details spread out horizontally*/}
                 {recentCustomers.slice(0, 5).map((customer, index) => {
-                  console.log(customer);
                   return (
                     <Grid item xs={12} key={index}>
                       <Box
