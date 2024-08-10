@@ -1,31 +1,32 @@
 .static-overlay {
     position: absolute;
-    top: 30%;
+    top: 50%; /* Center vertically */
     left: 50%; /* Center horizontally */
     transform: translate(-50%, -50%); /* Adjust position to be perfectly centered */
     text-align: center;
     z-index: 10; /* Ensure it's above other content */
+    width: 100%; /* Full width for the overlay */
+    padding: 0 20px; /* Add padding to ensure text doesn't touch the edges */
 }
 
 .header-text {
     font-size: 2.5em; /* Adjust font size as needed */
     font-family: 'Arial';
-    text-align: left; 
     color: white;
     text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7); /* Add some text shadow for readability */
 }
 
 .cta-button {
-    padding: 10px 10px;
+    padding: 10px 20px; /* Increased padding for better appearance */
     background-color: white;
     color: red;
     border: none;
     font-size: 1em;
     cursor: pointer;
     text-transform: uppercase;
-    text-shadow: none; /* Optional: Remove text shadow from the button text */
+    text-shadow: none;
     transition: background-color 0.3s ease;
-    margin:0px 580px 0px 10px;
+    margin-top: 20px; /* Added margin for spacing */
 }
 
 .cta-button:hover {
@@ -35,7 +36,7 @@
 .carousel-container {
     max-width: 100%;
     position: relative;
-    overflow: hidden; /* Prevent any overlap */
+    overflow: hidden;
 }
 
 .carousel .slide {
@@ -49,17 +50,17 @@
 }
 
 .carousel .center-slide {
-    transform: scale(1.1); /* Slightly scale up the center slide */
+    transform: scale(1.2); /* Increase scale to make the center slide larger */
     z-index: 2; /* Ensure the center slide is above the others */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5); /* Optional: Add a subtle shadow */
+    margin: 0 20px; /* Add margin to the left and right of the center slide */
 }
 
 .carousel .slide img,
 .carousel .center-slide img {
     width: 100%;
-    max-width: 1000px;
-    height: 350px; /* Ensure uniform height for all slides */
-    object-fit: cover;
+    height: 100%; /* Ensure the image covers the slide area */
+    object-fit: cover; /* This will cover the whole area, cropping if necessary */
     margin: 0; /* Remove any extra margin on the images */
 }
 
@@ -85,8 +86,17 @@
     border-radius: 50%; /* Make the dots circular */
 }
 
-.carousel .center-slide + .control-dots {
-    left: 50%; /* Ensure dots are centered relative to the center slide */
-    transform: translateX(-50%);
-    width: auto;
+@media (max-width: 768px) {
+    .carousel .slide {
+        height: 300px; /* Adjust slide height for smaller screens */
+    }
+
+    .header-text {
+        font-size: 2em; /* Adjust text size for smaller screens */
+    }
+
+    .cta-button {
+        padding: 8px 16px; /* Adjust button padding for smaller screens */
+        margin-top: 15px; /* Adjust margin for spacing */
+    }
 }
