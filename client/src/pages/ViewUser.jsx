@@ -13,7 +13,6 @@ import {
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { Close, ArrowBack, Edit } from "@mui/icons-material";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function ViewUser() {
@@ -43,7 +42,6 @@ function ViewUser() {
     http.get(`/user/${id}`).then((res) => {
       setUser({
         ...res.data,
-        password: "**********",
       });
       setLoading(false);
     });
@@ -87,9 +85,17 @@ function ViewUser() {
           </IconButton>
         </Tooltip> */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <Typography variant="h5" sx={{ my: 2, textAlign: 'center', color: "#e2160f", fontWeight: "bold" }}>
+          <Typography
+            variant="h5"
+            sx={{
+              my: 2,
+              textAlign: "center",
+              color: "#e2160f",
+              fontWeight: "bold",
+            }}
+          >
             View User
-        </Typography>
+          </Typography>
           <IconButton
             color="secondary"
             sx={{
@@ -225,8 +231,6 @@ function ViewUser() {
             )}
           </Box>
         )}
-
-        <ToastContainer />
       </Paper>
     </Box>
   );

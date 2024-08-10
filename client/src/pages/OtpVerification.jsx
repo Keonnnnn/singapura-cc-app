@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import http from "../http";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../contexts/UserContext";
 
@@ -99,7 +99,6 @@ const OtpVerification = () => {
               Verify OTP
             </Button>
           </Box>
-          <ToastContainer />
         </Box>
       </Box>
     </Container>

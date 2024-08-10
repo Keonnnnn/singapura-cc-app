@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import UserContext from "../contexts/UserContext";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import http from "../http";
 
@@ -53,7 +53,6 @@ const Settings = () => {
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 4, gap: 5 }}>
-      <ToastContainer />
       {user && (
         <>
           <UserSidebar />
@@ -68,15 +67,27 @@ const Settings = () => {
               position: "relative",
             }}
           >
-            <Typography gutterBottom variant="h4"
-        sx={{ my: 2, textAlign: "center", color: "#e2160f", fontWeight: "bold" }}>
+            <Typography
+              gutterBottom
+              variant="h4"
+              sx={{
+                my: 2,
+                textAlign: "center",
+                color: "#e2160f",
+                fontWeight: "bold",
+              }}
+            >
               Account Settings
             </Typography>
             <Divider sx={{ my: 2 }} />
 
-
             {/* Two-Factor Authentication */}
-            <Typography variant="h6" sx={{color: "#e2160f", fontWeight: "bold"}}>Security Settings</Typography>
+            <Typography
+              variant="h6"
+              sx={{ color: "#e2160f", fontWeight: "bold" }}
+            >
+              Security Settings
+            </Typography>
 
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -92,11 +103,12 @@ const Settings = () => {
             <Divider sx={{ my: 3 }} />
 
             {/* Delete Account */}
-            <Typography variant="h6" sx={{color: "#e2160f", fontWeight: "bold"}}>Danger Zone</Typography>
-
-            
-
-
+            <Typography
+              variant="h6"
+              sx={{ color: "#e2160f", fontWeight: "bold" }}
+            >
+              Danger Zone
+            </Typography>
           </Paper>
         </>
       )}

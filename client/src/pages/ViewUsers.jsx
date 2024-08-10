@@ -23,9 +23,17 @@ import {
   Chip,
   InputAdornment,
 } from "@mui/material";
-import { Sort, FilterList, Visibility, Edit, Delete, Search, Clear } from "@mui/icons-material";
+import {
+  Sort,
+  FilterList,
+  Visibility,
+  Edit,
+  Delete,
+  Search,
+  Clear,
+} from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import http from "../http";
 
@@ -95,7 +103,9 @@ function ViewUsers() {
     }
 
     if (filterMembership) {
-      updatedUsers = updatedUsers.filter((user) => user.membershipType === filterMembership);
+      updatedUsers = updatedUsers.filter(
+        (user) => user.membershipType === filterMembership
+      );
     }
 
     if (search) {
@@ -109,10 +119,14 @@ function ViewUsers() {
 
     switch (sortOrder) {
       case "newest":
-        updatedUsers.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        updatedUsers.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
         break;
       case "oldest":
-        updatedUsers.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        updatedUsers.sort(
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+        );
         break;
       case "alphabetical":
         updatedUsers.sort((a, b) => a.firstName.localeCompare(b.firstName));
@@ -129,24 +143,73 @@ function ViewUsers() {
   const getMembershipStyle = (membershipType) => {
     switch (membershipType) {
       case "Gold":
-        return { backgroundColor: "#FFC107", color: "#000", fontWeight: "bold", borderRadius: "5px", padding: "4px 12px", textAlign: "center" };
+        return {
+          backgroundColor: "#FFC107",
+          color: "#000",
+          fontWeight: "bold",
+          borderRadius: "5px",
+          padding: "4px 12px",
+          textAlign: "center",
+        };
       case "Silver":
-        return { backgroundColor: "#C0C0C0", color: "#000", fontWeight: "bold", borderRadius: "5px", padding: "4px 12px", textAlign: "center" };
+        return {
+          backgroundColor: "#C0C0C0",
+          color: "#000",
+          fontWeight: "bold",
+          borderRadius: "5px",
+          padding: "4px 12px",
+          textAlign: "center",
+        };
       case "Bronze":
-        return { backgroundColor: "#CD7F32", color: "#000", fontWeight: "bold", borderRadius: "5px", padding: "4px 12px", textAlign: "center" };
+        return {
+          backgroundColor: "#CD7F32",
+          color: "#000",
+          fontWeight: "bold",
+          borderRadius: "5px",
+          padding: "4px 12px",
+          textAlign: "center",
+        };
       default:
-        return { backgroundColor: "#E0E0E0", color: "#000", fontWeight: "bold", borderRadius: "5px", padding: "4px 12px", textAlign: "center" };
+        return {
+          backgroundColor: "#E0E0E0",
+          color: "#000",
+          fontWeight: "bold",
+          borderRadius: "5px",
+          padding: "4px 12px",
+          textAlign: "center",
+        };
     }
   };
 
   const getRoleStyle = (role) => {
     switch (role) {
       case "Admin":
-        return { backgroundColor: "#D32F2F", color: "#fff", fontWeight: "bold", borderRadius: "5px", padding: "4px 12px", textAlign: "center" };
+        return {
+          backgroundColor: "#D32F2F",
+          color: "#fff",
+          fontWeight: "bold",
+          borderRadius: "5px",
+          padding: "4px 12px",
+          textAlign: "center",
+        };
       case "Staff":
-        return { backgroundColor: "#388E3C", color: "#fff", fontWeight: "bold", borderRadius: "5px", padding: "4px 12px", textAlign: "center" };
+        return {
+          backgroundColor: "#388E3C",
+          color: "#fff",
+          fontWeight: "bold",
+          borderRadius: "5px",
+          padding: "4px 12px",
+          textAlign: "center",
+        };
       case "Customer":
-        return { backgroundColor: "#FFEB3B", color: "#000", fontWeight: "bold", borderRadius: "5px", padding: "4px 12px", textAlign: "center" };
+        return {
+          backgroundColor: "#FFEB3B",
+          color: "#000",
+          fontWeight: "bold",
+          borderRadius: "5px",
+          padding: "4px 12px",
+          textAlign: "center",
+        };
       default:
         return {};
     }
@@ -207,15 +270,34 @@ function ViewUsers() {
   };
 
   return (
-    <Box sx={{ backgroundColor: "#f0f0f0", minHeight: "100vh", p: 3, borderRadius: "8px" }}>
+    <Box
+      sx={{
+        backgroundColor: "#f0f0f0",
+        minHeight: "100vh",
+        p: 3,
+        borderRadius: "8px",
+      }}
+    >
       <Typography
         variant="h4"
-        sx={{ my: 2, textAlign: "center", color: "#e2160f", fontWeight: "bold" }}
+        sx={{
+          my: 2,
+          textAlign: "center",
+          color: "#e2160f",
+          fontWeight: "bold",
+        }}
       >
         User Overview
       </Typography>
 
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          mb: 2,
+        }}
+      >
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Input
             value={search}
@@ -237,7 +319,9 @@ function ViewUsers() {
 
         <Box sx={{ display: "flex", alignItems: "center" }}>
           <Box sx={{ display: "flex", alignItems: "center", mr: 2 }}>
-            <Typography variant="body1" sx={{ mr: 1 }}>Role:</Typography>
+            <Typography variant="body1" sx={{ mr: 1 }}>
+              Role:
+            </Typography>
             <IconButton onClick={handleRoleFilterClick}>
               <FilterList />
             </IconButton>
@@ -247,14 +331,24 @@ function ViewUsers() {
             open={Boolean(anchorElRole)}
             onClose={handleFilterClose}
           >
-            <MenuItem onClick={() => handleFilterChange("", "role")}>All Roles</MenuItem>
-            <MenuItem onClick={() => handleFilterChange("Admin", "role")}>Admin</MenuItem>
-            <MenuItem onClick={() => handleFilterChange("Staff", "role")}>Staff</MenuItem>
-            <MenuItem onClick={() => handleFilterChange("Customer", "role")}>Customer</MenuItem>
+            <MenuItem onClick={() => handleFilterChange("", "role")}>
+              All Roles
+            </MenuItem>
+            <MenuItem onClick={() => handleFilterChange("Admin", "role")}>
+              Admin
+            </MenuItem>
+            <MenuItem onClick={() => handleFilterChange("Staff", "role")}>
+              Staff
+            </MenuItem>
+            <MenuItem onClick={() => handleFilterChange("Customer", "role")}>
+              Customer
+            </MenuItem>
           </Menu>
 
           <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-            <Typography variant="body1" sx={{ mr: 1 }}>Membership:</Typography>
+            <Typography variant="body1" sx={{ mr: 1 }}>
+              Membership:
+            </Typography>
             <IconButton onClick={handleMembershipFilterClick}>
               <FilterList />
             </IconButton>
@@ -264,14 +358,28 @@ function ViewUsers() {
             open={Boolean(anchorElMembership)}
             onClose={handleFilterClose}
           >
-            <MenuItem onClick={() => handleFilterChange("", "membership")}>All Memberships</MenuItem>
-            <MenuItem onClick={() => handleFilterChange("Gold", "membership")}>Gold</MenuItem>
-            <MenuItem onClick={() => handleFilterChange("Silver", "membership")}>Silver</MenuItem>
-            <MenuItem onClick={() => handleFilterChange("Bronze", "membership")}>Bronze</MenuItem>
+            <MenuItem onClick={() => handleFilterChange("", "membership")}>
+              All Memberships
+            </MenuItem>
+            <MenuItem onClick={() => handleFilterChange("Gold", "membership")}>
+              Gold
+            </MenuItem>
+            <MenuItem
+              onClick={() => handleFilterChange("Silver", "membership")}
+            >
+              Silver
+            </MenuItem>
+            <MenuItem
+              onClick={() => handleFilterChange("Bronze", "membership")}
+            >
+              Bronze
+            </MenuItem>
           </Menu>
 
           <Box sx={{ display: "flex", alignItems: "center", ml: 2 }}>
-            <Typography variant="body1" sx={{ mr: 1 }}>Sort:</Typography>
+            <Typography variant="body1" sx={{ mr: 1 }}>
+              Sort:
+            </Typography>
             <IconButton onClick={handleSortFilterClick}>
               <Sort />
             </IconButton>
@@ -281,10 +389,20 @@ function ViewUsers() {
             open={Boolean(anchorElSort)}
             onClose={handleFilterClose}
           >
-            <MenuItem onClick={() => handleFilterChange("default", "sort")}>User ID (Default)</MenuItem>
-            <MenuItem onClick={() => handleFilterChange("newest", "sort")}>Most Recent</MenuItem>
-            <MenuItem onClick={() => handleFilterChange("oldest", "sort")}>Oldest</MenuItem>
-            <MenuItem onClick={() => handleFilterChange("alphabetical", "sort")}>Alphabetical</MenuItem>
+            <MenuItem onClick={() => handleFilterChange("default", "sort")}>
+              User ID (Default)
+            </MenuItem>
+            <MenuItem onClick={() => handleFilterChange("newest", "sort")}>
+              Most Recent
+            </MenuItem>
+            <MenuItem onClick={() => handleFilterChange("oldest", "sort")}>
+              Oldest
+            </MenuItem>
+            <MenuItem
+              onClick={() => handleFilterChange("alphabetical", "sort")}
+            >
+              Alphabetical
+            </MenuItem>
           </Menu>
         </Box>
       </Box>
@@ -318,14 +436,30 @@ function ViewUsers() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell><strong>User ID</strong></TableCell>
-              <TableCell><strong>First Name</strong> </TableCell>
-              <TableCell><strong>Last Name</strong></TableCell>
-              <TableCell><strong>Email</strong></TableCell>
-              <TableCell><strong>Mobile Number</strong></TableCell>
-              <TableCell><strong>Role</strong></TableCell>
-              <TableCell><strong>Membership</strong></TableCell>
-              <TableCell><strong>Actions</strong></TableCell>
+              <TableCell>
+                <strong>User ID</strong>
+              </TableCell>
+              <TableCell>
+                <strong>First Name</strong>{" "}
+              </TableCell>
+              <TableCell>
+                <strong>Last Name</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Email</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Mobile Number</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Role</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Membership</strong>
+              </TableCell>
+              <TableCell>
+                <strong>Actions</strong>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -335,7 +469,9 @@ function ViewUsers() {
                 <TableCell>{user.firstName}</TableCell>
                 <TableCell>{user.lastName}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.mobileNumber ? user.mobileNumber : "N/A"}</TableCell>
+                <TableCell>
+                  {user.mobileNumber ? user.mobileNumber : "N/A"}
+                </TableCell>
                 <TableCell>
                   <Box sx={getRoleStyle(user.role)}>{user.role}</Box>
                 </TableCell>
@@ -393,7 +529,8 @@ function ViewUsers() {
         <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete this user? This action cannot be undone.
+            Are you sure you want to delete this user? This action cannot be
+            undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -405,8 +542,6 @@ function ViewUsers() {
           </Button>
         </DialogActions>
       </Dialog>
-
-      <ToastContainer />
     </Box>
   );
 }

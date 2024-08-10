@@ -7,6 +7,17 @@ const { sign } = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 const { validateToken, isAdmin } = require("../middlewares/auth");
+const multer = require("multer");
+const { v4: uuidv4 } = require("uuid");
+const { Storage } = require("@google-cloud/storage");
+const storage = new Storage({
+  projectId: process.env.PROJECT_ID,
+  keyFilename: process.env.SERVICE_ACCOUNT_FILE,
+});
+
+const upload = multer({
+  storage: multer.memoryStorage(), // Store the file in memory
+});
 
 // Send email function
 const sendMailWithPromise = (mailOptions) => {
@@ -234,7 +245,10 @@ router.post("/login", async (req, res) => {
     }
 
     // Update lastLogin field
-    await User.update({ lastLogin: new Date() }, { where: { email: user.email } });
+    await User.update(
+      { lastLogin: new Date() },
+      { where: { email: user.email } }
+    );
 
     // Check OTP if enabled
     if (user.otpEnabled) {
@@ -250,6 +264,7 @@ router.post("/login", async (req, res) => {
       username: user.username,
       role: user.role,
       otpEnabled: user.otpEnabled,
+      pfpURL: user.pfpURL,
     };
 
     let accessToken = sign(userInfo, process.env.APP_SECRET, {
@@ -425,6 +440,7 @@ router.get("/auth", validateToken, (req, res) => {
     username: req.user.username,
     role: req.user.role,
     otpEnabled: req.user.otpEnabled,
+    pfpURL: req.user.pfpURL,
   };
   res.json({ user: userInfo });
 });
@@ -494,6 +510,7 @@ router.post("/verify-otp", async (req, res) => {
     username: user.username,
     role: user.role,
     otpEnabled: user.otpEnabled,
+    pfpURL: user.pfpURL,
   };
 
   let accessToken = sign(userInfo, process.env.APP_SECRET, {
@@ -632,22 +649,11 @@ router.put("/profile/:id", validateToken, async (req, res) => {
 
   // Validation
   let validationSchema = yup.object({
-    salutations: yup
-      .string()
-      .trim()
-      .min(2)
-      .max(10)
-      .required("Salutations is required")
-      .matches(
-        /^[a-zA-Z '-,.]+$/,
-        "Salutations only allow letters, spaces and characters: ' - , ."
-      ),
     firstName: yup
       .string()
       .trim()
       .min(2)
       .max(50)
-      .required("First name is required")
       .matches(
         /^[a-zA-Z '-,.]+$/,
         "First name only allow letters, spaces and characters: ' - , ."
@@ -657,37 +663,21 @@ router.put("/profile/:id", validateToken, async (req, res) => {
       .trim()
       .min(2)
       .max(50)
-      .required("Last name is required")
       .matches(
         /^[a-zA-Z '-,.]+$/,
         "Last name only allow letters, spaces and characters: ' - , ."
       ),
-    email: yup
+    email: yup.string().trim().lowercase().email().max(50),
+    username: yup
       .string()
       .trim()
-      .lowercase()
-      .email("Enter a valid email")
+      .min(1)
       .max(50)
-      .required("Email is required"),
-    dateOfBirth: yup.date().required("Date of Birth is required"),
-    gender: yup.string().required("Gender is required"),
-    mobileNumber: yup
-      .string()
-      .trim()
-      .matches(/^\d{8}$/, "Mobile number must be exactly 8 digits")
-      .required("Mobile number is required"),
-    blockNo: yup.string().trim().required("Block No. is required"),
-    unitNo: yup.string().trim().required("Unit No. is required"),
-    streetName: yup.string().trim().required("Street Name is required"),
-    postalCode: yup
-      .string()
-      .trim()
-      .matches(/^\d{6}$/, "Postal Code must be exactly 6 digits")
-      .required("Postal Code is required"),
-    idType: yup.string().required("ID Type is required"),
-    idNumber: yup.string().trim().required("ID Number is required"),
-    citizenshipStatus: yup.string().required("Citizenship Status is required"),
-    race: yup.string().required("Race is required"),
+      .matches(
+        /^[a-zA-Z0-9_.-]+$/,
+        "Username only allows letters, numbers, underscores, periods, and hyphens."
+      ),
+    // profileDescription: yup.string().trim().max(255).optional()
   });
 
   try {
@@ -778,8 +768,6 @@ router.get("/:id/following", validateToken, async (req, res) => {
   }
 });
 
-
-
 // UPDATE USER
 router.put("/:id", validateToken, async (req, res) => {
   const { id } = req.params;
@@ -842,6 +830,72 @@ router.put("/:id", validateToken, async (req, res) => {
   }
 });
 
+// FETCH ALL USERS
+router.get("/", validateToken, async (req, res) => {
+  try {
+    const users = await User.findAll();
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// make update api for user's profile picture
+router.put(
+  "/profile-picture/:id",
+  validateToken,
+  upload.single("profilePicture"),
+  async (req, res) => {
+    const { id } = req.params;
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const fileExtension = file.originalname.split(".").pop();
+    const fileName = `${uuidv4()}.${fileExtension}`;
+    const bucketName = process.env.BUCKET_NAME;
+    const uploadPath = `storage_folder/${fileName}`;
+
+    try {
+      const bucket = storage.bucket(bucketName);
+      const blob = bucket.file(uploadPath);
+
+      const blobStream = blob.createWriteStream({
+        metadata: {
+          contentType: file.mimetype,
+        },
+      });
+
+      blobStream.on("error", (error) => {
+        console.error("Error uploading to Google Cloud Storage:", error);
+        res.status(500).json({ message: "Failed to upload profile picture" });
+      });
+
+      blobStream.on("finish", async () => {
+        const publicUrl = `https://storage.googleapis.com/${bucketName}/${uploadPath}`;
+
+        try {
+          // Update the user's profile picture URL in the database
+          await User.update({ pfpURL: publicUrl }, { where: { id } });
+          res.json({
+            message: "Profile picture uploaded successfully",
+            url: publicUrl,
+          });
+        } catch (dbError) {
+          console.error("Error updating user profile picture:", dbError);
+          res.status(500).json({ message: "Failed to update profile picture" });
+        }
+      });
+
+      blobStream.end(file.buffer);
+    } catch (error) {
+      console.error("Error uploading file to Google Cloud Storage:", error);
+      res.status(500).json({ message: "Failed to upload profile picture" });
+    }
+  }
+);
 // DELETE USER
 router.delete("/:id", validateToken, async (req, res) => {
   const { id } = req.params;
@@ -890,39 +944,48 @@ router.get("/:id", validateToken, async (req, res) => {
   }
 });
 
-
 // GET TOTAL NUMBER OF USERS
-router.get("/dashboard/users/count", validateToken, isAdmin, async (req, res) => {
-  try {
-    const totalUsers = await User.count();
-    res.json({ totalUsers });
-  } catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
+router.get(
+  "/dashboard/users/count",
+  validateToken,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const totalUsers = await User.count();
+      res.json({ totalUsers });
+    } catch (err) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   }
-});
+);
 
 // GET USER BREAKDOWN BY ROLE
-router.get("/dashboard/users/roles", validateToken, isAdmin, async (req, res) => {
-  try {
-    const roles = await User.findAll({
-      attributes: [
-        "role",
-        [sequelize.fn("COUNT", sequelize.col("role")), "count"]
-      ],
-      group: ["role"],
-    });
-    res.json({ roles });
-  } catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
+router.get(
+  "/dashboard/users/roles",
+  validateToken,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const roles = await User.findAll({
+        attributes: [
+          "role",
+          [sequelize.fn("COUNT", sequelize.col("role")), "count"],
+        ],
+        group: ["role"],
+      });
+      res.json({ roles });
+    } catch (err) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   }
-});
+);
 
 // GET DAILY LOGIN STATISTICS
 router.get("/daily-logins", validateToken, isAdmin, async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const endOfDay = new Date(today);
     endOfDay.setDate(today.getDate() + 1);
 
@@ -941,23 +1004,24 @@ router.get("/daily-logins", validateToken, isAdmin, async (req, res) => {
   }
 });
 
-
 // GET TOP 5 RECENT CUSTOMERS
-router.get("/dashboard/recent-customers", validateToken, isAdmin, async (req, res) => {
-  try {
-    const recentCustomers = await User.findAll({
-      where: { role: "Customer" },
-      order: [["createdAt", "DESC"]],
-      limit: 5,
-      attributes: ["id", "firstName", "lastName", "email"]
-    });
-    res.json({ recentCustomers });
-  } catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
+router.get(
+  "/dashboard/recent-customers",
+  validateToken,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const recentCustomers = await User.findAll({
+        where: { role: "Customer" },
+        order: [["createdAt", "DESC"]],
+        limit: 5,
+        attributes: ["id", "firstName", "lastName", "email"],
+      });
+      res.json({ recentCustomers });
+    } catch (err) {
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   }
-});
-
-
-
+);
 
 module.exports = router;

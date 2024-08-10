@@ -16,7 +16,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import http from "../http";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import signupImage from "../assets/signup.png";
@@ -477,7 +477,6 @@ function Register() {
                 Sign up
               </Button>
             </Box>
-            <ToastContainer />
           </Box>
         </Box>
       ) : (
@@ -719,7 +718,6 @@ function Register() {
                   />
                 </Button>
               </Box>
-              <ToastContainer />
             </Box>
           </Box>
         </Box>

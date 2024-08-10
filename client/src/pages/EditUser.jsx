@@ -7,7 +7,6 @@ import {
   TextField,
   Button,
   Paper,
-  IconButton,
   Select,
   MenuItem,
   FormControl,
@@ -18,8 +17,7 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
-import { Close } from "@mui/icons-material";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function EditUser() {
@@ -50,137 +48,129 @@ function EditUser() {
     http.get(`/user/${id}`).then((res) => {
       setUser({
         ...res.data,
-        password: "**********",
       });
       setLoading(false);
     });
   }, [id]);
 
-  const validationSchema = yup.object().shape({
+  const custValidationSchema = yup.object().shape({
     salutations: yup
       .string()
       .trim()
-      .min(2)
-      .max(10)
+      .min(2, "Salutations must be at least 2 characters")
+      .max(10, "Salutations can't be longer than 10 characters")
       .required("Salutations is required"),
     firstName: yup
       .string()
       .trim()
-      .min(2)
-      .max(50)
+      .min(2, "First name must be at least 2 characters")
+      .max(50, "First name can't be longer than 50 characters")
       .required("First name is required"),
     lastName: yup
       .string()
       .trim()
-      .min(2)
-      .max(50)
+      .min(2, "Last name must be at least 2 characters")
+      .max(50, "Last name can't be longer than 50 characters")
       .required("Last name is required"),
-    dateOfBirth: yup
-      .date()
-      .when("role", {
-        is: (role) => role === "Customer" || role === "Staff",
-        then: yup.date().required("Date of Birth is required"),
-        otherwise: yup.date().nullable(),
-      }),
-    gender: yup
-      .string()
-      .when("role", {
-        is: "Customer",
-        then: yup.string().required("Gender is required"),
-        otherwise: yup.string().nullable(),
-      }),
+    dateOfBirth: yup.date().required("Date of Birth is required"),
+    gender: yup.string().required("Gender is required"),
     email: yup
       .string()
       .trim()
       .lowercase()
       .email("Enter a valid email")
-      .max(50)
+      .max(50, "Email can't be longer than 50 characters")
       .required("Email is required"),
-    password: yup
-      .string()
-      .trim()
-      .min(8)
-      .max(50)
-      .required("Password is required"),
+
     mobileNumber: yup
       .string()
       .trim()
       .matches(/^\d{8}$/, "Mobile number must be exactly 8 digits")
       .required("Mobile number is required"),
-    blockNo: yup
-      .string()
-      .trim()
-      .when("role", {
-        is: "Customer",
-        then: yup.string().required("Block No. is required"),
-        otherwise: yup.string().nullable(),
-      }),
-    unitNo: yup
-      .string()
-      .trim()
-      .when("role", {
-        is: "Customer",
-        then: yup.string().required("Unit No. is required"),
-        otherwise: yup.string().nullable(),
-      }),
-    streetName: yup
-      .string()
-      .trim()
-      .when("role", {
-        is: "Customer",
-        then: yup.string().required("Street Name is required"),
-        otherwise: yup.string().nullable(),
-      }),
+    blockNo: yup.string().trim().required("Block No. is required"),
+    unitNo: yup.string().trim().required("Unit No. is required"),
+    streetName: yup.string().trim().required("Street Name is required"),
     postalCode: yup
       .string()
       .trim()
       .matches(/^\d{6}$/, "Postal Code must be exactly 6 digits")
-      .when("role", {
-        is: "Customer",
-        then: yup.string().required("Postal Code is required"),
-        otherwise: yup.string().nullable(),
-      }),
-    idType: yup
-      .string()
-      .when("role", {
-        is: "Customer",
-        then: yup.string().required("ID Type is required"),
-        otherwise: yup.string().nullable(),
-      }),
-    idNumber: yup
+      .required("Postal Code is required"),
+    idType: yup.string().required("ID Type is required"),
+    idNumber: yup.string().trim().required("ID Number is required"),
+    citizenshipStatus: yup.string().required("Citizenship Status is required"),
+    race: yup.string().required("Race is required"),
+  });
+
+  const staffValidationSchema = yup.object().shape({
+    salutations: yup
       .string()
       .trim()
-      .when("role", {
-        is: "Customer",
-        then: yup.string().required("ID Number is required"),
-        otherwise: yup.string().nullable(),
-      }),
-    citizenshipStatus: yup
+      .min(2, "Salutations must be at least 2 characters")
+      .max(10, "Salutations can't be longer than 10 characters")
+      .required("Salutations is required"),
+    firstName: yup
       .string()
-      .when("role", {
-        is: "Customer",
-        then: yup.string().required("Citizenship Status is required"),
-        otherwise: yup.string().nullable(),
-      }),
-    race: yup
+      .trim()
+      .min(2, "First name must be at least 2 characters")
+      .max(50, "First name can't be longer than 50 characters")
+      .required("First name is required"),
+    lastName: yup
       .string()
-      .when("role", {
-        is: "Customer",
-        then: yup.string().required("Race is required"),
-        otherwise: yup.string().nullable(),
-      }),
-  });  
+      .trim()
+      .min(2, "Last name must be at least 2 characters")
+      .max(50, "Last name can't be longer than 50 characters")
+      .required("Last name is required"),
+    dateOfBirth: yup.date().required("Date of Birth is required"),
+    gender: yup.string().required("Gender is required"),
+    email: yup
+      .string()
+      .trim()
+      .lowercase()
+      .email("Enter a valid email")
+      .max(50, "Email can't be longer than 50 characters")
+      .required("Email is required"),
+    mobileNumber: yup
+      .string()
+      .trim()
+      .matches(/^\d{8}$/, "Mobile number must be exactly 8 digits")
+      .required("Mobile number is required"),
+  });
+
+  const adminValidationSchema = yup.object().shape({
+    firstName: yup
+      .string()
+      .trim()
+      .min(2, "First name must be at least 2 characters")
+      .max(50, "First name can't be longer than 50 characters")
+      .required("First name is required"),
+    lastName: yup
+      .string()
+      .trim()
+      .min(2, "Last name must be at least 2 characters")
+      .max(50, "Last name can't be longer than 50 characters")
+      .required("Last name is required"),
+    email: yup
+      .string()
+      .trim()
+      .lowercase()
+      .email("Enter a valid email")
+      .max(50, "Email can't be longer than 50 characters")
+      .required("Email is required"),
+  });
 
   const formik = useFormik({
     initialValues: {
       ...user,
-      role: user.role,
-      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
+      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : null,
     },
     enableReinitialize: true,
-    validationSchema: validationSchema,
+    validationSchema:
+      user.role === "Customer"
+        ? custValidationSchema
+        : user.role === "Staff"
+        ? staffValidationSchema
+        : adminValidationSchema,
     onSubmit: async (values) => {
-      console.log("Form submitted:", values); // Added logging
       try {
         const updatedUser = {
           ...values,
@@ -188,7 +178,7 @@ function EditUser() {
           lastName: values.lastName.trim(),
           email: values.email.trim(),
         };
-  
+
         const response = await http.put(`/user/${id}`, updatedUser);
         console.log("User updated successfully:", response.data); // Added logging
         toast.success("User updated successfully"); // Optional toast message
@@ -247,9 +237,17 @@ function EditUser() {
           </IconButton>
         </Tooltip> */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <Typography variant="h5" sx={{ my: 2, textAlign: 'center', color: "#e2160f", fontWeight: "bold" }}>
-          Edit User
-        </Typography>
+          <Typography
+            variant="h5"
+            sx={{
+              my: 2,
+              textAlign: "center",
+              color: "#e2160f",
+              fontWeight: "bold",
+            }}
+          >
+            Edit User
+          </Typography>
         </Box>
 
         <Box component="form" onSubmit={formik.handleSubmit}>
@@ -263,9 +261,13 @@ function EditUser() {
             }}
           >
             <Avatar
-              sx={{ width: 100, height: 100, border: "4px solid #D22B2B", // Updated to red color
-                boxShadow: 3, }}
-              src={user.avatarUrl || ""}
+              sx={{
+                width: 100,
+                height: 100,
+                border: "4px solid #D22B2B", // Updated to red color
+                boxShadow: 3,
+              }}
+              src={user.pfpURL || ""}
               alt={`${user.firstName} ${user.lastName}`}
             />
             <Typography variant="h5" sx={{ mt: 2 }}>
@@ -426,7 +428,7 @@ function EditUser() {
                     label="Password"
                     name="password"
                     disabled
-                    value={formik.values.password}
+                    value={formik.values.password ? "***********" : ""}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     error={
@@ -744,7 +746,7 @@ function EditUser() {
                   label="Password"
                   name="password"
                   disabled
-                  value={formik.values.password}
+                  value={formik.values.password ? "********" : ""}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   error={
@@ -1008,8 +1010,6 @@ function EditUser() {
             </Button>
           </Box>
         </Box>
-
-        <ToastContainer />
       </Paper>
     </Box>
   );

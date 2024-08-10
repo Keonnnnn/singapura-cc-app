@@ -11,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import http from "../http";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../contexts/UserContext";
 
@@ -61,7 +61,10 @@ function Login() {
           setUser(res.data.user);
           // navigate("/"); // Navigate to home after login
 
-          if (res.data.user.role === 'Admin' || res.data.user.role === 'Staff') {
+          if (
+            res.data.user.role === "Admin" ||
+            res.data.user.role === "Staff"
+          ) {
             navigate("/admin/dashboard"); // Navigate to dashboard for Admin/Staff
           } else {
             navigate("/"); // Navigate to home for Customer
@@ -233,7 +236,6 @@ function Login() {
                 Login
               </Button>
             </Box>
-            <ToastContainer />
           </Box>
         </Box>
       </Box>

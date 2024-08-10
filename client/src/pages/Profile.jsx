@@ -11,7 +11,6 @@ import {
   Divider,
   Button,
 } from "@mui/material";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Edit } from "@mui/icons-material";
 import UserContext from "../contexts/UserContext";
@@ -31,6 +30,7 @@ const Profile = () => {
         try {
           const res = await http.get(`/user/profile/${id}`);
           setUser(res.data);
+          console.log(res.data);
         } catch (error) {
           console.error(error);
         }
@@ -41,7 +41,7 @@ const Profile = () => {
   }, []);
 
   const handleEdit = () => {
-    navigate("/profile/edit");
+    navigate("/profile/edit", { state: { user } });
   };
 
   return (
@@ -87,8 +87,8 @@ const Profile = () => {
                   border: "4px solid #D22B2B", // Updated to red color
                   boxShadow: 3,
                 }}
-                src={""}
-                alt={`${loggedInUser.firstName} ${loggedInUser.lastName}`}
+                src={user.pfpURL || ""}
+                alt={`${user.firstName} ${user.lastName}`}
               />
               <Typography
                 variant="h4"
@@ -98,7 +98,7 @@ const Profile = () => {
                   color: "#333",
                 }}
               >
-                {loggedInUser.firstName} {loggedInUser.lastName}
+                {user.firstName} {user.lastName}
               </Typography>
             </Box>
 
@@ -109,17 +109,19 @@ const Profile = () => {
                 Basic Information
               </Typography>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={4}>
-                  <Typography variant="body1">
-                    <strong>Salutations:</strong> {user.salutations}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={4}>
+                {user.role != "Admin" && (
+                  <Grid item xs={12} sm={4}>
+                    <Typography variant="body1">
+                      <strong>Salutations:</strong> {user.salutations}
+                    </Typography>
+                  </Grid>
+                )}
+                <Grid item xs={12} sm={user.role == "Admin" ? 6 : 4}>
                   <Typography variant="body1">
                     <strong>First Name:</strong> {user.firstName}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={user.role == "Admin" ? 6 : 4}>
                   <Typography variant="body1">
                     <strong>Last Name:</strong> {user.lastName}
                   </Typography>
@@ -133,21 +135,25 @@ const Profile = () => {
                     )}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Gender:</strong> {user.gender}
-                  </Typography>
-                </Grid>
+                {user.role != "Admin" && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Gender:</strong> {user.gender}
+                    </Typography>
+                  </Grid>
+                )}
                 <Grid item xs={12} sm={6}>
                   <Typography variant="body1">
                     <strong>Email:</strong> {user.email}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Mobile Number:</strong> {user.mobileNumber}
-                  </Typography>
-                </Grid>
+                {user.role != "Admin" && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Mobile Number:</strong> {user.mobileNumber}
+                    </Typography>
+                  </Grid>
+                )}
               </Grid>
 
               {user.role == "Customer" && (
@@ -215,7 +221,6 @@ const Profile = () => {
                 </>
               )}
             </Box>
-
           </Paper>
         </>
       )}
