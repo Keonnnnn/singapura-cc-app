@@ -54,7 +54,6 @@ import NotificationList from "./pages/NotificationList";
 import NotificationDetail from "./pages/NotificationDetail";
 
 // Ayura
-import Rewards from "./pages/Rewards";
 import EditRewards from "./pages/EditRewards";
 import UpdateReward from "./pages/updateReward";
 import ClaimRewards from "./pages/claimRewards.jsx";
@@ -301,10 +300,6 @@ function App() {
             <Route
               path="/editpost/:id"
               element={user ? <EditPost /> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/admin/rewards"
-              element={<ProtectedRoute element={Rewards} />}
             />
             <Route
               path="/admin/edit-rewards"

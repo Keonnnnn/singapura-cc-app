@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import http from '../http';
-import { Box, Typography, TextField, Button, Card, CardContent, Grid } from '@mui/material';
+import { Box, Typography, TextField, Button, Card, CardContent, Grid, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
 function updateReward() {
 
     const handleCancel = () => {
-        navigate('/admin/rewards'); // Replace '/editrewards' with the correct path
+        navigate('/admin/edit-rewards'); // Replace '/editrewards' with the correct path
     };
 
     const navigate = useNavigate();
@@ -33,7 +33,7 @@ function updateReward() {
             rewardName: yup.string().trim().min(3, 'At least 3 characters').max(100, 'At most 100 characters').required('Reward name is needed'),
             description: yup.string().trim().min(3, 'At least 3 characters').max(500, 'At most 500 characters').required('Description is required'),
             Points: yup.number().min(100, 'Minimum points 1000').max(100000, 'Maximum points 100,000').integer().required('Points is required'),
-            Tier: yup.string().trim().min(3, 'At least 3 characters').max(100, 'At most 100 characters').required('Tier is required')
+            Tier: yup.string().trim().required('Tier is required')
         }),
         onSubmit: (data) => {
             data.rewardName = data.rewardName.trim();
@@ -44,7 +44,7 @@ function updateReward() {
             http.put(`/reward/${id}`, data)
                 .then((res) => {
                     console.log(res.data);
-                    navigate("/admin/rewards");
+                    navigate("/admin/edit-rewards");
                 });
         }
     });
@@ -99,25 +99,35 @@ function updateReward() {
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth margin="dense" autoComplete="off"
-                                            multiline minRows={1}
-                                            label="Tier"
-                                            name="Tier"
-                                            value={formik.values.Tier}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                            error={formik.touched.Tier && Boolean(formik.errors.Tier)}
-                                            helperText={formik.touched.Tier && formik.errors.Tier}
-                                        />
+                                        <FormControl fullWidth margin="dense">
+                                            <InputLabel id="tier-label">Tier</InputLabel>
+                                            <Select
+                                                labelId="tier-label"
+                                                id="Tier"
+                                                name="Tier"
+                                                value={formik.values.Tier}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                error={formik.touched.Tier && Boolean(formik.errors.Tier)}
+                                                label="Tier"
+                                            >
+                                                <MenuItem value="Bronze">Bronze</MenuItem>
+                                                <MenuItem value="Silver">Silver</MenuItem>
+                                                <MenuItem value="Gold">Gold</MenuItem>
+                                            </Select>
+                                            {formik.touched.Tier && formik.errors.Tier && (
+                                                <Typography variant="body2" color="error">
+                                                    {formik.errors.Tier}
+                                                </Typography>
+                                            )}
+                                        </FormControl>
                                     </Grid>
                                 </Grid>
                                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end'}}>
-                                    <Button variant="contained" onClick={handleCancel} sx={{ backgroundColor: 'blue', margin:' 0px 5px 0px 0px'}}>Cancel</Button>
+                                    <Button variant="contained" onClick={handleCancel} sx={{ backgroundColor: 'blue', margin:' 0px 5px 0px 0px', '&:hover': { backgroundColor: 'darkblue' }}}>Cancel</Button>
                                     <Button variant="contained" type="submit" sx={{ backgroundColor: 'red' }}>Update</Button>
                                 </Box>
                             </Box>
-
                         )
                     }
                 </CardContent>
@@ -126,4 +136,4 @@ function updateReward() {
     )
 }
 
-export default updateReward
+export default updateReward;
