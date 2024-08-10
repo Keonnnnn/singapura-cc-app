@@ -319,19 +319,6 @@ router.get('/user/:userId/registrations', validateToken, async (req, res) => {
     }
 });
 
-// Get user information
-router.get('/user/me', validateToken, async (req, res) => {
-    try {
-        const user = await User.findByPk(req.user.id);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        res.json(user);
-    } catch (error) {
-        res.status(500).json({ error: 'An error occurred while fetching user information' });
-    }
-});
-
 // Event request routes
 router.post("/eventrequests", async (req, res) => {
     let data = req.body;
