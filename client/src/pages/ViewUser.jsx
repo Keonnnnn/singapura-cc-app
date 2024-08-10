@@ -87,9 +87,9 @@ function ViewUser() {
           </IconButton>
         </Tooltip> */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Typography variant="h5" sx={{ flex: 1 }}>
+        <Typography variant="h5" sx={{ my: 2, textAlign: 'center', color: "#e2160f", fontWeight: "bold" }}>
             View User
-          </Typography>
+        </Typography>
           <IconButton
             color="secondary"
             sx={{

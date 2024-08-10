@@ -6,6 +6,8 @@ import {
   Grid,
   Paper,
   Switch,
+  Divider,
+  Typography,
 } from "@mui/material";
 import UserContext from "../contexts/UserContext";
 import { toast, ToastContainer } from "react-toastify";
@@ -58,14 +60,25 @@ const Settings = () => {
           <Paper
             elevation={3}
             sx={{
-              p: 3,
-              maxWidth: 800,
+              p: 4,
+              maxWidth: 900,
               width: "100%",
+              borderRadius: "16px",
+              backgroundColor: "#f4f6f9",
               position: "relative",
-              borderRadius: "12px",
             }}
           >
-            <Grid container spacing={2} mt={2}>
+            <Typography gutterBottom variant="h4"
+        sx={{ my: 2, textAlign: "center", color: "#e2160f", fontWeight: "bold" }}>
+              Account Settings
+            </Typography>
+            <Divider sx={{ my: 2 }} />
+
+
+            {/* Two-Factor Authentication */}
+            <Typography variant="h6" sx={{color: "#e2160f", fontWeight: "bold"}}>Security Settings</Typography>
+
+            <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
@@ -74,8 +87,16 @@ const Settings = () => {
                   label="Enable Two-Factor Authentication (OTP)"
                 />
               </Grid>
-              {/* ... other settings */}
             </Grid>
+
+            <Divider sx={{ my: 3 }} />
+
+            {/* Delete Account */}
+            <Typography variant="h6" sx={{color: "#e2160f", fontWeight: "bold"}}>Danger Zone</Typography>
+
+            
+
+
           </Paper>
         </>
       )}

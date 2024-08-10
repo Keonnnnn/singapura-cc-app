@@ -74,7 +74,11 @@ function Login() {
   });
 
   return (
-    <Container>
+    <Container
+      sx={{
+        mb: 10,
+      }}
+    >
       <Box
         sx={{
           mt: 10,

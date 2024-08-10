@@ -172,7 +172,11 @@ function Register() {
   });
 
   return (
-    <Container>
+    <Container
+      sx={{
+        mb: 10,
+      }}
+    >
       {showSecondForm ? (
         <Box
           sx={{

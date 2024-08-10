@@ -8,6 +8,8 @@ import {
   IconButton,
   Grid,
   Avatar,
+  Divider,
+  Button,
 } from "@mui/material";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -48,46 +50,65 @@ const Profile = () => {
         <>
           <UserSidebar />
           <Paper
-            elevation={3}
+            elevation={4}
             sx={{
-              p: 3,
-              maxWidth: 800,
+              p: 4,
+              maxWidth: 900,
               width: "100%",
+              borderRadius: "16px",
+              backgroundColor: "#f4f6f9",
               position: "relative",
-              borderRadius: "12px",
             }}
           >
             <IconButton
-              color="secondary"
+              color="primary"
               sx={{
                 position: "absolute",
-                top: 8,
-                right: 8,
-                bgcolor: "rgba(255,255,255,0.8)",
-                borderRadius: "25%",
-                gap: 1,
+                top: 16,
+                right: 16,
+                bgcolor: "white",
+                borderRadius: "50%",
+                boxShadow: 2,
+                color: "#D22B2B", // Updated to red color
+                "&:hover": {
+                  bgcolor: "rgba(255,255,255,0.9)",
+                },
               }}
               onClick={handleEdit}
             >
               <Edit />
-              <Typography>Edit</Typography>
             </IconButton>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+
+            <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
               <Avatar
-                sx={{ width: 100, height: 100 }}
+                sx={{
+                  width: 120,
+                  height: 120,
+                  border: "4px solid #D22B2B", // Updated to red color
+                  boxShadow: 3,
+                }}
                 src={""}
                 alt={`${loggedInUser.firstName} ${loggedInUser.lastName}`}
               />
-              <Typography variant="h5" sx={{ ml: 2 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  ml: 3,
+                  fontWeight: 700,
+                  color: "#333",
+                }}
+              >
                 {loggedInUser.firstName} {loggedInUser.lastName}
               </Typography>
             </Box>
 
+            <Divider sx={{ mb: 3 }} />
+
             <Box>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" gutterBottom sx={{ color: "#555" }}>
                 Basic Information
               </Typography>
-              <Grid container spacing={2}>
+              <Grid container spacing={3}>
                 <Grid item xs={12} sm={4}>
                   <Typography variant="body1">
                     <strong>Salutations:</strong> {user.salutations}
@@ -131,10 +152,14 @@ const Profile = () => {
 
               {user.role == "Customer" && (
                 <>
-                  <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ mt: 4, color: "#555" }}
+                  >
                     Residential Address
                   </Typography>
-                  <Grid container spacing={2}>
+                  <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <Typography variant="body1">
                         <strong>Block No.:</strong> {user.blockNo}
@@ -157,10 +182,14 @@ const Profile = () => {
                     </Grid>
                   </Grid>
 
-                  <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ mt: 4, color: "#555" }}
+                  >
                     Additional Information
                   </Typography>
-                  <Grid container spacing={2}>
+                  <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <Typography variant="body1">
                         <strong>ID Type:</strong> {user.idType}
@@ -186,6 +215,7 @@ const Profile = () => {
                 </>
               )}
             </Box>
+
           </Paper>
         </>
       )}

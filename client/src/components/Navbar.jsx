@@ -498,13 +498,44 @@ const Navbar = () => {
                 to="/register"
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <Typography>SIGN UP</Typography>
+                <Typography 
+                sx={{
+                  backgroundColor: "#333",
+                  color: "#fff",
+                  fontWeight: "bold",
+                  borderRadius: "5px",
+                  padding: "8px 16px",
+                  "&:hover": {
+                    backgroundColor: "#444",
+                  },
+                }}
+                
+                >
+                  SIGN UP
+                </Typography>
               </Link>
               <Link
                 to="/login"
                 style={{ textDecoration: "none", color: "inherit" }}
               >
-                <Typography>LOGIN</Typography>
+                <Typography
+                sx={{
+                  color: "#D22B2B", 
+                  backgroundColor: "#fff", 
+                  border: "2px solid #D22B2B", 
+                  fontWeight: "bold", 
+                  borderRadius: "5px", 
+                  padding: "8px 16px", 
+                  "&:hover": {
+                    backgroundColor: "#bfbfbf", 
+                    color: "#fff", 
+                    borderColor: "#bfbfbf", 
+                  },
+                }}
+                
+                >
+                  LOGIN
+                </Typography>
               </Link>
             </>
           )}

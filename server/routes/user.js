@@ -233,6 +233,9 @@ router.post("/login", async (req, res) => {
         .json({ message: "Email or password is incorrect." });
     }
 
+    // Update lastLogin field
+    await User.update({ lastLogin: new Date() }, { where: { email: user.email } });
+
     // Check OTP if enabled
     if (user.otpEnabled) {
       return res.json({ message: "OTP required.", needOtp: true });
@@ -775,64 +778,7 @@ router.get("/:id/following", validateToken, async (req, res) => {
   }
 });
 
-// update profile
-router.put("/profile/:id", validateToken, async (req, res) => {
-  const { id } = req.params;
-  let data = req.body;
 
-  // Validation
-  let validationSchema = yup.object({
-    firstName: yup
-      .string()
-      .trim()
-      .min(2)
-      .max(50)
-      .matches(
-        /^[a-zA-Z '-,.]+$/,
-        "First name only allow letters, spaces and characters: ' - , ."
-      ),
-    lastName: yup
-      .string()
-      .trim()
-      .min(2)
-      .max(50)
-      .matches(
-        /^[a-zA-Z '-,.]+$/,
-        "Last name only allow letters, spaces and characters: ' - , ."
-      ),
-    email: yup.string().trim().lowercase().email().max(50),
-    username: yup
-      .string()
-      .trim()
-      .min(1)
-      .max(50)
-      .matches(
-        /^[a-zA-Z0-9_.-]+$/,
-        "Username only allows letters, numbers, underscores, periods, and hyphens."
-      ),
-    // profileDescription: yup.string().trim().max(255).optional()
-  });
-
-  try {
-    userData = await validationSchema.validate(userData, { abortEarly: false });
-
-    // Check if user exists
-    let user = await User.findByPk(id);
-    if (!user) {
-      res.status(404).json({ message: "User not found." });
-      return;
-    }
-
-    // Update user data
-    await User.update(data, { where: { id } });
-
-    // Return updated user data
-    user = await User.findByPk(id);
-    res.json(user);
-  } catch (err) {
-    res.status(400).json({ errors: err.errors });
-  }
-});
 
 // UPDATE USER
 router.put("/:id", validateToken, async (req, res) => {
@@ -943,5 +889,75 @@ router.get("/:id", validateToken, async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+
+// GET TOTAL NUMBER OF USERS
+router.get("/dashboard/users/count", validateToken, isAdmin, async (req, res) => {
+  try {
+    const totalUsers = await User.count();
+    res.json({ totalUsers });
+  } catch (err) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// GET USER BREAKDOWN BY ROLE
+router.get("/dashboard/users/roles", validateToken, isAdmin, async (req, res) => {
+  try {
+    const roles = await User.findAll({
+      attributes: [
+        "role",
+        [sequelize.fn("COUNT", sequelize.col("role")), "count"]
+      ],
+      group: ["role"],
+    });
+    res.json({ roles });
+  } catch (err) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+// GET DAILY LOGIN STATISTICS
+router.get("/daily-logins", validateToken, isAdmin, async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(today);
+    endOfDay.setDate(today.getDate() + 1);
+
+    const dailyLogins = await User.count({
+      where: {
+        lastLogin: {
+          [Op.between]: [today, endOfDay],
+        },
+      },
+    });
+
+    res.json({ dailyLogins });
+  } catch (err) {
+    console.error("Error fetching daily logins:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+// GET TOP 5 RECENT CUSTOMERS
+router.get("/dashboard/recent-customers", validateToken, isAdmin, async (req, res) => {
+  try {
+    const recentCustomers = await User.findAll({
+      where: { role: "Customer" },
+      order: [["createdAt", "DESC"]],
+      limit: 5,
+      attributes: ["id", "firstName", "lastName", "email"]
+    });
+    res.json({ recentCustomers });
+  } catch (err) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+
 
 module.exports = router;

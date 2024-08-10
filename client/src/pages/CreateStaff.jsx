@@ -132,9 +132,9 @@ function CreateStaff() {
           </IconButton>
         </Tooltip> */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Typography variant="h5" sx={{ flex: 1 }}>
-            Add Staff
-          </Typography>
+        <Typography variant="h5" sx={{ my: 2, textAlign: 'center', color: "#e2160f", fontWeight: "bold" }}>
+                Add Staff
+        </Typography>
         </Box>
 
         <Box component="form" onSubmit={formik.handleSubmit}>

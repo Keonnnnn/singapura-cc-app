@@ -113,7 +113,11 @@ module.exports = (sequelize, DataTypes) => {
       totalPoints: {
         type: DataTypes.INTEGER,
         defaultValue: 0
-      }
+      },
+      lastLogin: { // New field to track last login timestamp
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       tableName: "users",

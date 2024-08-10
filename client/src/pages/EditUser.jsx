@@ -56,7 +56,7 @@ function EditUser() {
     });
   }, [id]);
 
-  const validationSchema = yup.object({
+  const validationSchema = yup.object().shape({
     salutations: yup
       .string()
       .trim()
@@ -75,13 +75,25 @@ function EditUser() {
       .min(2)
       .max(50)
       .required("Last name is required"),
-    dateOfBirth: yup.date().required("Date of Birth is required"),
-    gender: yup.string().required("Gender is required"),
+    dateOfBirth: yup
+      .date()
+      .when("role", {
+        is: (role) => role === "Customer" || role === "Staff",
+        then: yup.date().required("Date of Birth is required"),
+        otherwise: yup.date().nullable(),
+      }),
+    gender: yup
+      .string()
+      .when("role", {
+        is: "Customer",
+        then: yup.string().required("Gender is required"),
+        otherwise: yup.string().nullable(),
+      }),
     email: yup
       .string()
       .trim()
       .lowercase()
-      .email()
+      .email("Enter a valid email")
       .max(50)
       .required("Email is required"),
     password: yup
@@ -95,29 +107,80 @@ function EditUser() {
       .trim()
       .matches(/^\d{8}$/, "Mobile number must be exactly 8 digits")
       .required("Mobile number is required"),
-    blockNo: yup.string().trim().required("Block No. is required"),
-    unitNo: yup.string().trim().required("Unit No. is required"),
-    streetName: yup.string().trim().required("Street Name is required"),
+    blockNo: yup
+      .string()
+      .trim()
+      .when("role", {
+        is: "Customer",
+        then: yup.string().required("Block No. is required"),
+        otherwise: yup.string().nullable(),
+      }),
+    unitNo: yup
+      .string()
+      .trim()
+      .when("role", {
+        is: "Customer",
+        then: yup.string().required("Unit No. is required"),
+        otherwise: yup.string().nullable(),
+      }),
+    streetName: yup
+      .string()
+      .trim()
+      .when("role", {
+        is: "Customer",
+        then: yup.string().required("Street Name is required"),
+        otherwise: yup.string().nullable(),
+      }),
     postalCode: yup
       .string()
       .trim()
       .matches(/^\d{6}$/, "Postal Code must be exactly 6 digits")
-      .required("Postal Code is required"),
-    idType: yup.string().required("ID Type is required"),
-    idNumber: yup.string().trim().required("ID Number is required"),
-    citizenshipStatus: yup.string().required("Citizenship Status is required"),
-    race: yup.string().required("Race is required"),
-  });
+      .when("role", {
+        is: "Customer",
+        then: yup.string().required("Postal Code is required"),
+        otherwise: yup.string().nullable(),
+      }),
+    idType: yup
+      .string()
+      .when("role", {
+        is: "Customer",
+        then: yup.string().required("ID Type is required"),
+        otherwise: yup.string().nullable(),
+      }),
+    idNumber: yup
+      .string()
+      .trim()
+      .when("role", {
+        is: "Customer",
+        then: yup.string().required("ID Number is required"),
+        otherwise: yup.string().nullable(),
+      }),
+    citizenshipStatus: yup
+      .string()
+      .when("role", {
+        is: "Customer",
+        then: yup.string().required("Citizenship Status is required"),
+        otherwise: yup.string().nullable(),
+      }),
+    race: yup
+      .string()
+      .when("role", {
+        is: "Customer",
+        then: yup.string().required("Race is required"),
+        otherwise: yup.string().nullable(),
+      }),
+  });  
 
   const formik = useFormik({
     initialValues: {
       ...user,
-      dateOfBirth:
-        user.role === "Customer" ? user.dateOfBirth.split("T")[0] : "",
+      role: user.role,
+      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
     },
     enableReinitialize: true,
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      console.log("Form submitted:", values); // Added logging
       try {
         const updatedUser = {
           ...values,
@@ -125,9 +188,10 @@ function EditUser() {
           lastName: values.lastName.trim(),
           email: values.email.trim(),
         };
-
+  
         const response = await http.put(`/user/${id}`, updatedUser);
-        console.log(response.data);
+        console.log("User updated successfully:", response.data); // Added logging
+        toast.success("User updated successfully"); // Optional toast message
         navigate("/admin/users");
       } catch (error) {
         console.error("Error updating user:", error);
@@ -159,11 +223,12 @@ function EditUser() {
       <Paper
         elevation={3}
         sx={{
-          p: 3,
-          maxWidth: 800,
+          p: 4,
+          maxWidth: 900,
           width: "100%",
+          borderRadius: "16px",
+          backgroundColor: "#f4f6f9",
           position: "relative",
-          borderRadius: "12px",
         }}
       >
         {/* <Tooltip title="Cancel">
@@ -182,9 +247,9 @@ function EditUser() {
           </IconButton>
         </Tooltip> */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Typography variant="h5" sx={{ flex: 1 }}>
-            Edit User
-          </Typography>
+        <Typography variant="h5" sx={{ my: 2, textAlign: 'center', color: "#e2160f", fontWeight: "bold" }}>
+          Edit User
+        </Typography>
         </Box>
 
         <Box component="form" onSubmit={formik.handleSubmit}>
@@ -198,7 +263,8 @@ function EditUser() {
             }}
           >
             <Avatar
-              sx={{ width: 100, height: 100 }}
+              sx={{ width: 100, height: 100, border: "4px solid #D22B2B", // Updated to red color
+                boxShadow: 3, }}
               src={user.avatarUrl || ""}
               alt={`${user.firstName} ${user.lastName}`}
             />
@@ -209,199 +275,6 @@ function EditUser() {
           <Typography variant="h6" gutterBottom>
             Basic Information
           </Typography>
-
-          {/* {user.role === "Customer" && (
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={4}>
-                <FormControl
-                  fullWidth
-                  margin="dense"
-                  variant="outlined"
-                  error={
-                    formik.touched.salutations &&
-                    Boolean(formik.errors.salutations)
-                  }
-                >
-                  <InputLabel id="salutations-label">Salutations</InputLabel>
-                  <Select
-                    labelId="salutations-label"
-                    id="salutations"
-                    name="salutations"
-                    value={formik.values.salutations}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    label="Salutations"
-                  >
-                    <MenuItem value="">
-                      <em>---</em>
-                    </MenuItem>
-                    <MenuItem value="Mr">Mr</MenuItem>
-                    <MenuItem value="Mrs">Mrs</MenuItem>
-                    <MenuItem value="Ms">Ms</MenuItem>
-                    <MenuItem value="Mdm">Mdm</MenuItem>
-                  </Select>
-                  {formik.touched.salutations && formik.errors.salutations && (
-                    <FormHelperText>{formik.errors.salutations}</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  margin="dense"
-                  label="First Name"
-                  name="firstName"
-                  value={formik.values.firstName}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.firstName && Boolean(formik.errors.firstName)
-                  }
-                  helperText={
-                    formik.touched.firstName && formik.errors.firstName
-                  }
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextField
-                  fullWidth
-                  margin="dense"
-                  label="Last Name"
-                  name="lastName"
-                  value={formik.values.lastName}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.lastName && Boolean(formik.errors.lastName)
-                  }
-                  helperText={formik.touched.lastName && formik.errors.lastName}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="dense"
-                  type="date"
-                  label="Date of Birth"
-                  name="dateOfBirth"
-                  value={formik.values.dateOfBirth}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.dateOfBirth &&
-                    Boolean(formik.errors.dateOfBirth)
-                  }
-                  helperText={
-                    formik.touched.dateOfBirth && formik.errors.dateOfBirth
-                  }
-                  InputLabelProps={{ shrink: true }}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl
-                  fullWidth
-                  margin="dense"
-                  variant="outlined"
-                  error={formik.touched.gender && Boolean(formik.errors.gender)}
-                >
-                  <InputLabel id="gender-label">Gender</InputLabel>
-                  <Select
-                    labelId="gender-label"
-                    id="gender"
-                    name="gender"
-                    value={formik.values.gender}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    label="Gender"
-                  >
-                    <MenuItem value="">
-                      <em>---</em>
-                    </MenuItem>
-                    <MenuItem value="Male">Male</MenuItem>
-                    <MenuItem value="Female">Female</MenuItem>
-                    <MenuItem value="Other">Other</MenuItem>
-                  </Select>
-                  {formik.touched.gender && formik.errors.gender && (
-                    <FormHelperText>{formik.errors.gender}</FormHelperText>
-                  )}
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="dense"
-                  label="Email Address"
-                  name="email"
-                  value={formik.values.email}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="dense"
-                  type="password"
-                  label="Password"
-                  name="password"
-                  disabled
-                  value={formik.values.password}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.password && Boolean(formik.errors.password)
-                  }
-                  helperText={formik.touched.password && formik.errors.password}
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  margin="dense"
-                  label="Mobile Number"
-                  name="mobileNumber"
-                  value={formik.values.mobileNumber}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.mobileNumber &&
-                    Boolean(formik.errors.mobileNumber)
-                  }
-                  helperText={
-                    formik.touched.mobileNumber && formik.errors.mobileNumber
-                  }
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  fullWidth
-                  disabled={loading}
-                  onClick={() => handleResetPassword()}
-                >
-                  Reset Password
-                </Button>
-              </Grid>
-            </Grid>
-          )} */}
 
           {user.role === "Customer" && (
             <>
@@ -1108,212 +981,6 @@ function EditUser() {
               </Grid>
             </>
           )}
-
-
-          {/* {user.role === "Staff" && (
-            <>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={4}>
-                  <FormControl
-                    fullWidth
-                    margin="dense"
-                    variant="outlined"
-                    error={
-                      formik.touched.salutations &&
-                      Boolean(formik.errors.salutations)
-                    }
-                  >
-                    <InputLabel id="salutations-label">Salutations</InputLabel>
-                    <Select
-                      labelId="salutations-label"
-                      id="salutations"
-                      name="salutations"
-                      value={formik.values.salutations}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      label="Salutations"
-                    >
-                      <MenuItem value="">
-                        <em>---</em>
-                      </MenuItem>
-                      <MenuItem value="Mr">Mr</MenuItem>
-                      <MenuItem value="Mrs">Mrs</MenuItem>
-                      <MenuItem value="Ms">Ms</MenuItem>
-                      <MenuItem value="Mdm">Mdm</MenuItem>
-                    </Select>
-                    {formik.touched.salutations &&
-                      formik.errors.salutations && (
-                        <FormHelperText>
-                          {formik.errors.salutations}
-                        </FormHelperText>
-                      )}
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    margin="dense"
-                    label="First Name"
-                    name="firstName"
-                    value={formik.values.firstName}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.firstName &&
-                      Boolean(formik.errors.firstName)
-                    }
-                    helperText={
-                      formik.touched.firstName && formik.errors.firstName
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <TextField
-                    fullWidth
-                    margin="dense"
-                    label="Last Name"
-                    name="lastName"
-                    value={formik.values.lastName}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.lastName && Boolean(formik.errors.lastName)
-                    }
-                    helperText={
-                      formik.touched.lastName && formik.errors.lastName
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    margin="dense"
-                    type="date"
-                    label="Date of Birth"
-                    name="dateOfBirth"
-                    value={formik.values.dateOfBirth}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.dateOfBirth &&
-                      Boolean(formik.errors.dateOfBirth)
-                    }
-                    helperText={
-                      formik.touched.dateOfBirth && formik.errors.dateOfBirth
-                    }
-                    InputLabelProps={{ shrink: true }}
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl
-                    fullWidth
-                    margin="dense"
-                    variant="outlined"
-                    error={
-                      formik.touched.gender && Boolean(formik.errors.gender)
-                    }
-                  >
-                    <InputLabel id="gender-label">Gender</InputLabel>
-                    <Select
-                      labelId="gender-label"
-                      id="gender"
-                      name="gender"
-                      value={formik.values.gender}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      label="Gender"
-                    >
-                      <MenuItem value="">
-                        <em>---</em>
-                      </MenuItem>
-                      <MenuItem value="Male">Male</MenuItem>
-                      <MenuItem value="Female">Female</MenuItem>
-                      <MenuItem value="Other">Other</MenuItem>
-                    </Select>
-                    {formik.touched.gender && formik.errors.gender && (
-                      <FormHelperText>{formik.errors.gender}</FormHelperText>
-                    )}
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    margin="dense"
-                    label="Email Address"
-                    name="email"
-                    value={formik.values.email}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.email && Boolean(formik.errors.email)}
-                    helperText={formik.touched.email && formik.errors.email}
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    margin="dense"
-                    type="password"
-                    label="Password"
-                    name="password"
-                    disabled
-                    value={formik.values.password}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.password && Boolean(formik.errors.password)
-                    }
-                    helperText={
-                      formik.touched.password && formik.errors.password
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    margin="dense"
-                    label="Mobile Number"
-                    name="mobileNumber"
-                    value={formik.values.mobileNumber}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={
-                      formik.touched.mobileNumber &&
-                      Boolean(formik.errors.mobileNumber)
-                    }
-                    helperText={
-                      formik.touched.mobileNumber && formik.errors.mobileNumber
-                    }
-                    variant="outlined"
-                  />
-                </Grid>
-                <Grid
-                  item
-                  xs={12}
-                  sm={6}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    disabled={loading}
-                    onClick={() => handleResetPassword()}
-                  >
-                    Reset Password
-                  </Button>
-                </Grid>
-              </Grid>
-            </>
-          )} */}
 
           <Box
             sx={{
