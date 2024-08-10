@@ -111,19 +111,6 @@ const FeedbackDetail = () => {
                 </Typography>
                 <form>
                     <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
-                        <Typography gutterBottom>User ID</Typography>
-                        <TextField
-                            value={userId}
-                            onChange={(e) => setUserId(e.target.value)}
-                            fullWidth
-                            required
-                            variant="outlined"
-                            margin="normal"
-                            disabled
-                            sx={{ backgroundColor: '#fff', borderRadius: '4px' }}
-                        />
-                    </Box>
-                    <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
                         <Typography gutterBottom>Rating (1 to 10)</Typography>
                         <Slider
                             value={eventId}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import {
   TextField,
@@ -12,14 +12,15 @@ import {
 import ecorun from "../assets/ecorun.png";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import UserContext from '../contexts/UserContext'
 
 const FeedbackForm = () => {
   const [userId, setUserId] = useState('');
   const [eventId, setEventId] = useState(5);
   const [content, setContent] = useState('');
-  const [userIdError, setUserIdError] = useState('');
   const [contentError, setContentError] = useState('');
   const [imageFile, setImageFile] = useState(null);
+  const { user } = useContext(UserContext);
 
   const onFileChange = (e) => {
     let file = e.target.files[0];
@@ -49,15 +50,14 @@ const FeedbackForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!userId) setUserIdError("Please fill in this field");
     if (!content) setContentError("Please fill in this field");
 
-    if (!userId || !content || userIdError || contentError) {
+    if (!content || contentError) {
       return;
     }
 
     const feedbackData = {
-      userId: parseInt(userId),
+      userId: user.id,
       eventId,
       content,
       imageFile
@@ -80,15 +80,6 @@ const FeedbackForm = () => {
     }
   };
 
-  const handleUserIdChange = (e) => {
-    const value = e.target.value;
-    setUserId(value);
-    if (/^\d*$/.test(value)) {
-      setUserIdError('');
-    } else {
-      setUserIdError('User ID must be a number.');
-    }
-  };
 
   const handleContentChange = (e) => {
     const value = e.target.value;
@@ -128,18 +119,7 @@ const FeedbackForm = () => {
           <img src={ecorun} width={480} alt="Event" />
         </Box>
         <form onSubmit={handleSubmit}>
-          <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
-            <Typography gutterBottom>User ID*</Typography>
-            <TextField
-              value={userId}
-              onChange={handleUserIdChange}
-              fullWidth
-              required
-              error={!!userIdError}
-              helperText={userIdError}
-              sx={{ backgroundColor: '#fff', borderRadius: '4px' }}
-            />
-          </Box>
+          
           <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
             <Typography gutterBottom>Rating* (1 to 10)</Typography>
             <Slider
