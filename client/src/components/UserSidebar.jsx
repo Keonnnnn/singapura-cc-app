@@ -138,7 +138,6 @@ const UserSidebar = () => {
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
-        sx={{ "& .MuiDialog-paper": { borderRadius: "16px" } }}
       >
         <DialogTitle id="alert-dialog-title">{"Confirm Logout"}</DialogTitle>
         <DialogContent>

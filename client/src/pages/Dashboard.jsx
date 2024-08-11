@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Card, CardContent, Grid } from "@mui/material";
+import { Box, Typography, Card, CardContent, Grid, Avatar } from "@mui/material";
 import {
   LineChart,
   Line,
@@ -9,6 +9,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Label,
 } from "recharts";
 import http from "../http"; // Adjust based on your API path
 
@@ -20,7 +21,6 @@ const Dashboard = () => {
   const [recentCustomers, setRecentCustomers] = useState([]);
 
   useEffect(() => {
-    // Fetch total users
     http.get("/user").then((res) => {
       setTotalUsers(res.data.length);
       setTotalCustomers(
@@ -28,7 +28,6 @@ const Dashboard = () => {
       );
       setTotalStaff(res.data.filter((user) => user.role === "Staff").length);
 
-      // fetch daily usage statistics by checking lastLoggedIn date
       const today = new Date();
       const days = Array.from({ length: 7 }, (_, i) => {
         const date = new Date(today);
@@ -39,13 +38,12 @@ const Dashboard = () => {
       const dailyUsage = days.map((date) => ({
         date,
         usage: res.data.filter((user) =>
-          user.lastLogin ? user.lastLogin.split("T")[0] == date : false
+          user.lastLogin ? user.lastLogin.split("T")[0] === date : false
         ).length,
       }));
 
       setDailyUsage(dailyUsage);
 
-      // fetch top 5 recent customers based on creation date
       const recentCustomers = res.data
         .filter((user) => user.role === "Customer")
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -53,13 +51,20 @@ const Dashboard = () => {
     });
   }, []);
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <Box
       sx={{
         p: 3,
-        backgroundColor: "#f0f0f0",
+        backgroundColor: "#f4f6f9",
         minHeight: "100vh",
-        p: 3,
         borderRadius: "8px",
       }}
     >
@@ -75,9 +80,9 @@ const Dashboard = () => {
         Admin Dashboard
       </Typography>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={4}>
         <Grid item xs={12} md={4}>
-          <Card>
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
               <Typography variant="h6">Total Users</Typography>
               <Typography variant="h4">{totalUsers}</Typography>
@@ -86,7 +91,7 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card>
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
               <Typography variant="h6">Total Customers</Typography>
               <Typography variant="h4">{totalCustomers}</Typography>
@@ -95,7 +100,7 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card>
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
               <Typography variant="h6">Total Staff</Typography>
               <Typography variant="h4">{totalStaff}</Typography>
@@ -104,78 +109,97 @@ const Dashboard = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <Card>
+          <Card sx={{ borderRadius: 2, p: 2 }}>
             <CardContent>
               <Typography variant="h6">Daily Usage Statistics</Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={dailyUsage}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="usage" stroke="#8884d8" />
-                </LineChart>
-              </ResponsiveContainer>
+              <Box sx={{ height: 350, mt: 3 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={dailyUsage}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" tickFormatter={formatDate}>
+                      <Label value="Date (dd/mm/yyyy)" offset={-5} position="insideBottom" />
+                    </XAxis>
+                    <YAxis>
+                      <Label value="Usage Count" angle={-90} position="insideLeft" />
+                    </YAxis>
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="usage" stroke="#8884d8" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
 
         <Grid item xs={12}>
-          <Card>
+          <Card sx={{ borderRadius: 2 }}>
             <CardContent>
-              <Typography variant="h6">Top 5 Recent Customers</Typography>
-              <Grid container spacing={2}>
-                {/* Display top 5 recent customers profile picture, name, email and date created in a nice vertical list with the details spread out horizontally*/}
-                {recentCustomers.slice(0, 5).map((customer, index) => {
-                  return (
-                    <Grid item xs={12} key={index}>
+              <Typography variant="h6" gutterBottom>
+                Top 5 Recent Customers
+              </Typography>
+              <Grid container spacing={3} sx={{ mt: 2 }}>
+                {recentCustomers.slice(0, 5).map((customer, index) => (
+                  <Grid item xs={12} sm={4} key={index}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        padding: "10px 0",
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          marginRight: 2,
+                          color: "#000",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {index + 1}.
+                      </Typography>
+                      <Avatar
+                        src={customer.pfpURL || undefined}
+                        alt={customer.firstName}
+                        sx={{
+                          width: 60,
+                          height: 60,
+                          marginRight: 2,
+                          backgroundColor: customer.pfpURL ? "transparent" : "#ccc",
+                        }}
+                      >
+                        {!customer.pfpURL && customer.firstName[0]}
+                      </Avatar>
                       <Box
                         sx={{
                           display: "flex",
-                          alignItems: "center",
-                          justifyContent: "flex-start",
+                          flexDirection: "column",
+                          justifyContent: "center",
                         }}
                       >
-                        <Box
-                          component="img"
-                          src={customer.pfpURL || ""}
-                          alt={customer.firstName}
-                          sx={{
-                            width: 60,
-                            height: 60,
-                            borderRadius: "50%",
-                            mr: 2,
-                            objectFit: "cover",
-                          }}
-                        />
-                        <Box
-                          sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            width: "100%",
-                          }}
-                        >
-                          <Typography variant="h6">
-                            {customer.firstName} {customer.lastName}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {customer.email}
-                          </Typography>
-                          <Typography variant="body2" color="textSecondary">
-                            {new Date(customer.createdAt).toDateString()}
-                          </Typography>
-                        </Box>
+                        <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                          {customer.firstName} {customer.lastName}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {customer.email}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          {new Date(customer.createdAt).toLocaleDateString("en-GB")}
+                        </Typography>
                       </Box>
-                    </Grid>
-                  );
-                })}
+                    </Box>
+                  </Grid>
+                ))}
+                {/* Filler grid items to ensure correct alignment for 5 items */}
+                {recentCustomers.length < 5 && (
+                  <Grid item xs={12} sm={4} />
+                )}
               </Grid>
             </CardContent>
           </Card>
         </Grid>
+
       </Grid>
     </Box>
   );

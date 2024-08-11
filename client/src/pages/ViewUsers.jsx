@@ -526,18 +526,18 @@ function ViewUsers() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title" sx={{ color: "#e2160f", fontWeight: "bold" }}>{"Confirm Delete"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText id="alert-dialog-description" sx={{ mb: 2 }}>
             Are you sure you want to delete this user? This action cannot be
             undone.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color="primary" variant="outlined">
             Cancel
           </Button>
-          <Button onClick={deleteUser} color="secondary" autoFocus>
+          <Button onClick={deleteUser} color="error" autoFocus variant="contained" >
             Delete
           </Button>
         </DialogActions>

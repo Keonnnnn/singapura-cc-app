@@ -8,14 +8,13 @@ import {
   Slider,
   Box,
   Paper,
+  Avatar,
 } from "@mui/material";
-import ecorun from "../assets/ecorun.png";
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import UserContext from '../contexts/UserContext'
+import UserContext from '../contexts/UserContext';
 
 const FeedbackForm = () => {
-  const [userId, setUserId] = useState("");
   const [eventId, setEventId] = useState(5);
   const [content, setContent] = useState('');
   const [contentError, setContentError] = useState('');
@@ -26,24 +25,23 @@ const FeedbackForm = () => {
     let file = e.target.files[0];
     if (file) {
       if (file.size > 1024 * 1024) {
-        toast.error("Maximum file size is 1MB");
+        toast.error('Maximum file size is 1MB');
         return;
       }
       let formData = new FormData();
-      formData.append("file", file);
+      formData.append('file', file);
 
-      axios
-        .post("http://localhost:3001/feedback/file/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
+      axios.post('http://localhost:3001/feedback/file/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
         .then((res) => {
           setImageFile(res.data.filename);
         })
         .catch((error) => {
           console.log(error.response);
-          toast.error("Failed to upload file");
+          toast.error('Failed to upload file');
         });
     }
   };
@@ -61,81 +59,47 @@ const FeedbackForm = () => {
       userId: user.id,
       eventId,
       content,
-      imageFile,
+      imageFile
     };
 
     try {
-      const response = await axios.post(
-        "http://localhost:3001/feedback",
-        feedbackData
-      );
+      const response = await axios.post("http://localhost:3001/feedback", feedbackData);
       if (response.status === 201) {
-        setUserId("");
         setEventId(5);
-        setContent("");
+        setContent('');
         setImageFile(null);
-        alert("Feedback submitted successfully");
+        toast.success('Feedback submitted successfully');
       } else {
-        alert("Failed to submit feedback");
+        toast.error('Failed to submit feedback');
       }
     } catch (error) {
-      console.error("Failed to submit feedback:", error);
-      alert("Failed to submit feedback");
+      console.error('Failed to submit feedback:', error);
+      toast.error('Failed to submit feedback');
     }
   };
-
 
   const handleContentChange = (e) => {
     const value = e.target.value;
     setContent(value);
     if (value) {
-      setContentError("");
+      setContentError('');
     } else {
-      setContentError("Please fill in this field");
+      setContentError('Please fill in this field');
     }
   };
 
   return (
-    <Container
-      maxWidth="sm"
-      sx={{
-        mt: 4,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-      }}
-    >
-      <Paper elevation={3} sx={{ p: 3, borderRadius: "12px", width: "100%" }}>
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{ textAlign: "center", fontWeight: "bold", color: "#b71c1c" }}
-        >
-          Feedback Submission
+    <Container maxWidth="sm" sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: '16px', width: '100%', backgroundColor: '#f7f7f7' }}>
+        <Avatar sx={{ bgcolor: '#b71c1c', color: '#fff', width: 56, height: 56, mb: 2, alignSelf: 'center' }}>
+          {user.firstName.charAt(0)}
+        </Avatar>
+        <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold', color: '#333' }}>
+          Submit Your Feedback
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Box
-            sx={{
-              width: "48px",
-              height: "48px",
-              overflow: "hidden",
-              borderRadius: "50%",
-              mr: 2,
-              backgroundColor: "#b71c1c",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "24px",
-              fontWeight: "bold",
-              color: "#ffffff",
-            }}
-          ></Box>
-          <img src={ecorun} width={480} alt="Event" />
-        </Box>
         <form onSubmit={handleSubmit}>
-          
-          <Box sx={{ backgroundColor: '#f5f5f5', p: 2, borderRadius: '8px', mb: 2 }}>
-            <Typography gutterBottom>Rating* (1 to 10)</Typography>
+          <Box sx={{ backgroundColor: '#fff', p: 3, borderRadius: '8px', mb: 3 }}>
+            <Typography gutterBottom variant="subtitle1">Rate the Event (1 to 10)</Typography>
             <Slider
               value={eventId}
               onChange={(e, value) => setEventId(value)}
@@ -145,18 +109,11 @@ const FeedbackForm = () => {
               marks
               min={1}
               max={10}
-              sx={{ color: "#b71c1c" }}
+              sx={{ color: '#b71c1c' }}
             />
           </Box>
-          <Box
-            sx={{
-              backgroundColor: "#f5f5f5",
-              p: 2,
-              borderRadius: "8px",
-              mb: 2,
-            }}
-          >
-            <Typography gutterBottom>Feedback* </Typography>
+          <Box sx={{ backgroundColor: '#fff', p: 3, borderRadius: '8px', mb: 3 }}>
+            <Typography gutterBottom variant="subtitle1">Your Feedback</Typography>
             <TextField
               value={content}
               onChange={handleContentChange}
@@ -166,45 +123,27 @@ const FeedbackForm = () => {
               rows={4}
               error={!!contentError}
               helperText={contentError}
-              sx={{ backgroundColor: "#fff", borderRadius: "4px" }}
+              sx={{ backgroundColor: '#fff', borderRadius: '4px' }}
             />
           </Box>
-          <Button variant="contained" component="label">
+          <Button variant="contained" component="label" fullWidth sx={{ mb: 2, py: 1.5, borderRadius: '24px', backgroundColor: '#b71c1c', color: 'white', fontWeight: 'bold' }}>
             Upload Image
-            <input
-              hidden
-              accept="image/*"
-              type="file"
-              onChange={onFileChange}
-            />
+            <input hidden accept="image/*" type="file" onChange={onFileChange} />
           </Button>
           {imageFile && (
-            <div
-              className="aspect-ratio-container"
-              style={{ marginTop: "10px" }}
-            >
-              <img
-                alt="feedback"
-                src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`}
-              ></img>
-            </div>
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <img alt="feedback" src={`${import.meta.env.VITE_FILE_BASE_URL}${imageFile}`} style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px' }} />
+            </Box>
           )}
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             fullWidth
-            sx={{
-              mt: 2,
-              py: 1.5,
-              borderRadius: "24px",
-              backgroundColor: "#b71c1c",
-              color: "white",
-              fontWeight: "bold",
-            }}
+            sx={{ mt: 2, py: 1.5, borderRadius: '24px', backgroundColor: '#b71c1c', color: 'white', fontWeight: 'bold' }}
           >
             Submit Feedback
           </Button>
+          <ToastContainer />
         </form>
       </Paper>
     </Container>

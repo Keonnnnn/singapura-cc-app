@@ -170,8 +170,11 @@ const Settings = () => {
         <DialogTitle id="alert-dialog-title">{"Delete Account?"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Are you sure you want to delete your account? This action will
-            disable your account for 24 hours before permanent deletion. You can
+            Are you sure you want to delete your account?  
+          </DialogContentText>
+
+          <DialogContentText>
+            This action will disable your account for 24 hours before permanent deletion. You can
             undo this action by logging in again within 24 hours.
           </DialogContentText>
         </DialogContent>

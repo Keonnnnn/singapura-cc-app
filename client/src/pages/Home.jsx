@@ -1,11 +1,74 @@
-import React from 'react';
-import { Box, Typography, Container, Grid } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Container, Grid, Paper } from '@mui/material';
 import backgroundImage from '../assets/backgroundImage.jpg';
 import singaImage from '../assets/singaLion.png'; 
+import http from '../http';
 
 function Home() {
+  const [announcements, setAnnouncements] = useState([]);
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const response = await http.get('/announcements');
+        setAnnouncements(response.data);
+      } catch (error) {
+        console.error('Failed to fetch announcements', error);
+      }
+    };
+    fetchAnnouncements();
+  }, []);
+
   return (
     <div>
+      {/* Announcements Section */}
+      <Box sx={{ backgroundColor: '#fff', py: 8 }}>
+        <Container maxWidth="lg">
+          <Typography
+            variant="h4"
+            component="h2"
+            gutterBottom
+            sx={{
+              fontWeight: 'bold',
+              color: '#e2160f',
+              textAlign: 'center',
+              mb: 3,
+            }}
+          >
+            ANNOUNCEMENTS
+          </Typography>
+          <Grid container spacing={3}>
+            {announcements.length === 0 ? (
+              <Typography variant="h6" textAlign="center" sx={{ width: '100%' }}>
+                No Announcements Available
+              </Typography>
+            ) : (
+              announcements.map((announcement) => (
+                <Grid item xs={12} sm={6} md={4} key={announcement.id}>
+                  <Paper elevation={3} sx={{ padding: 2 }}>
+                    <Typography variant="h6" color="primary">
+                      {announcement.title}
+                    </Typography>
+                    <Box display="flex" alignItems="center" mt={2}>
+                      <Box>
+                        <Typography variant="body1" color="textSecondary">
+                          Date: {new Date(announcement.date).toLocaleDateString()}
+                        </Typography>
+                        <Typography variant="body1" color="textSecondary">
+                          Time: {announcement.time}
+                        </Typography>
+                        <Typography variant="body1" color="textSecondary">
+                          Location: {announcement.location}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Paper>
+                </Grid>
+              ))
+            )}
+          </Grid>
+        </Container>
+      </Box>
       {/* Welcome Section */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Grid container spacing={3} alignItems="center">
@@ -66,11 +129,11 @@ function Home() {
             >
               Join us to make a difference, forge new friendships, and contribute to a greener future.
             </Typography>
-
-            
           </Grid>
         </Grid>
       </Container>
+
+      
 
       {/* Meet Our Mascot Section */}
       <Box sx={{ backgroundColor: '#f9f9f9', py: 8 }}>
@@ -93,7 +156,7 @@ function Home() {
             <Grid item xs={12} md={5}>
               <Box
                 sx={{
-                  height: { xs: 180, md: 280 }, // Adjusted height to make Singa's image smaller
+                  height: { xs: 180, md: 280 },
                   backgroundImage: `url(${singaImage})`,
                   backgroundSize: 'contain',
                   backgroundPosition: 'center',

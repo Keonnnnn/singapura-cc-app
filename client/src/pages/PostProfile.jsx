@@ -432,16 +432,7 @@ function PostProfile() {
                             {selectedPost.description}
                         </Typography>
                     </DialogContent>
-                    <DialogActions sx={{ backgroundColor: darkMode ? '#1E1E1E' : '#fff' }}>
-                        <Button onClick={handleClose} variant="outlined" sx={{ borderRadius: '24px', color: darkMode ? '#BB86FC' : '#b71c1c', borderColor: darkMode ? '#BB86FC' : '#b71c1c' }}>
-                            Cancel
-                        </Button>
-                        {user && (user.id === selectedPost.userId || user.role === 'Admin') && (
-                            <Button onClick={handleDeleteConfirmOpen} variant="contained" color="error" sx={{ borderRadius: '24px' }}>
-                                Delete
-                            </Button>
-                        )}
-                    </DialogActions>
+                    
                 </Dialog>
             )}
 

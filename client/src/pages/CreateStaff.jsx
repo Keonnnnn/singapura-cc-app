@@ -109,11 +109,12 @@ function CreateStaff() {
       <Paper
         elevation={3}
         sx={{
-          p: 3,
-          maxWidth: 600,
+          p: 4,
+          maxWidth: 900,
           width: "100%",
+          borderRadius: "16px",
+          backgroundColor: "#f4f6f9",
           position: "relative",
-          borderRadius: "12px",
         }}
       >
         {/* <Tooltip title="Cancel">
