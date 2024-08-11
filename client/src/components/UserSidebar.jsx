@@ -49,7 +49,7 @@ const UserSidebar = () => {
 
   const menuItems = [
     { text: "Account", path: "/profile", icon: <Person /> },
-    { text: "Membership", path: "/Membership", icon: <Star /> },
+    { text: "Rewards", path: "", icon: <Star /> },
     { text: "History", path: "/user-registration-history", icon: <History /> },
     { text: "Reviews", path: "/reviews", icon: <RateReview /> },
     { text: "Settings", path: "/settings", icon: <Settings /> },

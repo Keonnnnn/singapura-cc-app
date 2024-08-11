@@ -131,6 +131,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      spinsLeft: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
     },
     {
       tableName: "users",
@@ -149,15 +153,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId",
       onDelete: "cascade",
     });
-    User.hasMany(models.Follower, {
-      as: "followers",
-      foreignKey: "followedId",
-    });
-    User.hasMany(models.Follower, {
-      as: "following",
-      foreignKey: "followerId",
-    });
-    User.hasMany(models.Registration, { foreignKey: "userId" });
+    User.hasMany(models.Follower, { as: 'followers', foreignKey: 'followedId' });
+    User.hasMany(models.Follower, { as: 'following', foreignKey: 'followerId' });
+    User.hasMany(models.Registration, { foreignKey: 'userId' });
+    User.belongsToMany(models.Reward, { through: 'UserRewards', foreignKey: 'userId' });
   };
 
   return User;
