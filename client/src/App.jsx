@@ -58,14 +58,13 @@ import AnnouncementForm from './pages/AnnouncementForm';
 import AnnouncementDetail from './pages/AnnouncementDetail';
 
 // Ayura
-import Rewards from "./pages/Rewards";
 import EditRewards from "./pages/EditRewards";
 import UpdateReward from "./pages/updateReward";
-import Membership from "./pages/Membership.jsx";
 import ClaimRewards from "./pages/claimRewards.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import { ToastContainer } from "react-toastify";
+import Spin from "./pages/Spin.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -248,19 +247,19 @@ function App() {
             <Route path="/addnote" element={<AddNote />} />
             <Route path="/editnote/:id" element={<EditNote />} />
             <Route
-              path="/membership"
+              path="/ClaimRewards"
               element={
                 <ProtectedRoute
-                  element={Membership}
+                  element={ClaimRewards}
                   allowedRoles={["Customer"]}
                 />
               }
             />
             <Route
-              path="/claim-rewards"
+              path="/Spin"
               element={
                 <ProtectedRoute
-                  element={ClaimRewards}
+                  element={Spin}
                   allowedRoles={["Customer"]}
                 />
               }
@@ -367,10 +366,6 @@ function App() {
             <Route
               path="/admin/edit-event/:id"
               element={<ProtectedRoute element={EditEvent} allowedRoles={["Admin", "Staff"]} />}
-            />
-             <Route
-              path="/admin/rewards"
-              element={<ProtectedRoute element={Rewards} />}
             />
             <Route
               path="/admin/edit-rewards"

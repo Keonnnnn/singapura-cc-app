@@ -31,6 +31,7 @@ const UserSidebar = () => {
   const { user: loggedInUser } = useContext(UserContext);
   const [user, setUser] = useState(null);
   const [open, setOpen] = useState(false);
+  const [membershipOpen, setMembershipOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -40,6 +41,10 @@ const UserSidebar = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleMembershipClick = () => {
+    setMembershipOpen(!membershipOpen); // Toggle dropdown under Membership
   };
 
   const logout = () => {
@@ -65,6 +70,7 @@ const UserSidebar = () => {
 
   return (
     <>
+
       {user && (
         <Box
           sx={{

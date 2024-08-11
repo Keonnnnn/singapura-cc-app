@@ -34,6 +34,7 @@ function Home() {
 
   return (
     <div>
+
       {/* Carousel */}
       <div className="carousel-container">
         <Carousel
@@ -63,7 +64,6 @@ function Home() {
           </div>
         </Carousel>
       </div>
-
 
       {/* Announcements Section */}
       <Box sx={{ backgroundColor: '#fff', py: 8 }}>
