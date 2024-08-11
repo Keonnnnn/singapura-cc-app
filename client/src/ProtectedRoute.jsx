@@ -11,8 +11,9 @@ const ProtectedRoute = ({ element: Component, allowedRoles, ...rest }) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-     return <Navigate to="/" />; // can consider changing to 404 or login page
+     return <Navigate to="/login" />; // can consider changing to 404 or login page
   }
+
 
   return (
     <ProtectedLayout>

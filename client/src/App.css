@@ -8,3 +8,12 @@
   color: inherit;
   margin-left: 12px;
 }
+
+/* Dark Mode Styles */
+.AppBar.dark-mode a {
+  color: #fff;
+}
+
+.AppBar.dark-mode button {
+  color: #fff;
+}

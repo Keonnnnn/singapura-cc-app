@@ -1,28 +1,53 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, TextField, Button, IconButton } from '@mui/material';
+import { Box, Typography, TextField, Button, IconButton, Input, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import http from '../http';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-
-
+import { Search, Clear } from '@mui/icons-material';
 
 function EditRewards() {
-
     const navigate = useNavigate();
     const [rewardList, setRewardList] = useState([]);
-    const [addDialogOpen, setAddDialogOpen] = React.useState(false);
-    const [tableData, setTableData] = useState(rewardList);
+    const [addDialogOpen, setAddDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+    const [search, setSearch] = useState('');
+    const { id } = useParams();
+    const [reward, setReward] = useState({
+        rewardName: "",
+        description: "",
+        Points: "",
+        Tier: ""
+    });
+
+    useEffect(() => {
+        getRewards();
+    }, []);
+
+    useEffect(() => {
+        if (id) {
+            getRewardById(id);
+        }
+    }, [id]);
+
+    const getRewards = () => {
+        http.get('/reward').then((res) => {
+            setRewardList(res.data);
+        });
+    };
+
+    const getRewardById = (id) => {
+        http.get(`/reward/${id}`).then((res) => {
+            setReward(res.data);
+        });
+    };
 
     const handleAddDialogOpen = () => {
         setAddDialogOpen(true);
@@ -32,12 +57,54 @@ function EditRewards() {
         setAddDialogOpen(false);
     };
 
-    useEffect(() => {
-        http.get('/reward').then((res) => {
-            console.log(res.data);
+    const handleDeleteDialogOpen = (id) => {
+        setDeleteDialogOpen(true);
+        setDeleteId(id);
+    };
+
+    const handleDeleteDialogClose = () => {
+        setDeleteDialogOpen(false);
+        setDeleteId(null);
+    };
+
+    const confirmDeleteReward = () => {
+        deleteReward(deleteId);
+        handleDeleteDialogClose();
+    };
+
+    const deleteReward = (id) => {
+        http.delete(`/reward/${id}`).then((res) => {
+            console.log("Data deleted from server:", res.data);
+            getRewards();
+        }).catch((error) => {
+            console.error("Error deleting data:", error);
+        });
+    };
+
+    const searchRewards = () => {
+        http.get(`/reward?search=${search}`).then((res) => {
             setRewardList(res.data);
         });
-    }, []);
+    };
+
+    const onSearchChange = (e) => {
+        setSearch(e.target.value);
+    };
+
+    const onClickSearch = () => {
+        searchRewards();
+    };
+
+    const onSearchKeyDown = (e) => {
+        if (e.key === "Enter") {
+            searchRewards();
+        }
+    };
+
+    const onClickClear = () => {
+        setSearch('');
+        getRewards();
+    };
 
     const formik = useFormik({
         initialValues: {
@@ -57,103 +124,26 @@ function EditRewards() {
             data.description = data.description.trim();
             data.Points = data.Points;
             data.Tier = data.Tier.trim();
-            http.post("/reward", data)
-                .then((res) => {
-                    console.log(res.data);
-                    navigate("/admin/rewards");
-                });
-        }
-    });
-
-    const { id } = useParams();
-    const [reward, setReward] = useState({
-        rewardName: "",
-        description: "",
-        Points: "",
-        Tier: ""
-    });
-    const [loading, setLoading] = useState(true);
-    const [open, setOpen] = React.useState(false);
-
-
-    const handleClickOpen = (id) => {
-        setOpen(true);
-        console.log(id)
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-        setAddDialogOpen(false);
-    };
-
-    useEffect(() => {
-        http.get(`/reward/${id}`).then((res) => {
-            setReward(res.data);
-            setLoading(false);
-            console.log(res.data);
-        });
-    }, [id]);
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await http.get(`/reward/${id}`);
-    //             setReward(response.data);
-    //         } catch (error) {
-    //             setError(error.message || "Error fetching reward"); // Set a default message
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-
-    //     if (id) {
-    //         fetchData();
-    //     }
-    // }, [id]);
-
-    const formikEdit = useFormik({
-        initialValues: reward,
-        enableReinitialize: true,
-        validationSchema: yup.object({
-            rewardName: yup.string().trim().min(3, 'At least 3 characters').max(100, 'At most 100 characters').required('Reward name is needed'),
-            description: yup.string().trim().min(3, 'At least 3 characters').max(500, 'At most 500 characters').required('Description is required'),
-            Points: yup.number().min(100, 'Minimum points 1000').max(100000, 'Maximum points 100,000').integer().required('Points is required'),
-            Tier: yup.string().trim().min(3, 'At least 3 characters').max(100, 'At most 100 characters').required('Tier is required')
-        }),
-        onSubmit: (data) => {
-            data.rewardName = data.rewardName.trim();
-            data.description = data.description.trim();
-            data.Points = data.Points;
-            data.description = data.description.trim();
-            data.description = data.Tier.trim();
-            http.put(`/reward/${formikEdit.values.id}`, data)
-                .then((res) => {
-                    console.log(res.data);
-                });
-        }
-    });
-
-
-    const deleteReward = (id) => {
-        const updatedData = tableData.filter((item) => item.id !== id);
-        setTableData(updatedData);
-
-        // Make API call to delete data
-        http.delete(`/reward/${id}`)
-            .then((res) => {
-                console.log("Data deleted from server:", res.data); // Optional: handle success message
+            http.post("/reward", data).then((res) => {
+                console.log(res.data);
                 window.location.reload();
-            })
-            .catch((error) => {
-                console.error("Error deleting data:", error); // Handle errors
             });
-
-    };
-
+        }
+    });
 
     return (
         <Box>
-            <Typography variant='h5' sx={{ margin: '-100px 0px 0px 100px' }}>Rewards</Typography>
-            <TableContainer component={Paper} sx={{ width: '100%', margin: '30px 0px 0px 100px'}}>
+            <Typography variant='h4' sx={{ margin: '10px 0px 50px 0px' }}>Rewards</Typography>
+            <Box sx={{ width: '100%'}}>
+                <Input value={search} placeholder="Search" onChange={onSearchChange} onKeyDown={onSearchKeyDown} />
+                <IconButton color="primary" onClick={onClickSearch}>
+                    <Search />
+                </IconButton>
+                <IconButton color="primary" onClick={onClickClear}>
+                    <Clear />
+                </IconButton>
+            </Box>
+            <TableContainer component={Paper} sx={{ width: '100%', margin: '30px 0px 0px 0px', paddingRight:'-0px'}}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
@@ -167,29 +157,19 @@ function EditRewards() {
                     </TableHead>
                     <TableBody>
                         {rewardList.map((reward) => (
-                            <TableRow
-                                key={reward.id}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
+                            <TableRow key={reward.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                 <TableCell>{reward.id}</TableCell>
-                                <TableCell component="th" scope="row">
-                                    {reward.rewardName}
-                                </TableCell>
+                                <TableCell component="th" scope="row">{reward.rewardName}</TableCell>
                                 <TableCell>{reward.description}</TableCell>
                                 <TableCell>{reward.Points}</TableCell>
                                 <TableCell>{reward.Tier}</TableCell>
                                 <TableCell>
-                                        {reward && (
-                                            
-                                            <Link to={`/admin/update-rewards/${reward.id}`}>
-                                                <Button color="primary" sx={{ padding: '4px', backgroundColor: 'blue', color: 'white', margin: '0px 5px 0px 0px' }}>
-                                                    Edit
-                                                </Button>
-                                            </Link>
-                                           
-                                        )}
-                                       
-                                    <Button color="primary" sx={{ padding: '4px', backgroundColor: 'red', color: 'white' }} onClick={() => deleteReward(reward.id)}>
+                                <Link to={`/admin/update-rewards/${reward.id}`}>
+                                        <Button color="primary" sx={{ padding: '4px', margin: '0px 5px 0px 0px', backgroundColor: 'blue', color: 'white', '&:hover': { backgroundColor: 'darkblue' } }}>
+                                            Edit
+                                        </Button>
+                                    </Link>
+                                    <Button color="primary" sx={{ padding: '4px', backgroundColor: 'red', color: 'white', '&:hover': { backgroundColor: 'darkred' } }} onClick={() => handleDeleteDialogOpen(reward.id)}>
                                         Delete
                                     </Button>
                                 </TableCell>
@@ -199,14 +179,10 @@ function EditRewards() {
                 </Table>
             </TableContainer>
             <React.Fragment>
-                <Button variant="outlined" onClick={handleAddDialogOpen} sx={{ borderColor: 'red', backgroundColor: 'red', color: 'white', margin: '30px 0px 0px 1180px' }}>
+                <Button variant="outlined" onClick={handleAddDialogOpen} sx={{ borderColor: 'red', backgroundColor: 'red', color: 'white', margin: '50px 0px 0px 1000px', '&:hover': { backgroundColor: 'darkred' } }}>
                     Add
                 </Button>
-                <Dialog
-                    open={addDialogOpen}
-                    onClose={handleAddDialogClose}
-
-                >
+                <Dialog open={addDialogOpen} onClose={handleAddDialogClose}>
                     <DialogTitle>Add New Reward</DialogTitle>
                     <DialogContent>
                         <Box>
@@ -244,34 +220,49 @@ function EditRewards() {
                                     error={formik.touched.Points && Boolean(formik.errors.Points)}
                                     helperText={formik.touched.Points && formik.errors.Points}
                                 />
-                                <TextField
-                                    fullWidth margin="dense" autoComplete="off"
-                                    label="Tier"
-                                    name="Tier"
-                                    sx={{ width: '48%' }}
-                                    value={formik.values.Tier}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    error={formik.touched.Tier && Boolean(formik.errors.Tier)}
-                                    helperText={formik.touched.Tier && formik.errors.Tier}
-                                />
-                                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Box sx={{ mt: 5, borderColor: 'red', backgroundborderColor: 'red', backgroundColor: 'blue', color: 'white', borderRadius: '5px', margin: '40px 10px 10px 400px' }}>
-                                        <Button onClick={handleAddDialogClose} sx={{ color: 'white' }}>Cancel</Button>
-                                    </Box>
-                                    <Box sx={{ mt: 5 }}>
-                                        <Button variant="contained" type="submit" sx={{ borderColor: 'red', backgroundColor: 'red', color: 'white' }}>
-                                            Add
-                                        </Button>
-                                    </Box>
-                                </div>
+                                <FormControl fullWidth margin="dense" sx={{ width: '48%' }}>
+                                    <InputLabel id="tier-label">Tier</InputLabel>
+                                    <Select
+                                        labelId="tier-label"
+                                        label="Tier"
+                                        name="Tier"
+                                        value={formik.values.Tier}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={formik.touched.Tier && Boolean(formik.errors.Tier)}
+                                    >
+                                        <MenuItem value="Bronze">Bronze</MenuItem>
+                                        <MenuItem value="Silver">Silver</MenuItem>
+                                        <MenuItem value="Gold">Gold</MenuItem>
+                                    </Select>
+                                    {formik.touched.Tier && formik.errors.Tier && (
+                                        <Typography color="error" variant="caption">{formik.errors.Tier}</Typography>
+                                    )}
+                                </FormControl>
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%', margin: '40px 10px 10px 400px' }}>
+                                    <Button onClick={handleAddDialogClose} sx={{ mt: 5, backgroundColor: 'blue', color: 'white', borderRadius: '5px', marginRight: '10px', '&:hover': { backgroundColor: 'darkblue' } }}>Cancel</Button>
+                                    <Button variant="contained" type="submit" sx={{ mt: 5, backgroundColor: 'red', color: 'white' }}>Add</Button>
+                                </Box>
                             </Box>
                         </Box>
                     </DialogContent>
                 </Dialog>
+                <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+                    <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+                    <DialogContent>
+                        <Typography>Are you sure you want to delete this reward?</Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDeleteDialogClose} sx={{ backgroundColor: 'blue', color: 'white', '&:hover': { backgroundColor: 'darkblue' } }}>Cancel</Button>
+                        <Button onClick={confirmDeleteReward} sx={{ backgroundColor: 'red', color: 'white', '&:hover': { backgroundColor: 'darkred' } }}>
+                            Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </React.Fragment>
         </Box>
-    )
+    );
 }
 
-export default EditRewards
+export default EditRewards;
+

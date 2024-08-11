@@ -21,10 +21,10 @@ import UserContext from "../contexts/UserContext";
 // Icons for the sidebar options
 import dashboardIcon from "../assets/dashboard.svg";
 import usersIcon from "../assets/users.svg";
-import blogIcon from "../assets/blog.svg";
 import eventsIcon from "../assets/events.svg";
 import rewardsIcon from "../assets/rewards.svg";
 import notificationsIcon from "../assets/notification.svg";
+
 
 // Sidebar menu options
 const sideMenuOptions = [
@@ -49,11 +49,6 @@ const sideMenuOptions = [
     ],
   },
   {
-    name: "Blogs",
-    icon: blogIcon,
-    path: "/posts",
-  },
-  {
     name: "Events",
     icon: eventsIcon,
     subOptions: [
@@ -74,16 +69,7 @@ const sideMenuOptions = [
   {
     name: "Rewards",
     icon: rewardsIcon,
-    subOptions: [
-      {
-        name: "View All Rewards",
-        path: "/admin/rewards",
-      },
-      {
-        name: "Add Rewards",
-        path: "/admin/edit-rewards",
-      },
-    ],
+    path: "/admin/edit-rewards",
   },
   {
     name: "Notifications",
@@ -96,6 +82,20 @@ const sideMenuOptions = [
       {
         name: "Add Notification",
         path: "/admin/notifications/add",
+      },
+    ],
+  },
+  {
+    name: "Announcements",
+    icon: notificationsIcon,
+    subOptions: [
+      {
+        name: "View All Announcements",
+        path: "/announcements",
+      },
+      {
+        name: "Create Announcement",
+        path: "/announcements/new",
       },
     ],
   },

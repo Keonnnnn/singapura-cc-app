@@ -11,15 +11,13 @@ import {
   Select,
   MenuItem,
   FormHelperText,
-  IconButton,
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import http from "../http";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Close } from "@mui/icons-material";
 
 function CreateStaff() {
   const navigate = useNavigate();
@@ -109,11 +107,12 @@ function CreateStaff() {
       <Paper
         elevation={3}
         sx={{
-          p: 3,
-          maxWidth: 600,
+          p: 4,
+          maxWidth: 900,
           width: "100%",
+          borderRadius: "16px",
+          backgroundColor: "#f4f6f9",
           position: "relative",
-          borderRadius: "12px",
         }}
       >
         {/* <Tooltip title="Cancel">
@@ -132,7 +131,15 @@ function CreateStaff() {
           </IconButton>
         </Tooltip> */}
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Typography variant="h5" sx={{ flex: 1 }}>
+          <Typography
+            variant="h5"
+            sx={{
+              my: 2,
+              textAlign: "center",
+              color: "#e2160f",
+              fontWeight: "bold",
+            }}
+          >
             Add Staff
           </Typography>
         </Box>
@@ -332,8 +339,6 @@ function CreateStaff() {
             </Button>
           </Box>
         </Box>
-
-        <ToastContainer />
       </Paper>
     </Box>
   );

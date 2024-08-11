@@ -9,9 +9,8 @@ import {
 import http from "./http";
 import { ThemeProvider } from "@mui/material/styles";
 import Navbar from "./components/Navbar.jsx";
-
-// Francine
-import MyTheme from "./themes/MyTheme";
+import Footer from "./components/Footer.jsx"; // Import Footer component
+import { theme, darkTheme } from "./themes/MyTheme";
 import Register from "./pages/Register";
 import UserContext from "./contexts/UserContext";
 import ProtectedRoute from "./ProtectedRoute.jsx";
@@ -29,6 +28,7 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import OtpVerification from "./pages/OtpVerification.jsx";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import FacilitiesWorkInProgress from "./pages/FacilitiesWorkInProgress";
 
 // Keon
 import Posts from "./pages/Posts";
@@ -42,8 +42,9 @@ import Events from "./pages/Events";
 import AddEvent from "./pages/AddEvent";
 import EditEvent from "./pages/EditEvent";
 import ChatBot from "react-chatbotify";
-import CustomerEvent from "./pages/CustomerEvents"; //page
+import CustomerEvent from "./pages/CustomerEvents";
 import StaffEventConfirmation from "./pages/StaffEventConfirmation.jsx";
+import UserRegistrationHistory from "./pages/UserRegistrationHistory.jsx";
 
 // Ahmed
 import FeedbackForm from "./pages/FeedbackForm";
@@ -52,20 +53,23 @@ import FeedbackDetail from "./pages/FeedbackDetail";
 import AddNotification from "./pages/AddNotification";
 import NotificationList from "./pages/NotificationList";
 import NotificationDetail from "./pages/NotificationDetail";
+import AnnouncementList from "./pages/AnnouncementList";
+import AnnouncementForm from "./pages/AnnouncementForm";
+import AnnouncementDetail from "./pages/AnnouncementDetail";
 
 // Ayura
-import Rewards from "./pages/Rewards";
 import EditRewards from "./pages/EditRewards";
 import UpdateReward from "./pages/updateReward";
-import Membership from "./pages/Membership.jsx";
 import ClaimRewards from "./pages/claimRewards.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import { ToastContainer } from "react-toastify";
+import Spin from "./pages/Spin.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const localS = localStorage.getItem("accessToken");
 
   useEffect(() => {
@@ -83,80 +87,108 @@ function App() {
     fetchUser();
   }, [localS]);
 
+  const toggleDarkMode = () => {
+    setDarkMode((prevMode) => !prevMode);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
   // Amelia's codes
-
   const flow = {
     start: {
       message: "Greetings to you! How can I help you today?",
-      options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!"],
-      path: "handle_inquiry",
+      transition: { duration: 1000 },
+      path: "show_options",
     },
-    
+    show_options: {
+      message: "Here are some options you can choose from:",
+      options: [
+        "Tell me about the events",
+        "I want to view my membership details",
+        "I want to connect with other people!",
+        "I want to write feedback",
+      ],
+      path: "process_options",
+    },
+    unknown_input: {
+      message:
+        "Sorry, I do not understand your message 😢! If you require further assistance you may click on ",
+      options: [
+        "Tell me about the events",
+        "I want to view my membership details",
+        "I want to connect with other people!",
+        "I want to write feedback",
+      ],
+      path: "process_options",
+    },
+    prompt_again: {
+      message: "Do you need any other help?",
+      options: [
+        "Tell me about the events",
+        "I want to view my membership details",
+        "I want to connect with other people!",
+        "I want to write feedback",
+      ],
+      path: "process_options",
+    },
     process_options: {
-      message: (params) => {
+      transition: { duration: 0 },
+      path: async (params) => {
         let link = "";
         switch (params.userInput) {
           case "Tell me about the events":
-            link = "customer-events";
-            params.userInput = "our events";
+            link = "/customer-events";
             break;
-
           case "I want to view my membership details":
-            if (user) {
-              link = "Membership";
-              params.userInput = "your membership details";
-            }
-            else {
-              link = "login";
-              params.userInput = "login or sign up before you can view your membership details";
-            }
+            link = "/membership";
             break;
-
           case "I want to connect with other people!":
-            if (user) {
-              link = "posts";
-              params.userInput = "bond with fellow members";
-            }
-            else {
-              link = "posts";
-              params.userInput = "login or sign up before you can view your membership details";
-            }
+            link = "/posts";
             break;
-
-          case "Help me with something else":
-            return {
-              path: "handle_inquiry"
-            };
-
+          case "I want to write feedback":
+            return "handle_inquiry";
           default:
             return "unknown_input";
         }
+        await params.injectMessage("Sit tight! I'll send you right there!");
         setTimeout(() => {
           window.open(link);
         }, 2000);
-        return `Sit tight! I'll send you to ${params.userInput}!`;
+        return "repeat";
       },
+    },
+    repeat: {
+      transition: { duration: 3000 },
+      path: "prompt_again",
     },
 
     handle_inquiry: {
-      message: "Thank you for your inquiry. We will review it and get back to you soon.",
-      path: "end",
-      processInput: (params) => {
-        // Here you can handle the user's inquiry, e.g., send it to a backend service or store it.
-        console.log("User inquiry:", params.userInput);
-      }
+      message: "Great! Would you like to send an email to the community club?",
+      options: ["Yes", "No"],
+      path: async (params) => {
+        switch (params.userInput) {
+          case "Yes":
+            await params.injectMessage(
+              "You may send an email to singapuracommunityclub@gmail.com"
+            );
+            return "prompt_again";
+          case "No":
+            return "prompt_again";
+          default:
+            return "unknown_input";
+        }
+      },
     },
-    
+
     end: {
       message: "Thank you for using our service!",
       end: true,
     },
   };
 
+  // Define options for the chatbot
   const options = {
     theme: {
       primaryColor: "#6667AB",
@@ -169,11 +201,11 @@ function App() {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, darkMode, toggleDarkMode }}>
       <Router>
         <Navbar />
 
-        <ThemeProvider theme={MyTheme}>
+        <ThemeProvider theme={theme}>
           <Routes>
             {/* customer routes */}
             <Route path="/" element={<Home />} />
@@ -187,12 +219,20 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route
               path="/comments/:postId"
-              element={user ? <Comments /> : <Navigate to="/login" />}
+              element={
+                user ? (
+                  <Comments darkMode={darkMode} />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
             />
             <Route
               path="/profile/:userId"
-              element={<ProtectedRoute element={PostProfile} />}
+              element={<PostProfile darkMode={darkMode} />}
             />
+
+            <Route path="/facilities" element={<FacilitiesWorkInProgress />} />
 
             <Route
               path="/events"
@@ -203,46 +243,79 @@ function App() {
                 />
               }
             />
+            <Route path="/customer-events" element={<CustomerEvent />} />
             <Route
-              path={"/customer-events"}
-              element={<CustomerEvent/>}
+              path={"/user-registration-history"}
+              element={<UserRegistrationHistory />}
             />
-            
+            <Route path="/feedbackform" element={<FeedbackForm />} />
+            <Route path="/feedbacklist" element={<FeedbackList />} />
             <Route
-              path="/feedbackform"
-              element={<ProtectedRoute element={FeedbackForm} />}
+              path="/posts"
+              element={
+                <ThemeProvider theme={darkMode ? darkTheme : theme}>
+                  <Posts darkMode={darkMode} />
+                </ThemeProvider>
+              }
             />
-            <Route path="/posts" element={<ProtectedRoute element={Posts} />} />
             <Route
               path="/createpost"
-              element={user ? <CreatePost /> : <Navigate to="/login" />}
+              element={
+                user ? (
+                  <ThemeProvider theme={darkMode ? darkTheme : theme}>
+                    <CreatePost darkMode={darkMode} />
+                  </ThemeProvider>
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/editpost/:id"
+              element={
+                <ThemeProvider theme={darkMode ? darkTheme : theme}>
+                  <EditPost darkMode={darkMode} />
+                </ThemeProvider>
+              }
             />
             <Route path="/notes" element={<Notes />} />
             <Route path="/addnote" element={<AddNote />} />
             <Route path="/editnote/:id" element={<EditNote />} />
-            <Route
-              path="/Membership"
-              element={
-                <ProtectedRoute
-                  element={Membership}
-                  allowedRoles={["Customer"]}
-                />
-              }
-            />
-            <Route
-              path="/ClaimRewards"
-              element={
-                <ProtectedRoute
-                  element={ClaimRewards}
-                  allowedRoles={["Customer"]}
-                />
-              }
-            />
+            <Route path="/ClaimRewards" element={<ClaimRewards />} />
+            <Route path="/Spin" element={<Spin />} />
             <Route
               path="/admin/notifications"
-              element={<ProtectedRoute element={NotificationList} />}
+              element={
+                <ProtectedRoute
+                  element={NotificationList}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
             <Route path="/notifications/:id" element={<NotificationDetail />} />
+            <Route
+              path="/announcements"
+              element={
+                <ProtectedRoute
+                  element={AnnouncementList}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
+            />
+            <Route
+              path="/announcements/new"
+              element={
+                <ProtectedRoute
+                  element={AnnouncementForm}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
+            />
+            {/* <Route
+              path="/announcements/:id/edit"
+              element={AnnouncementForm}
+            /> */}
+            <Route path="/announcements/:id" element={<AnnouncementDetail />} />
 
             {/* admin routes */}
             <Route
@@ -292,19 +365,54 @@ function App() {
             />
             <Route
               path="/feedbacklist"
-              element={<ProtectedRoute element={FeedbackList} />}
+              element={
+                <ProtectedRoute
+                  element={FeedbackList}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
             <Route path="/feedback/:id" element={<FeedbackDetail />} />
-            <Route path="/addevent" element={<AddEvent />} />
-            <Route path="/eventsregistrations/:id" element={<StaffEventConfirmation />}/>
-            <Route path="/editevent/:id" element={<EditEvent />} />
             <Route
-              path="/editpost/:id"
-              element={user ? <EditPost /> : <Navigate to="/login" />}
+              path="/admin/notifications/add"
+              element={
+                <ProtectedRoute
+                  element={AddNotification}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
             <Route
-              path="/admin/rewards"
-              element={<ProtectedRoute element={Rewards} />}
+              path="/admin/edit-notification/:id"
+              element={
+                <ProtectedRoute
+                  element={AddNotification}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
+            />
+            <Route
+              path="/admin/events"
+              element={
+                <ProtectedRoute
+                  element={Events}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
+            />
+            <Route
+              path="/eventsregistrations/:id"
+              element={<StaffEventConfirmation />}
+            />
+            <Route path="/addevent" element={<AddEvent />} />
+            <Route
+              path="/admin/edit-event/:id"
+              element={
+                <ProtectedRoute
+                  element={EditEvent}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
             <Route
               path="/admin/edit-rewards"
@@ -324,23 +432,17 @@ function App() {
                 />
               }
             />
-            <Route
-              path="/admin/notifications/add"
-              element={
-                <ProtectedRoute
-                  element={AddNotification}
-                  allowedRoles={["Admin", "Staff"]}
-                />
-              }
-            />
-            {/* routes not listed above */}
-            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </ThemeProvider>
       </Router>
       <ToastContainer />
 
-      <ChatBot flow={flow} options={options} />
+      {(!user || (user && user.role !== "Admin" && user.role !== "Staff")) && (
+        <>
+          <Footer />
+          <ChatBot flow={flow} options={options} />
+        </>
+      )}
     </UserContext.Provider>
   );
 }

@@ -11,7 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import http from "../http";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../contexts/UserContext";
 
@@ -57,11 +57,23 @@ function Login() {
             state: { email: data.email, accessToken: res.data.accessToken },
           });
         } else {
+          console.log(res.data.user);
+          if (res.data.user.deleteRequested === true) {
+            // set to false
+            http.put(`/user/${res.data.user.id}`, {
+              deleteRequested: false,
+              deleteRequestedAt: null,
+            });
+          }
           localStorage.setItem("accessToken", res.data.accessToken);
           setUser(res.data.user);
+          toast.success("Logged in successfully");
           // navigate("/"); // Navigate to home after login
 
-          if (res.data.user.role === 'Admin' || res.data.user.role === 'Staff') {
+          if (
+            res.data.user.role === "Admin" ||
+            res.data.user.role === "Staff"
+          ) {
             navigate("/admin/dashboard"); // Navigate to dashboard for Admin/Staff
           } else {
             navigate("/"); // Navigate to home for Customer
@@ -74,7 +86,11 @@ function Login() {
   });
 
   return (
-    <Container>
+    <Container
+      sx={{
+        mb: 10,
+      }}
+    >
       <Box
         sx={{
           mt: 10,
@@ -229,7 +245,6 @@ function Login() {
                 Login
               </Button>
             </Box>
-            <ToastContainer />
           </Box>
         </Box>
       </Box>

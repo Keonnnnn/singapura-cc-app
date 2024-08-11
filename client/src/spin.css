@@ -1,0 +1,79 @@
+.spin-container {
+  margin-top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.spin-paper {
+  max-width: 900px;
+  width: 100%;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-left: 10px;
+}
+
+.spin-title {
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.membership-info {
+  margin-bottom: 10px;
+  color: #333;
+  text-align: center;
+}
+
+.points-info {
+  margin-bottom: 40px;
+  color: #333;
+  text-align: center;
+}
+
+.buy-spin-button {
+  margin-left: 5px;
+  background-color: #df3428;
+  color: #ffffff;
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  border-radius: 50px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.buy-spin-button:hover {
+  background-color: #ff6f61;
+}
+
+.wheel-container {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.spinbtn {
+  position: absolute;
+  top: -40px; /* Position the button above the wheel */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #df3428;
+  color: white;
+  border: none;
+  padding: 13px 15px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+}
+
+#spincnt {
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+  color: #333;
+  font-size: 2em;
+}

@@ -1,23 +1,59 @@
+.progress-and-rewards-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Take full width available */
+  padding: 20px;
+}
+
 .circular-progressbar-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  text-align: center;
+  width: 80px; /* Further reduced width */
+  height: 80px; /* Further reduced height */
+  margin-bottom: 30px; /* Space between progress bar and rewards */
+}
+
+
+.rewards-container {
+  width: 70%;
+  margin-top: 50px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reward-description {
+  margin: 0px 50px; /* Adjusted for smaller screen sizes */
+}
+
+.claimed-rewards-container {
+  width: 70%;
+  margin-top: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.display-rewards{
+  width: 100%; /* Make the paper take the full width of the container */
+  max-width: 500px; /* Set a maximum width if needed */
+  margin: 10px 0; /* Add some margin to space out each reward */
+  padding: 10px; /* Optionally add padding inside the Paper component */
+  box-sizing: border-box; /* Ensure padding doesn't affect the width */
+}
+
+@media (min-width: 768px) {
+  .progress-and-rewards-container {
     align-items: center;
-    height: 100vh; /* Adjust this based on your layout */
+    justify-content: center;
   }
-  
-.circular-progressbar-text {
-font-size: 20px; /* Adjust this to your desired text size */
-/* dominant-baseline: middle; Vertically align the text */
-text-anchor: middle; /* Horizontally align the text */
 }
 
-.progress-description {
-margin-top: 20px; /* Adjust the spacing as needed */
-font-size: 16px; /* Adjust this to your desired text size */
-text-align: center; /* Center the text */
-}
-
-Button{
-    color: green;
+@media (max-width: 767px) {
+  .progress-and-rewards-container {
+    align-items: center;
+  }
 }

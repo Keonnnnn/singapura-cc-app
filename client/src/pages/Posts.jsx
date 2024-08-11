@@ -1,13 +1,16 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Box, Typography, Card, CardContent, Button, IconButton, Avatar, Divider, TextField, MenuItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
+import {
+    Box, Typography, Card, CardContent, Button, IconButton, Avatar, Divider, TextField,
+    MenuItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions
+} from '@mui/material';
 import { Edit, ThumbUp, Comment, Delete, ThumbUpAltOutlined } from '@mui/icons-material';
 import http from '../http';
 import dayjs from 'dayjs';
 import UserContext from '../contexts/UserContext';
 import global from '../global';
 
-function Posts() {
+function Posts({ darkMode }) {
     const [postList, setPostList] = useState([]);
     const { user } = useContext(UserContext);
     const [filter, setFilter] = useState('all');
@@ -19,7 +22,6 @@ function Posts() {
     const getPosts = (filter = 'all') => {
         http.get(`/post?filter=${filter}`).then((res) => {
             setPostList(res.data);
-            console.log("Fetched Posts: ", res.data);
         }).catch(err => {
             console.error("Error fetching posts:", err);
         });
@@ -36,7 +38,7 @@ function Posts() {
     };
 
     const getRandomColor = () => {
-        const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
+        const colors = ['#7D3C98', '#8E44AD', '#9B59B6', '#5B2C6F', '#6C3483', '#BB8FCE', '#C39BD3', '#AF7AC5', '#8E44AD', '#9C27B0', '#7B1FA2'];
         const randomIndex = Math.floor(Math.random() * colors.length);
         return colors[randomIndex];
     };
@@ -46,9 +48,9 @@ function Posts() {
             return userColors[userId];
         } else {
             const color = getRandomColor();
-            setUserColors(prevState => ({
+            setUserColors((prevState) => ({
                 ...prevState,
-                [userId]: color
+                [userId]: color,
             }));
             return color;
         }
@@ -56,7 +58,7 @@ function Posts() {
 
     const likePost = (postId) => {
         http.post(`/like/${postId}/like`).then(() => {
-            getPosts(filter); // Refresh posts after liking
+            getPosts(filter);
         }).catch(err => {
             console.error("Error liking post:", err);
         });
@@ -64,7 +66,7 @@ function Posts() {
 
     const unlikePost = (postId) => {
         http.post(`/like/${postId}/unlike`).then(() => {
-            getPosts(filter); // Refresh posts after unliking
+            getPosts(filter);
         }).catch(err => {
             console.error("Error unliking post:", err);
         });
@@ -83,7 +85,7 @@ function Posts() {
     const handleDeletePost = () => {
         if (selectedPostId) {
             http.delete(`/post/${selectedPostId}`).then(() => {
-                getPosts(filter); // Refresh posts after deleting
+                getPosts(filter);
                 handleClose();
             }).catch(err => {
                 console.error("Error deleting post:", err);
@@ -92,44 +94,77 @@ function Posts() {
     };
 
     return (
-        <Box sx={{ display: 'flex', backgroundColor: '#f0f2f5', minHeight: '100vh', borderRadius: 2, boxShadow: 3, mt: 2 }}>
-            <Box sx={{ width: 300, padding: 3, backgroundColor: '#ffffff', borderRight: '1px solid #ddd', minHeight: '100vh', boxShadow: 3, borderRadius: 2 }}>
-                <Typography variant="h6" sx={{ mb: 3, fontSize: '1.5rem', fontWeight: 'bold', fontStyle: 'italic' }}>
+        <Box sx={{ display: 'flex', backgroundColor: darkMode ? '#121212' : '#f5f5f5', minHeight: '100vh', borderRadius: 2, boxShadow: 3, mt: darkMode ? 0 : 2, pt: darkMode ? 0 : 2, color: darkMode ? '#f0e6ff' : '#000' }}>
+            <Box sx={{
+                width: 300,
+                padding: 3,
+                backgroundColor: darkMode ? '#1c1c1c' : '#ffffff',
+                borderRight: darkMode ? '1px solid #282828' : '1px solid #ddd',
+                minHeight: '100vh',
+                boxShadow: 3,
+                borderRadius: 2,
+                position: 'sticky',
+                top: 0,
+                height: '100vh',
+                mb: 4,
+            }}>
+                <Typography variant="h6" sx={{ mb: 3, fontSize: '1.5rem', fontWeight: 'bold', fontStyle: 'italic', color: darkMode ? '#D32F2F' : '#000' }}>
                     Connect
                 </Typography>
                 {user && (
                     <Link to="/createpost">
-                        <Button variant='contained' fullWidth sx={{ mb: 2, backgroundColor: '#4caf50' }}>
+                        <Button
+                            variant='contained'
+                            fullWidth
+                            sx={{
+                                mb: 2,
+                                backgroundColor: '#D32F2F',
+                                '&:hover': { backgroundColor: '#b71c1c' },
+                                borderRadius: '20px',
+                                color: '#fff',
+                                fontSize: '1.1rem',
+                                boxShadow: darkMode ? '0px 0px 10px rgba(211, 47, 47, 0.5)' : 'none'
+                            }}
+                        >
                             Post
                         </Button>
                     </Link>
                 )}
                 {user && (
-                    <Card sx={{ mb: 3, boxShadow: 2, borderRadius: 2 }}>
+                    <Card sx={{
+                        mb: 3,
+                        boxShadow: 2,
+                        borderRadius: 3,
+                        background: darkMode ? 'linear-gradient(135deg, #1f1f1f, #2b2b2b)' : '#ffffff',
+                        color: darkMode ? '#f0e6ff' : '#000',
+                        padding: '16px',
+                        border: darkMode ? '1px solid #282828' : '1px solid #ddd',
+                        boxShadow: darkMode ? '0px 0px 15px rgba(187, 134, 252, 0.5)' : '0px 0px 10px rgba(0,0,0,0.1)'
+                    }}>
                         <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
                             <Avatar
                                 component={Link}
                                 to={`/profile/${user.id}`}
-                                sx={{ bgcolor: getUserColor(user.id), mr: 2, textDecoration: 'none' }}
+                                sx={{ bgcolor: getUserColor(user.id), mr: 2, textDecoration: 'none', width: 56, height: 56 }}
                             >
                                 {user.firstName.charAt(0).toUpperCase()}
                             </Avatar>
                             <Box
                                 component={Link}
                                 to={`/profile/${user.id}`}
-                                sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit' }}
+                                sx={{ flexGrow: 1, textDecoration: 'none', color: darkMode ? '#BB86FC' : 'inherit' }}
                             >
-                                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', fontSize: '1.25rem' }}>
                                     {user.firstName} {user.lastName}
                                 </Typography>
-                                <Typography variant="body2" color="textSecondary">
+                                <Typography variant="body2" color={darkMode ? '#BB86FC' : 'textSecondary'}>
                                     @{user.username}
                                 </Typography>
                             </Box>
                         </CardContent>
                     </Card>
                 )}
-                <Divider />
+                <Divider sx={{ backgroundColor: darkMode ? '#333333' : '#ddd' }} />
                 <Box sx={{ mt: 3 }}>
                     <TextField
                         select
@@ -139,7 +174,22 @@ function Posts() {
                         size="small"
                         value={filter}
                         onChange={handleFilterChange}
-                        sx={{ borderRadius: 2 }}
+                        sx={{
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? '#1e1e1e' : '#fff',
+                            color: darkMode ? '#f0e6ff' : '#000',
+                            boxShadow: darkMode ? '0px 0px 5px rgba(187, 134, 252, 0.5)' : 'none'
+                        }}
+                        InputLabelProps={{
+                            style: {
+                                color: darkMode ? '#BB86FC' : '#000',
+                            },
+                        }}
+                        InputProps={{
+                            style: {
+                                color: darkMode ? '#f0e6ff' : '#000',
+                            },
+                        }}
                     >
                         <MenuItem value="all">
                             <ListItemText primary="All Posts" />
@@ -152,11 +202,11 @@ function Posts() {
             </Box>
 
             <Box sx={{ flexGrow: 1, padding: 3, marginLeft: 3 }}>
-                <Typography variant="h5" sx={{ mb: 3 }}>
+                <Typography variant="h5" sx={{ mb: 3, color: darkMode ? '#BB86FC' : '#000' }}>
                     Latest Events
                 </Typography>
                 {postList.map((post) => (
-                    <Card key={post.id} sx={{ mb: 3, boxShadow: 3, borderRadius: 2, padding: 2, border: '1px solid #ddd', backgroundColor: 'white' }}>
+                    <Card key={post.id} sx={{ mb: 3, boxShadow: 3, borderRadius: 2, padding: 2, border: darkMode ? '1px solid #333333' : '1px solid #ddd', backgroundColor: darkMode ? '#1e1e1e' : '#ffffff', color: darkMode ? '#f0e6ff' : '#000', '&:hover': { boxShadow: darkMode ? '0px 0px 10px rgba(187, 134, 252, 0.5)' : '0px 0px 10px rgba(0,0,0,0.2)' } }}>
                         <CardContent>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                                 <Avatar
@@ -171,29 +221,29 @@ function Posts() {
                                         component={Link}
                                         to={`/profile/${post.userId}`}
                                         variant="subtitle1"
-                                        sx={{ fontWeight: 'bold', textDecoration: 'none', color: 'inherit' }}
+                                        sx={{ fontWeight: 'bold', textDecoration: 'none', color: darkMode ? '#BB86FC' : 'inherit' }}
                                     >
                                         {post.user?.username}
                                     </Typography>
-                                    <Typography variant="body2" color="textSecondary">
+                                    <Typography variant="body2" color={darkMode ? '#BB86FC' : 'textSecondary'}>
                                         {dayjs(post.createdAt).format(global.datetimeFormat)}
                                     </Typography>
                                 </Box>
                                 {user && (user.id === post.userId || user.role === 'Admin') && (
                                     <>
                                         <Link to={`/editpost/${post.id}`}>
-                                            <IconButton color="primary" sx={{ padding: '4px' }}>
+                                            <IconButton sx={{ padding: '4px', color: darkMode ? '#D32F2F' : '#D32F2F' }}>
                                                 <Edit />
                                             </IconButton>
                                         </Link>
-                                        <IconButton color="secondary" sx={{ padding: '4px' }} onClick={() => handleOpen(post.id)}>
+                                        <IconButton sx={{ padding: '4px', color: darkMode ? '#E53935' : '#E53935' }} onClick={() => handleOpen(post.id)}>
                                             <Delete />
                                         </IconButton>
                                     </>
                                 )}
                             </Box>
-                            <Divider sx={{ mb: 2 }} />
-                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+                            <Divider sx={{ mb: 2, backgroundColor: darkMode ? '#333333' : '#ddd' }} />
+                            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: darkMode ? '#BB86FC' : 'inherit' }}>
                                 {post.title}
                             </Typography>
                             {post.imageFile && (
@@ -201,29 +251,28 @@ function Posts() {
                                     <img
                                         src={`${import.meta.env.VITE_FILE_BASE_URL}${post.imageFile}`}
                                         alt="post"
-                                        style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }}
+                                        style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover', borderRadius: '10px', border: darkMode ? '2px solid #333333' : '2px solid #ddd' }}
                                     />
                                 </Box>
                             )}
-                            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', mb: 2 }}>
+                            <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', mb: 2, color: darkMode ? '#f0e6ff' : '#000' }}>
                                 {post.description}
                             </Typography>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                     <IconButton
-                                        color="primary"
-                                        sx={{ padding: '4px', mr: 1 }}
+                                        sx={{ padding: '4px', mr: 1, color: darkMode ? '#BB86FC' : '#E53935' }}
                                         onClick={() => post.Likes.some(like => like.userId === user.id) ? unlikePost(post.id) : likePost(post.id)}
                                     >
                                         {post.Likes.some(like => like.userId === user.id)
-                                                ? <ThumbUp /> : <ThumbUpAltOutlined />}
+                                            ? <ThumbUp /> : <ThumbUpAltOutlined />}
                                     </IconButton>
                                     <Typography variant="body2">
                                         {post.Likes.length || 0} Likes
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <IconButton color="primary" sx={{ padding: '4px', mr: 1 }} onClick={() => navigate(`/comments/${post.id}`)}>
+                                    <IconButton sx={{ padding: '4px', mr: 1, color: darkMode ? '#BB86FC' : '#E53935' }} onClick={() => navigate(`/comments/${post.id}`)}>
                                         <Comment />
                                     </IconButton>
                                     <Typography variant="body2">
@@ -237,17 +286,19 @@ function Posts() {
             </Box>
 
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Delete Post</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to delete this post?
+                <DialogTitle sx={{ color: darkMode ? '#BB86FC' : '#b71c1c', backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    Delete Post
+                </DialogTitle>
+                <DialogContent sx={{ backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    <DialogContentText sx={{ color: darkMode ? '#BB86FC' : '#b71c1c' }}>
+                        Are you sure you want to delete this post? This action cannot be undone.
                     </DialogContentText>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} variant="contained" color="inherit">
+                <DialogActions sx={{ backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    <Button onClick={handleClose} variant="outlined" sx={{ color: darkMode ? '#BB86FC' : '#b71c1c', borderColor: darkMode ? '#BB86FC' : '#b71c1c' }}>
                         Cancel
                     </Button>
-                    <Button onClick={handleDeletePost} variant="contained" color="error">
+                    <Button onClick={handleDeletePost} variant="contained" color="error" sx={{ borderRadius: '24px', backgroundColor: darkMode ? '#E53935' : '#b71c1c', '&:hover': { backgroundColor: darkMode ? '#D32F2F' : '#8e0000' } }}>
                         Delete
                     </Button>
                 </DialogActions>
