@@ -324,9 +324,6 @@ const Navbar = () => {
                   <Typography>Facilities</Typography>
                 </Link>
 
-                <Link to="/notifications">
-                  <Typography>Notification</Typography>
-                </Link>
 
                 {user && user.role === "Customer" && (
                   <Link to="/posts">
