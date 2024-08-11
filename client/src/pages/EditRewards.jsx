@@ -179,7 +179,7 @@ function EditRewards() {
                 </Table>
             </TableContainer>
             <React.Fragment>
-                <Button variant="outlined" onClick={handleAddDialogOpen} sx={{ borderColor: 'red', backgroundColor: 'red', color: 'white', margin: '50px 0px 0px 1300px', '&:hover': { backgroundColor: 'darkred' } }}>
+                <Button variant="outlined" onClick={handleAddDialogOpen} sx={{ borderColor: 'red', backgroundColor: 'red', color: 'white', margin: '50px 0px 0px 1000px', '&:hover': { backgroundColor: 'darkred' } }}>
                     Add
                 </Button>
                 <Dialog open={addDialogOpen} onClose={handleAddDialogClose}>
