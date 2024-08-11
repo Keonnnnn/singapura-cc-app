@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import http from "../http";
 import { useNavigate } from 'react-router-dom';
-import { Box, Container, Button, Menu, MenuItem, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { Box,  Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { Wheel } from 'react-custom-roulette';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import '../spin.css';

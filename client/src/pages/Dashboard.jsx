@@ -11,7 +11,7 @@ import {
   ResponsiveContainer,
   Label,
 } from "recharts";
-import http from "../http"; // Adjust based on your API path
+import http from "../http"; 
 
 const Dashboard = () => {
   const [totalUsers, setTotalUsers] = useState(0);
