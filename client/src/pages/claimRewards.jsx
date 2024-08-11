@@ -73,7 +73,7 @@ function ClaimRewards() {
           const res = await http.get(`/reward/Membership/${id}`);
           const claimedRes = await http.get(`/reward/claimed/${id}`);
           setUser(res.data.user);
-          
+
           const actualPoints = res.data.user.totalPoints;
           const testPoints = 80001;
 
@@ -143,62 +143,122 @@ function ClaimRewards() {
     }
   };
 
-  return (
-    <Box sx={{marginTop:"100px"}}>
-    <UserSidebar/>
-    <UserContext.Provider value={{ user, setUser }}>
-      <Box sx={{margin:"-500px 0px 0px 0px"}}>
-      
-        {/* <div>You are currently a {userTier} member</div> */}
-        {user && (
-          <>
-            {/* <Typography sx={{ marginLeft: 1 }}>{user.firstName} {user.lastName}</Typography>
-            <Typography>{user.totalPoints}</Typography>
-            <Typography>Membership Type: {user.membershipType}</Typography> Display membership type */}
-          </>
-        )}
-        <div style={{ width: 250, height: 250, margin: '-100px 0px 1000px 800px' }}>
-          <CircularProgressbar
-            value={percentage}
-            text={`${points} points`}
-            styles={buildStyles({
-              pathColor: getProgressColor(points),
-              textColor: '#000',
-              trailColor: '#d6d6d6',
-              textSize: '12px',
-            })}
-          />
-          <div className="progress-description">
-            {getNextLevelInfo(points)}
-          </div>
+  // return (
+  //   <Box>
+  //   <UserSidebar/>
+  //   <UserContext.Provider value={{ user, setUser }}>
+  //     <Box>
+  //       <div style={{ width: 250, height: 250 }}>
+  //         <CircularProgressbar
+  //           value={percentage}
+  //           text={`${points} points`}
+  //           styles={buildStyles({
+  //             pathColor: getProgressColor(points),
+  //             textColor: '#000',
+  //             trailColor: '#d6d6d6',
+  //             textSize: '12px',
+  //           })}
+  //         />
+  //         <div className="progress-description">
+  //           {getNextLevelInfo(points)}
+  //         </div>
 
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, marginTop: 5 }}>
+  //         <Box >
+  //           {rewardList
+  //             .filter(reward => reward.Tier === userTier)
+  //             .filter(reward => !claimedRewards.includes(reward.id)) // Filter out claimed rewards
+  //             .map((reward) => {
+  //               const isClaimable = canClaimReward(reward.Tier, reward.Points);
+  //               return (
+  //                 <Paper key={reward.id} elevation={3} className='displayRewards'>
+  //                   <Typography variant="h5" className='rewardsdescription'>{reward.rewardName} <span style={{ marginLeft: '100px' }}>{reward.description}</span> <span style={{ marginLeft: '100px' }}><Button
+  //                     variant="contained"
+  //                     color="primary"
+  //                     onClick={() => handleClaim(reward.id, reward.Points)} // Pass rewardId and rewardPoints
+  //                     disabled={!isClaimable} // Disable button if reward is claimed
+  //                     sx={{
+  //                       backgroundColor: isClaimable ? 'green' : 'grey',
+  //                       '&:hover': { backgroundColor: isClaimable ? 'darkgreen' : 'grey' }
+  //                     }}
+  //                   >
+  //                     Claim
+  //                   </Button></span></Typography>
+  //                   <Typography variant="body1">Points: {reward.Points}</Typography>
+  //                   <Typography variant="body2">Tier: {reward.Tier}</Typography>
+  //                 </Paper>
+  //               );
+  //             })}
+  //         </Box>
+  //         <Box sx={{ marginTop: 5 }}>
+  //           <Typography variant="h6">Claimed Rewards:</Typography>
+  //           {claimedRewards.map(rewardId => {
+  //             const reward = rewardList.find(r => r.id === rewardId);
+  //             return (
+  //               <Typography key={rewardId} variant="body1">
+  //                 {reward.rewardName} - {reward.description}
+  //               </Typography>
+  //             );
+  //           })}
+  //         </Box>
+  //       </div>
+  //     </Box>
+  //   </UserContext.Provider>
+  //   </Box>
+  // );
+
+  return (
+    <Box display="flex">
+      <UserSidebar />
+      <UserContext.Provider value={{ user, setUser }}>
+        <Box className="progress-and-rewards-container">
+          <div className="circular-progressbar-container">
+            <CircularProgressbar
+              value={percentage}
+              text={`${points} points`}
+              styles={buildStyles({
+                pathColor: getProgressColor(points),
+                textColor: '#000',
+                trailColor: '#d6d6d6',
+                textSize: '12px',
+              })}
+            />
+            <div className="progress-description">
+              {getNextLevelInfo(points)}
+            </div>
+          </div>
+  
+          <Box className="rewards-container">
             {rewardList
               .filter(reward => reward.Tier === userTier)
               .filter(reward => !claimedRewards.includes(reward.id)) // Filter out claimed rewards
               .map((reward) => {
                 const isClaimable = canClaimReward(reward.Tier, reward.Points);
                 return (
-                  <Paper key={reward.id} elevation={3} sx={{ padding: 2, width: '600px', textAlign: 'center' }}>
-                    <Typography variant="h5">{reward.rewardName} <span style={{ marginLeft: '100px' }}>{reward.description}</span> <span style={{ marginLeft: '100px' }}><Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleClaim(reward.id, reward.Points)} // Pass rewardId and rewardPoints
-                      disabled={!isClaimable} // Disable button if reward is claimed
-                      sx={{
-                        backgroundColor: isClaimable ? 'green' : 'grey',
-                        '&:hover': { backgroundColor: isClaimable ? 'darkgreen' : 'grey' }
-                      }}
-                    >
-                      Claim
-                    </Button></span></Typography>
+                  <Paper key={reward.id} elevation={3} className='display-rewards'>
+                    <Typography variant="h5" className='reward-name'>
+                      {reward.rewardName}
+                      <span className="reward-description">{reward.description}</span>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => handleClaim(reward.id, reward.Points)} // Pass rewardId and rewardPoints
+                        disabled={!isClaimable} // Disable button if reward is claimed
+                        sx={{
+                          backgroundColor: isClaimable ? 'green' : 'grey',
+                          '&:hover': { backgroundColor: isClaimable ? 'darkgreen' : 'grey' }
+                        }} className='claim-button'
+                      >
+                        Claim
+                      </Button>
+                    </Typography>
                     <Typography variant="body1">Points: {reward.Points}</Typography>
                     <Typography variant="body2">Tier: {reward.Tier}</Typography>
                   </Paper>
                 );
               })}
           </Box>
-          <Box sx={{ marginTop: 5 }}>
+  
+          <Box className="claimed-rewards-container" sx={{ marginTop: 5 }}>
             <Typography variant="h6">Claimed Rewards:</Typography>
             {claimedRewards.map(rewardId => {
               const reward = rewardList.find(r => r.id === rewardId);
@@ -209,11 +269,12 @@ function ClaimRewards() {
               );
             })}
           </Box>
-        </div>
-      </Box>
-    </UserContext.Provider>
+        </Box>
+      </UserContext.Provider>
     </Box>
   );
+  
+
 }
 
 export default ClaimRewards;
