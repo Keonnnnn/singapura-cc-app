@@ -159,7 +159,7 @@ function PostProfile() {
         <Box sx={{ padding: 3, backgroundColor: darkMode ? '#000000' : '#f5f5f5', minHeight: '100vh' }}>
             <Button 
                 startIcon={<ArrowBack />} 
-                onClick={() => navigate(-1)} 
+                onClick={() => navigate('/posts')}  
                 variant="outlined" 
                 sx={{
                     mb: 3,
