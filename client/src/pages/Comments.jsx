@@ -252,17 +252,19 @@ function Comments({ darkMode }) {
             </Slide>
 
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle sx={{ color: darkMode ? '#BB86FC' : 'inherit' }}>Delete Comment</DialogTitle>
-                <DialogContent sx={{ backgroundColor: darkMode ? '#1c1c1c' : 'inherit', color: darkMode ? '#f0e6ff' : '#000' }}>
-                    <DialogContentText>
-                        Are you sure you want to delete this comment?
+                <DialogTitle sx={{ color: darkMode ? '#BB86FC' : '#b71c1c', backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    Delete Comment
+                </DialogTitle>
+                <DialogContent sx={{ backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    <DialogContentText sx={{ color: darkMode ? '#BB86FC' : '#b71c1c' }}>
+                        Are you sure you want to delete this comment? This action cannot be undone.
                     </DialogContentText>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} variant="contained" sx={{ color: darkMode ? '#BB86FC' : 'inherit' }}>
+                <DialogActions sx={{ backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    <Button onClick={handleClose} variant="outlined" sx={{ color: darkMode ? '#BB86FC' : '#b71c1c', borderColor: darkMode ? '#BB86FC' : '#b71c1c' }}>
                         Cancel
                     </Button>
-                    <Button onClick={handleDeleteComment} variant="contained" sx={{ backgroundColor: darkMode ? '#E53935' : '#f44336', color: '#fff' }}>
+                    <Button onClick={handleDeleteComment} variant="contained" color="error" sx={{ borderRadius: '24px', backgroundColor: darkMode ? '#E53935' : '#b71c1c', '&:hover': { backgroundColor: darkMode ? '#D32F2F' : '#8e0000' } }}>
                         Delete
                     </Button>
                 </DialogActions>

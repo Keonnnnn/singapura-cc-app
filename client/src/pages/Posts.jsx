@@ -27,15 +27,15 @@ function Posts({ darkMode }) {
         });
     };
 
-  useEffect(() => {
-    getPosts();
-  }, []);
+    useEffect(() => {
+        getPosts();
+    }, []);
 
-  const handleFilterChange = (event) => {
-    const newFilter = event.target.value;
-    setFilter(newFilter);
-    getPosts(newFilter);
-  };
+    const handleFilterChange = (event) => {
+        const newFilter = event.target.value;
+        setFilter(newFilter);
+        getPosts(newFilter);
+    };
 
     const getRandomColor = () => {
         const colors = ['#7D3C98', '#8E44AD', '#9B59B6', '#5B2C6F', '#6C3483', '#BB8FCE', '#C39BD3', '#AF7AC5', '#8E44AD', '#9C27B0', '#7B1FA2'];
@@ -43,18 +43,18 @@ function Posts({ darkMode }) {
         return colors[randomIndex];
     };
 
-  const getUserColor = (userId) => {
-    if (userColors[userId]) {
-      return userColors[userId];
-    } else {
-      const color = getRandomColor();
-      setUserColors((prevState) => ({
-        ...prevState,
-        [userId]: color,
-      }));
-      return color;
-    }
-  };
+    const getUserColor = (userId) => {
+        if (userColors[userId]) {
+            return userColors[userId];
+        } else {
+            const color = getRandomColor();
+            setUserColors((prevState) => ({
+                ...prevState,
+                [userId]: color,
+            }));
+            return color;
+        }
+    };
 
     const likePost = (postId) => {
         http.post(`/like/${postId}/like`).then(() => {
@@ -72,15 +72,15 @@ function Posts({ darkMode }) {
         });
     };
 
-  const handleOpen = (postId) => {
-    setSelectedPostId(postId);
-    setOpen(true);
-  };
+    const handleOpen = (postId) => {
+        setSelectedPostId(postId);
+        setOpen(true);
+    };
 
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedPostId(null);
-  };
+    const handleClose = () => {
+        setOpen(false);
+        setSelectedPostId(null);
+    };
 
     const handleDeletePost = () => {
         if (selectedPostId) {
@@ -95,32 +95,32 @@ function Posts({ darkMode }) {
 
     return (
         <Box sx={{ display: 'flex', backgroundColor: darkMode ? '#121212' : '#f5f5f5', minHeight: '100vh', borderRadius: 2, boxShadow: 3, mt: darkMode ? 0 : 2, pt: darkMode ? 0 : 2, color: darkMode ? '#f0e6ff' : '#000' }}>
-            <Box sx={{ 
-                width: 300, 
-                padding: 3, 
-                backgroundColor: darkMode ? '#1c1c1c' : '#ffffff', 
-                borderRight: darkMode ? '1px solid #282828' : '1px solid #ddd', 
-                minHeight: '100vh', 
-                boxShadow: 3, 
-                borderRadius: 2, 
+            <Box sx={{
+                width: 300,
+                padding: 3,
+                backgroundColor: darkMode ? '#1c1c1c' : '#ffffff',
+                borderRight: darkMode ? '1px solid #282828' : '1px solid #ddd',
+                minHeight: '100vh',
+                boxShadow: 3,
+                borderRadius: 2,
                 position: 'sticky',
                 top: 0,
                 height: '100vh',
-                mb: 4, 
+                mb: 4,
             }}>
                 <Typography variant="h6" sx={{ mb: 3, fontSize: '1.5rem', fontWeight: 'bold', fontStyle: 'italic', color: darkMode ? '#D32F2F' : '#000' }}>
                     Connect
                 </Typography>
                 {user && (
                     <Link to="/createpost">
-                        <Button 
-                            variant='contained' 
-                            fullWidth 
-                            sx={{ 
-                                mb: 2, 
-                                backgroundColor: '#D32F2F', 
-                                '&:hover': { backgroundColor: '#b71c1c' }, 
-                                borderRadius: '20px', 
+                        <Button
+                            variant='contained'
+                            fullWidth
+                            sx={{
+                                mb: 2,
+                                backgroundColor: '#D32F2F',
+                                '&:hover': { backgroundColor: '#b71c1c' },
+                                borderRadius: '20px',
                                 color: '#fff',
                                 fontSize: '1.1rem',
                                 boxShadow: darkMode ? '0px 0px 10px rgba(211, 47, 47, 0.5)' : 'none'
@@ -131,11 +131,11 @@ function Posts({ darkMode }) {
                     </Link>
                 )}
                 {user && (
-                    <Card sx={{ 
-                        mb: 3, 
-                        boxShadow: 2, 
-                        borderRadius: 3, 
-                        background: darkMode ? 'linear-gradient(135deg, #1f1f1f, #2b2b2b)' : '#ffffff', 
+                    <Card sx={{
+                        mb: 3,
+                        boxShadow: 2,
+                        borderRadius: 3,
+                        background: darkMode ? 'linear-gradient(135deg, #1f1f1f, #2b2b2b)' : '#ffffff',
                         color: darkMode ? '#f0e6ff' : '#000',
                         padding: '16px',
                         border: darkMode ? '1px solid #282828' : '1px solid #ddd',
@@ -174,9 +174,9 @@ function Posts({ darkMode }) {
                         size="small"
                         value={filter}
                         onChange={handleFilterChange}
-                        sx={{ 
-                            borderRadius: 2, 
-                            backgroundColor: darkMode ? '#1e1e1e' : '#fff', 
+                        sx={{
+                            borderRadius: 2,
+                            backgroundColor: darkMode ? '#1e1e1e' : '#fff',
                             color: darkMode ? '#f0e6ff' : '#000',
                             boxShadow: darkMode ? '0px 0px 5px rgba(187, 134, 252, 0.5)' : 'none'
                         }}
@@ -286,17 +286,19 @@ function Posts({ darkMode }) {
             </Box>
 
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle sx={{ color: darkMode ? '#BB86FC' : 'inherit' }}>Delete Post</DialogTitle>
-                <DialogContent sx={{ backgroundColor: darkMode ? '#1c1c1c' : 'inherit', color: darkMode ? '#f0e6ff' : '#000' }}>
-                    <DialogContentText>
-                        Are you sure you want to delete this post?
+                <DialogTitle sx={{ color: darkMode ? '#BB86FC' : '#b71c1c', backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    Delete Post
+                </DialogTitle>
+                <DialogContent sx={{ backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    <DialogContentText sx={{ color: darkMode ? '#BB86FC' : '#b71c1c' }}>
+                        Are you sure you want to delete this post? This action cannot be undone.
                     </DialogContentText>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} variant="contained" sx={{ color: darkMode ? '#BB86FC' : 'inherit' }}>
+                <DialogActions sx={{ backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    <Button onClick={handleClose} variant="outlined" sx={{ color: darkMode ? '#BB86FC' : '#b71c1c', borderColor: darkMode ? '#BB86FC' : '#b71c1c' }}>
                         Cancel
                     </Button>
-                    <Button onClick={handleDeletePost} variant="contained" sx={{ backgroundColor: darkMode ? '#E53935' : '#f44336', color: '#fff' }}>
+                    <Button onClick={handleDeletePost} variant="contained" color="error" sx={{ borderRadius: '24px', backgroundColor: darkMode ? '#E53935' : '#b71c1c', '&:hover': { backgroundColor: darkMode ? '#D32F2F' : '#8e0000' } }}>
                         Delete
                     </Button>
                 </DialogActions>

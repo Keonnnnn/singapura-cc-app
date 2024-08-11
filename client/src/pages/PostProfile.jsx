@@ -398,9 +398,16 @@ function PostProfile() {
                                         {selectedPost.user?.username}
                                     </Typography>
                                 </Link>
-                                <Typography variant="body2" color="textSecondary">
-                                    {dayjs(selectedPost.createdAt).format(global.datetimeFormat)}
-                                </Typography>
+                                <Typography 
+    variant="body2" 
+    sx={{ 
+        color: darkMode ? '#BB86FC' : '#8e0000', 
+        fontWeight: darkMode ? 'bold' : 'normal' 
+    }}
+>
+    {dayjs(selectedPost.createdAt).format(global.datetimeFormat)}
+</Typography>
+
                             </Box>
                             {user && (user.id === selectedPost.userId || user.role === 'Admin') && (
                                 <>

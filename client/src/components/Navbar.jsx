@@ -301,7 +301,7 @@ const Navbar = () => {
           </Box>
 
           {location.pathname.startsWith('/posts') && (
-            <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+           <Box sx={{ display: 'flex', alignItems: 'center', ml: 1, mr: 2 }}> {/* Added mr: 2 to create spacing on the right */}
               <FormControlLabel
                 control={
                   <Switch
