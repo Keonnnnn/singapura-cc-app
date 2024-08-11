@@ -25,6 +25,7 @@ import eventsIcon from "../assets/events.svg";
 import rewardsIcon from "../assets/rewards.svg";
 import notificationsIcon from "../assets/notification.svg";
 
+
 // Sidebar menu options
 const sideMenuOptions = [
   {

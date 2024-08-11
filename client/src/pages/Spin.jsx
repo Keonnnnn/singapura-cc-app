@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import http from "../http";
-import { useNavigate } from 'react-router-dom';
-import { Box,  Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, Paper } from '@mui/material';
 import { Wheel } from 'react-custom-roulette';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import '../spin.css';
@@ -9,7 +8,7 @@ import UserContext from '../contexts/UserContext';
 import UserSidebar from '../components/UserSidebar';
 
 function Spin() {
-  const [userPoints, setUserPoints] = useState(60000); // example starting points
+  const [userPoints, setUserPoints] = useState(60000);
   const [mustSpin, setMustSpin] = useState(false);
   const [prizeNumber, setPrizeNumber] = useState(0);
   const [spinsLeft, setSpinsLeft] = useState(0);
@@ -19,7 +18,6 @@ function Spin() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();
   const { user: loggedInUser } = useContext(UserContext);
   const { id } = loggedInUser;
 
@@ -40,11 +38,7 @@ function Spin() {
     };
 
     getInitialData();
-  }, [id]); // Empty dependency array fetches on mount
-
-  const handleCloseReward = () => {
-    setOpenReward(false);
-  };
+  }, [id]);
 
   const handleSpinClick = async () => {
     if (spinsLeft > 0 && !mustSpin && filteredRewards.length > 0) {
@@ -70,7 +64,7 @@ function Spin() {
       const newPoints = userPoints - 500;
       const newSpins = spinsLeft + 1;
       setUserPoints(newPoints);
-      setSpinsLeft(newSpins); // Increase spins left by 1
+      setSpinsLeft(newSpins);
 
       try {
         await http.put(`/reward/updatePoints/${id}`, { totalPoints: newPoints, spinsLeft: newSpins });
@@ -101,31 +95,8 @@ function Spin() {
     }
   };
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleClaimRewards = () => {
-    navigate('/ClaimRewards');
-  };
-  const handleSpinTheWheel = () => {
-    navigate('/spin');
-  };
-
-  const renderOption = (option) => {
-    const reward = rewardList.find(r => r.rewardName === option.option);
-    if (reward) {
-      return (
-        <Box className="wheel-content">
-          <span style={{ fontSize: '20px' }}>{reward.rewardName}</span>
-        </Box>
-      );
-    }
-    return <span style={{ fontSize: '20px' }}>{option.option}</span>;
+  const handleCloseReward = () => {
+    setOpenReward(false);
   };
 
   useEffect(() => {
@@ -141,63 +112,105 @@ function Spin() {
     return <div>Loading...</div>;
   }
 
-  // Filter rewards based on the user's tier
   const filteredRewards = rewardList.filter(reward => reward.Tier !== user?.membershipType);
 
   return (
-    <Box sx={{ marginTop: "100px", display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' } }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', padding: 2, backgroundColor: '#f7f9fc' }}>
       <UserSidebar />
-      <div className="spin-container">
-        <h3 id='textpos'>You are currently a {user?.membershipType} member</h3>
-        <div className="header-container">
-          <p id='textpos'>Buy spins, 1 Spin = 500 points <button id='buybtn' onClick={handleBuySpin}>buy</button></p>
-        </div>
-        <div className="wheel-wrapper">
-          <div className="wheel-container">
-            {filteredRewards.length > 0 ? (
-              <Wheel
-                mustStartSpinning={mustSpin}
-                prizeNumber={prizeNumber}
-                data={filteredRewards.map(reward => ({ option: reward.rewardName, style: { backgroundColor: 'lightgray' } }))}
-                backgroundColors={['#3e3e3e', '#df3428']}
-                textColors={['#ffffff']}
-                renderOptionContent={renderOption}
-                onStopSpinning={() => {
-                  setMustSpin(false);
-                  const wonOption = filteredRewards[prizeNumber].rewardName;
-                  setWonOption(wonOption);
-                  setOpenReward(true);
-                }}
-              />
-            ) : (
-              <p>No rewards available for your tier.</p>
-            )}
-            <button className='spinbtn' onClick={handleSpinClick} disabled={mustSpin || spinsLeft <= 0}>
-              <PlayArrowIcon />
-            </button>
-          </div>
-          <h1 id='spincnt'>{spinsLeft} Spins left</h1>
-        </div>
-      </div>
-      <Dialog
-        open={openReward}
-        onClose={handleCloseReward}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
+      <Paper
+        elevation={4}
+        sx={{
+          marginLeft: '10px',
+          p: 4,
+          maxWidth: 900,
+          width: '100%',
+          minHeight: '500px',  // Ensure enough height to contain the wheel and spin count
+          borderRadius: '16px',
+          backgroundColor: '#ffffff',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        }}
       >
-        <DialogTitle id="alert-dialog-title">Congratulations!</DialogTitle>
-        <DialogContent>
-          <p>{`You won ${wonOption}`}</p>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseReward} color="primary" autoFocus>
-            Close
+        <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: 2, color: '#333', textAlign: 'center' }}>
+          Spin the Wheel
+        </Typography>
+        <Typography sx={{ marginBottom: 1, color: '#333', textAlign: 'center' }}>
+          You are currently a {user?.membershipType} member
+        </Typography>
+        <Typography sx={{ marginBottom: 4, color: '#333', textAlign: 'center' }}>
+          1 Spin = 500 points
+          <Button
+            id="buybtn"
+            onClick={handleBuySpin}
+            sx={{
+              marginLeft: 2,
+              backgroundColor: '#df3428',
+              color: '#ffffff',
+              padding: '5px 10px',
+              fontSize: '0.875rem',
+              borderRadius: '50px',
+              boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
+              '&:hover': { backgroundColor: '#ff6f61' },
+            }}
+          >
+            Buy a Spin
           </Button>
-        </DialogActions>
-      </Dialog>
-
+        </Typography>
+        <Box className="wheel-container" sx={{ display: 'flex', justifyContent: 'center', position: 'relative', marginBottom: 4 }}>
+          <Wheel
+            mustStartSpinning={mustSpin}
+            prizeNumber={prizeNumber}
+            data={filteredRewards.map(reward => ({ option: reward.rewardName, style: { backgroundColor: 'lightgray' } }))}
+            backgroundColors={['#3e3e3e', '#df3428']}
+            textColors={['#ffffff']}
+            onStopSpinning={() => {
+              setMustSpin(false);
+              const wonOption = filteredRewards[prizeNumber].rewardName;
+              setWonOption(wonOption);
+              setOpenReward(true);
+            }}
+          />
+          <Button
+            className="spinbtn"
+            onClick={handleSpinClick}
+            disabled={mustSpin || spinsLeft <= 0}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#df3428',
+              color: '#ffffff',
+              padding: '20px 15px',
+              borderRadius: '50%',
+              zIndex: 10,
+              '&:hover': {
+                backgroundColor: '#b71c1c', // Dark red color on hover
+              },
+            }}
+          >
+            <PlayArrowIcon />
+          </Button>
+        </Box>
+        <Typography id="spincnt" sx={{ textAlign: 'center', marginTop: 2, fontWeight: 'bold', color: '#333'}}>
+          {spinsLeft} Spins left
+        </Typography>
+        <Dialog
+          open={openReward}
+          onClose={handleCloseReward}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Congratulations!</DialogTitle>
+          <DialogContent>
+            <p>{`You won ${wonOption}`}</p>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseReward} color="primary" autoFocus>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Paper>
     </Box>
-
   );
 }
 

@@ -39,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
         imageFile: {
             type: DataTypes.STRING(20),
             allowNull: true,
+        },
+        isActive:{
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
         }
     }, {
         tableName: 'events'
@@ -46,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
 
     );
     Event.associate = function (models) {
-        Event.hasMany(models.Registration, { foreignKey: 'eventId' });
+        Event.hasMany(models.Registration, { foreignKey: 'eventId', onDelete: "cascade" });
     };
     return Events;
 }

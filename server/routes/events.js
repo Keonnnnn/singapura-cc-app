@@ -168,7 +168,9 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-    let list = await Event.findAll();
+    let list = await Event.findAll({
+        where: { isActive: true } 
+    });
     res.json(list);
 });
 
@@ -205,16 +207,14 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
     let id = req.params.id;
-    let num = await Event.destroy({ where: { id: id } });
-    if (!num) {
+    let event = await Event.findByPk(id);
+    if (!event) {
         res.sendStatus(404);
         return;
     }
-    if (num == 1) {
-        res.json({ message: "Event was deleted successfully." });
-    } else {
-        res.status(400).json({ message: `Cannot delete event with id ${id}.` });
-    }
+    event.isActive = false; 
+    await event.save(); 
+    res.json({ message: "Event was successfully deleted." });
 });
 
 // Registration route

@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Registration.associate = function(models) {
-        Registration.belongsTo(models.Event, { foreignKey: 'eventId' });
+        Registration.belongsTo(models.Event, { foreignKey: 'eventId', onDelete: 'cascade' });
         Registration.belongsTo(models.User, { foreignKey: 'userId' });
     };
 

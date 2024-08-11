@@ -1,36 +1,65 @@
 .spin-container {
+  margin-top: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 100%; /* Take full width available */
   padding: 20px;
-  margin-top: -100px;
 }
 
-.header-container {
+.spin-paper {
+  max-width: 900px;
+  width: 100%;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-left: 10px;
+}
+
+.spin-title {
+  font-weight: bold;
   margin-bottom: 20px;
+  color: #333;
   text-align: center;
 }
 
-.wheel-container {
-  position: relative;
-  width: 300px;
-  height: 300px;
-  margin: 0 auto;
+.membership-info {
+  margin-bottom: 10px;
+  color: #333;
+  text-align: center;
 }
 
-.wheel-wrapper {
+.points-info {
+  margin-bottom: 40px;
+  color: #333;
+  text-align: center;
+}
+
+.buy-spin-button {
+  margin-left: 5px;
+  background-color: #df3428;
+  color: #ffffff;
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  border-radius: 50px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.buy-spin-button:hover {
+  background-color: #ff6f61;
+}
+
+.wheel-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   position: relative;
+  margin-bottom: 40px;
 }
 
 .spinbtn {
   position: absolute;
-  top: 75%; /* Position it closer to the center */
-  left: 73%; /* Center the button horizontally */
+  top: -40px; /* Position the button above the wheel */
+  left: 50%;
   transform: translate(-50%, -50%);
   background-color: #df3428;
   color: white;
@@ -41,53 +70,10 @@
   z-index: 10;
 }
 
-#buybtn {
-  margin-left: 10px;
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  border-radius: 5px;
-  display: inline-block;
-}
-
-#textpos {
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 #spincnt {
   text-align: center;
-  position: relative;
-  top: 150px; /* Position the spin count below the wheel */
-  left: 70px;
-  z-index: 5;
-}
-
-@media (max-width: 768px) {
-  .spin-container {
-    margin-left: 0;
-    text-align: center;
-  }
-
-  #textpos {
-    flex-direction: column;
-  }
-
-  #buybtn, #textpos {
-    margin-left: 0;
-    margin-top: 10px;
-  }
-
-  .spinbtn {
-    padding: 10px 12px;
-  }
-
-  #spincnt {
-    top: 30px;
-  }
+  margin-top: 20px;
+  font-weight: bold;
+  color: #333;
+  font-size: 2em;
 }
