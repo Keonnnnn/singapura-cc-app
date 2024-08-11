@@ -228,13 +228,12 @@ const EditProfile = () => {
         // Update the user's profile
         await http.put(`/user/profile/${id}`, updatedValues);
 
-        setLoggedInUser(
-          (prevUser) => ({
-            ...prevUser,
-            ...updatedValues,
-          }),
-          setLoggedInUser(updatedValues)
-        );
+        setLoggedInUser({
+          ...loggedInUser,
+          pfpURL: updatedValues.pfpURL,
+          firstName: updatedValues.firstName,
+          lastName: updatedValues.lastName,
+        });
         toast.success("Profile updated successfully");
         navigate("/profile");
       } catch (error) {
@@ -340,31 +339,27 @@ const EditProfile = () => {
                 Basic Information
               </Typography>
               <Grid container spacing={3}>
-                {
-                  // Display salutations field only for customers and staff
-                  loggedInUser.role != "Admin" && (
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
-                        margin="dense"
-                        label="Salutations"
-                        name="salutations"
-                        value={formik.values.salutations}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        error={
-                          formik.touched.salutations &&
-                          Boolean(formik.errors.salutations)
-                        }
-                        helperText={
-                          formik.touched.salutations &&
-                          formik.errors.salutations
-                        }
-                        variant="outlined"
-                      />
-                    </Grid>
-                  )
-                }
+                {loggedInUser.role != "Admin" && (
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      fullWidth
+                      margin="dense"
+                      label="Salutations"
+                      name="salutations"
+                      value={formik.values.salutations}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={
+                        formik.touched.salutations &&
+                        Boolean(formik.errors.salutations)
+                      }
+                      helperText={
+                        formik.touched.salutations && formik.errors.salutations
+                      }
+                      variant="outlined"
+                    />
+                  </Grid>
+                )}
                 <Grid item xs={12} sm={loggedInUser.role == "Admin" ? 6 : 4}>
                   <TextField
                     fullWidth

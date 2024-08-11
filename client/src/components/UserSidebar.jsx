@@ -55,7 +55,16 @@ const UserSidebar = () => {
   const menuItems = [
     { text: "Account", path: "/profile", icon: <Person /> },
     { text: "Rewards", path: "/ClaimRewards", icon: <Star /> },
-    { text: "Event Registrations", path: "/user-registration-history", icon: <History /> },
+    {
+      text: "Event Registrations",
+      path: "/user-registration-history",
+      icon: <History />,
+    },
+    { text: "Settings", path: "/settings", icon: <Settings /> },
+  ];
+
+  const menuItemsAdmin = [
+    { text: "Account", path: "/profile", icon: <Person /> },
     { text: "Settings", path: "/settings", icon: <Settings /> },
   ];
 
@@ -69,7 +78,6 @@ const UserSidebar = () => {
 
   return (
     <>
-
       {user && (
         <Box
           sx={{
@@ -105,25 +113,47 @@ const UserSidebar = () => {
           </Box>
           <Divider />
           <List component="nav" aria-label="main mailbox folders">
-            {menuItems.map((item) => (
-              <ListItem
-                button
-                key={item.text}
-                onClick={() => navigate(item.path)}
-                sx={{
-                  borderRadius: 2,
-                  backgroundColor: location.pathname.startsWith(item.path)
-                    ? "#e2160f"
-                    : "transparent",
-                  color: location.pathname.startsWith(item.path)
-                    ? "#fff"
-                    : "inherit",
-                }}
-              >
-                {item.icon}
-                <ListItemText primary={item.text} sx={{ ml: 1 }} />
-              </ListItem>
-            ))}
+            {user.role == "Customer" &&
+              menuItems.map((item) => (
+                <ListItem
+                  button
+                  key={item.text}
+                  onClick={() => navigate(item.path)}
+                  sx={{
+                    borderRadius: 2,
+                    backgroundColor: location.pathname.startsWith(item.path)
+                      ? "#e2160f"
+                      : "transparent",
+                    color: location.pathname.startsWith(item.path)
+                      ? "#fff"
+                      : "inherit",
+                  }}
+                >
+                  {item.icon}
+                  <ListItemText primary={item.text} sx={{ ml: 1 }} />
+                </ListItem>
+              ))}
+
+            {user.role != "Customer" &&
+              menuItemsAdmin.map((item) => (
+                <ListItem
+                  button
+                  key={item.text}
+                  onClick={() => navigate(item.path)}
+                  sx={{
+                    borderRadius: 2,
+                    backgroundColor: location.pathname.startsWith(item.path)
+                      ? "#e2160f"
+                      : "transparent",
+                    color: location.pathname.startsWith(item.path)
+                      ? "#fff"
+                      : "inherit",
+                  }}
+                >
+                  {item.icon}
+                  <ListItemText primary={item.text} sx={{ ml: 1 }} />
+                </ListItem>
+              ))}
           </List>
           <Divider />
           <Button

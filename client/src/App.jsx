@@ -2,7 +2,7 @@ import "./App.css";
 import { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
-  Routes, 
+  Routes,
   Route,
   Navigate,
 } from "react-router-dom";
@@ -53,9 +53,9 @@ import FeedbackDetail from "./pages/FeedbackDetail";
 import AddNotification from "./pages/AddNotification";
 import NotificationList from "./pages/NotificationList";
 import NotificationDetail from "./pages/NotificationDetail";
-import AnnouncementList from './pages/AnnouncementList';
-import AnnouncementForm from './pages/AnnouncementForm';
-import AnnouncementDetail from './pages/AnnouncementDetail';
+import AnnouncementList from "./pages/AnnouncementList";
+import AnnouncementForm from "./pages/AnnouncementForm";
+import AnnouncementDetail from "./pages/AnnouncementDetail";
 
 // Ayura
 import EditRewards from "./pages/EditRewards";
@@ -104,17 +104,33 @@ function App() {
     },
     show_options: {
       message: "Here are some options you can choose from:",
-      options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!", "I want to write feedback"],
+      options: [
+        "Tell me about the events",
+        "I want to view my membership details",
+        "I want to connect with other people!",
+        "I want to write feedback",
+      ],
       path: "process_options",
     },
     unknown_input: {
-      message: "Sorry, I do not understand your message 😢! If you require further assistance you may click on ",
-      options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!", "I want to write feedback"],
+      message:
+        "Sorry, I do not understand your message 😢! If you require further assistance you may click on ",
+      options: [
+        "Tell me about the events",
+        "I want to view my membership details",
+        "I want to connect with other people!",
+        "I want to write feedback",
+      ],
       path: "process_options",
     },
     prompt_again: {
       message: "Do you need any other help?",
-      options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!", "I want to write feedback"],
+      options: [
+        "Tell me about the events",
+        "I want to view my membership details",
+        "I want to connect with other people!",
+        "I want to write feedback",
+      ],
       path: "process_options",
     },
     process_options: {
@@ -147,29 +163,31 @@ function App() {
       transition: { duration: 3000 },
       path: "prompt_again",
     },
-  
+
     handle_inquiry: {
       message: "Great! Would you like to send an email to the community club?",
       options: ["Yes", "No"],
       path: async (params) => {
         switch (params.userInput) {
           case "Yes":
-            await params.injectMessage("You may send an email to singapuracommunityclub@gmail.com");
+            await params.injectMessage(
+              "You may send an email to singapuracommunityclub@gmail.com"
+            );
             return "prompt_again";
           case "No":
             return "prompt_again";
           default:
             return "unknown_input";
         }
-      }
+      },
     },
-  
+
     end: {
       message: "Thank you for using our service!",
       end: true,
     },
   };
-  
+
   // Define options for the chatbot
   const options = {
     theme: {
@@ -179,9 +197,8 @@ function App() {
     },
     chatHistory: {
       storageKey: "example_theming",
-    }
+    },
   };
-  
 
   return (
     <UserContext.Provider value={{ user, setUser, darkMode, toggleDarkMode }}>
@@ -202,12 +219,20 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route
               path="/comments/:postId"
-              element={user ? <Comments darkMode={darkMode} /> : <Navigate to="/login" />}
+              element={
+                user ? (
+                  <Comments darkMode={darkMode} />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
             />
-            <Route path="/profile/:userId" element={<PostProfile darkMode={darkMode} />} />
+            <Route
+              path="/profile/:userId"
+              element={<PostProfile darkMode={darkMode} />}
+            />
 
             <Route path="/facilities" element={<FacilitiesWorkInProgress />} />
-
 
             <Route
               path="/events"
@@ -223,65 +248,74 @@ function App() {
               path={"/user-registration-history"}
               element={<UserRegistrationHistory />}
             />
-            <Route
-              path="/feedbackform"
-              element={<ProtectedRoute element={FeedbackForm} />}
-            />
-            <Route
-              path="/feedbacklist"
-              element={<ProtectedRoute element={FeedbackList} />}
-            />
+            <Route path="/feedbackform" element={<FeedbackForm />} />
+            <Route path="/feedbacklist" element={<FeedbackList />} />
             <Route
               path="/posts"
-              element={<ThemeProvider theme={darkMode ? darkTheme : theme}><Posts darkMode={darkMode} /></ThemeProvider>}
+              element={
+                <ThemeProvider theme={darkMode ? darkTheme : theme}>
+                  <Posts darkMode={darkMode} />
+                </ThemeProvider>
+              }
             />
             <Route
               path="/createpost"
-              element={user ? <ThemeProvider theme={darkMode ? darkTheme : theme}><CreatePost darkMode={darkMode} /></ThemeProvider> : <Navigate to="/login" />}
+              element={
+                user ? (
+                  <ThemeProvider theme={darkMode ? darkTheme : theme}>
+                    <CreatePost darkMode={darkMode} />
+                  </ThemeProvider>
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
             />
             <Route
               path="/editpost/:id"
-              element={<ThemeProvider theme={darkMode ? darkTheme : theme}><EditPost darkMode={darkMode} /></ThemeProvider>}
+              element={
+                <ThemeProvider theme={darkMode ? darkTheme : theme}>
+                  <EditPost darkMode={darkMode} />
+                </ThemeProvider>
+              }
             />
             <Route path="/notes" element={<Notes />} />
             <Route path="/addnote" element={<AddNote />} />
             <Route path="/editnote/:id" element={<EditNote />} />
-            <Route
-              path="/ClaimRewards"
-              element={
-                <ClaimRewards/>
-              }
-            />
-            <Route
-              path="/Spin"
-              element={
-                <Spin/>
-              }
-            />
+            <Route path="/ClaimRewards" element={<ClaimRewards />} />
+            <Route path="/Spin" element={<Spin />} />
             <Route
               path="/admin/notifications"
-              element={<ProtectedRoute element={NotificationList} allowedRoles={["Admin", "Staff"]} />}
+              element={
+                <ProtectedRoute
+                  element={NotificationList}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
-            <Route
-              path="/notifications/:id"
-              element={<NotificationDetail />}
-            />
+            <Route path="/notifications/:id" element={<NotificationDetail />} />
             <Route
               path="/announcements"
-              element={<ProtectedRoute element={AnnouncementList} allowedRoles={["Admin", "Staff"]}/>} 
+              element={
+                <ProtectedRoute
+                  element={AnnouncementList}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
             <Route
               path="/announcements/new"
-              element={<ProtectedRoute element={AnnouncementForm} allowedRoles={["Admin", "Staff"]}/>}
+              element={
+                <ProtectedRoute
+                  element={AnnouncementForm}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
             {/* <Route
               path="/announcements/:id/edit"
               element={AnnouncementForm}
             /> */}
-            <Route
-              path="/announcements/:id"
-              element={<AnnouncementDetail/>}
-            />
+            <Route path="/announcements/:id" element={<AnnouncementDetail />} />
 
             {/* admin routes */}
             <Route
@@ -331,7 +365,12 @@ function App() {
             />
             <Route
               path="/feedbacklist"
-              element={<ProtectedRoute element={FeedbackList} allowedRoles={["Admin", "Staff"]} />}
+              element={
+                <ProtectedRoute
+                  element={FeedbackList}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
             <Route path="/feedback/:id" element={<FeedbackDetail />} />
             <Route
@@ -345,20 +384,35 @@ function App() {
             />
             <Route
               path="/admin/edit-notification/:id"
-              element={<ProtectedRoute element={AddNotification} allowedRoles={["Admin", "Staff"]} />}
+              element={
+                <ProtectedRoute
+                  element={AddNotification}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
             <Route
               path="/admin/events"
-              element={<ProtectedRoute element={Events} allowedRoles={["Admin", "Staff"]} />}
+              element={
+                <ProtectedRoute
+                  element={Events}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
-             <Route
+            <Route
               path="/eventsregistrations/:id"
               element={<StaffEventConfirmation />}
             />
             <Route path="/addevent" element={<AddEvent />} />
             <Route
               path="/admin/edit-event/:id"
-              element={<ProtectedRoute element={EditEvent} allowedRoles={["Admin", "Staff"]} />}
+              element={
+                <ProtectedRoute
+                  element={EditEvent}
+                  allowedRoles={["Admin", "Staff"]}
+                />
+              }
             />
             <Route
               path="/admin/edit-rewards"

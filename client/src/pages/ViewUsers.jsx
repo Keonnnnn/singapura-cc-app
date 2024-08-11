@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -36,6 +36,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import http from "../http";
+import UserContext from "../contexts/UserContext";
 
 function ViewUsers() {
   const [users, setUsers] = useState([]);
@@ -49,7 +50,7 @@ function ViewUsers() {
   const [anchorElSort, setAnchorElSort] = useState(null);
   const [anchorElMembership, setAnchorElMembership] = useState(null);
   const [search, setSearch] = useState("");
-
+  const { user: loggedInUser } = useContext(UserContext);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -294,6 +295,7 @@ function ViewUsers() {
         sx={{
           display: "flex",
           alignItems: "center",
+          flexDirection: { xs: "column", md: "row" },
           justifyContent: "space-between",
           mb: 2,
         }}
@@ -494,13 +496,20 @@ function ViewUsers() {
                       </IconButton>
                     </Tooltip>
                   </Link>
-                  <Link to={`/admin/users/${user.id}/edit`}>
-                    <Tooltip title="Edit User">
-                      <IconButton color="secondary" sx={{ padding: "4px" }}>
-                        <Edit />
-                      </IconButton>
-                    </Tooltip>
-                  </Link>
+                  {
+                    // Render the edit button for all users except when the user is an admin and the logged-in user is staff
+                    !(
+                      user.role === "Admin" && loggedInUser.role === "Staff"
+                    ) && (
+                      <Link to={`/admin/users/${user.id}/edit`}>
+                        <Tooltip title="Edit User">
+                          <IconButton color="secondary" sx={{ padding: "4px" }}>
+                            <Edit />
+                          </IconButton>
+                        </Tooltip>
+                      </Link>
+                    )
+                  }
                   <Tooltip title="Delete User">
                     <IconButton
                       color="error"
@@ -526,7 +535,12 @@ function ViewUsers() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title" sx={{ color: "#e2160f", fontWeight: "bold" }}>{"Confirm Delete"}</DialogTitle>
+        <DialogTitle
+          id="alert-dialog-title"
+          sx={{ color: "#e2160f", fontWeight: "bold" }}
+        >
+          {"Confirm Delete"}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description" sx={{ mb: 2 }}>
             Are you sure you want to delete this user? This action cannot be
@@ -537,7 +551,12 @@ function ViewUsers() {
           <Button onClick={handleClose} color="primary" variant="outlined">
             Cancel
           </Button>
-          <Button onClick={deleteUser} color="error" autoFocus variant="contained" >
+          <Button
+            onClick={deleteUser}
+            color="error"
+            autoFocus
+            variant="contained"
+          >
             Delete
           </Button>
         </DialogActions>

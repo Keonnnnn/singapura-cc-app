@@ -37,8 +37,12 @@ import {
 } from "@mui/icons-material";
 
 const Navbar = () => {
-  const { user: loggedInUser, setUser: setLoggedInUser, darkMode, toggleDarkMode } =
-    useContext(UserContext);
+  const {
+    user: loggedInUser,
+    setUser: setLoggedInUser,
+    darkMode,
+    toggleDarkMode,
+  } = useContext(UserContext);
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorElCustomer, setAnchorElCustomer] = useState(null);
@@ -60,9 +64,12 @@ const Navbar = () => {
         setLoggedInUser({
           ...loggedInUser,
           pfpURL: res.data.pfpURL,
+          firstName: res.data.firstName,
+          lastName: res.data.lastName,
         });
       });
     }
+    console.log(loggedInUser);
   }, [loggedInUser, user]);
 
   useEffect(() => {
@@ -248,11 +255,22 @@ const Navbar = () => {
   });
 
   return (
-    <AppBar position="static" className="AppBar" sx={{ backgroundColor: "#D22B2B" }}>
+    <AppBar
+      position="static"
+      className="AppBar"
+      sx={{ backgroundColor: "#D22B2B" }}
+    >
       <Container>
         <Toolbar disableGutters={true}>
           <Link to={isAdmin ? "/admin/dashboard" : "/"}>
-          <Grid container spacing={0} direction="column" alignItems="center" justifyContent="center" paddingTop={"10px"}>
+            <Grid
+              container
+              spacing={0}
+              direction="column"
+              alignItems="center"
+              justifyContent="center"
+              paddingTop={"10px"}
+            >
               <Avatar src={logo} sx={{ width: 60, height: 60 }} />
               <Typography variant="h6" component="div">
                 SINGAPURA CC
@@ -270,16 +288,35 @@ const Navbar = () => {
           >
             {!isAdmin && (
               <>
-                <Box sx={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={handleEventsClick}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                  onClick={handleEventsClick}
+                >
                   <Typography>Events</Typography>
                 </Box>
 
-                <Menu anchorEl={anchorElEvents} open={openEvents} onClose={handleEventsClose}>
-                  <Link to="/customer-events" style={{ textDecoration: "none", color: "inherit" }}>
+                <Menu
+                  anchorEl={anchorElEvents}
+                  open={openEvents}
+                  onClose={handleEventsClose}
+                >
+                  <Link
+                    to="/customer-events"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
                     <MenuItem onClick={handleEventsClose}>All Events</MenuItem>
                   </Link>
-                  <Link to="/feedbacklist" style={{ textDecoration: "none", color: "inherit" }}>
-                    <MenuItem onClick={handleEventsClose}>View Feedback</MenuItem>
+                  <Link
+                    to="/feedbacklist"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <MenuItem onClick={handleEventsClose}>
+                      View Feedback
+                    </MenuItem>
                   </Link>
                 </Menu>
 
@@ -300,8 +337,10 @@ const Navbar = () => {
             )}
           </Box>
 
-          {location.pathname.startsWith('/posts') && (
-           <Box sx={{ display: 'flex', alignItems: 'center', ml: 1, mr: 2 }}> {/* Added mr: 2 to create spacing on the right */}
+          {location.pathname.startsWith("/posts") && (
+            <Box sx={{ display: "flex", alignItems: "center", ml: 1, mr: 2 }}>
+              {" "}
+              {/* Added mr: 2 to create spacing on the right */}
               <FormControlLabel
                 control={
                   <Switch
@@ -315,9 +354,9 @@ const Navbar = () => {
                 label={darkMode ? "Dark Mode" : "Light Mode"}
                 labelPlacement="start"
                 sx={{
-                  '& .MuiTypography-root': {
-                    fontWeight: 'bold',
-                    fontSize: '0.875rem',
+                  "& .MuiTypography-root": {
+                    fontWeight: "bold",
+                    fontSize: "0.875rem",
                   },
                 }}
               />
@@ -333,7 +372,10 @@ const Navbar = () => {
               )}
 
               <IconButton color="inherit" onClick={handleNotificationClick}>
-                <Badge badgeContent={notifications.filter((n) => !n.isRead).length} color="secondary">
+                <Badge
+                  badgeContent={notifications.filter((n) => !n.isRead).length}
+                  color="secondary"
+                >
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
@@ -352,16 +394,22 @@ const Navbar = () => {
                 }}
               >
                 {sortedNotifications.length === 0 ? (
-                  <MenuItem onClick={handleNotificationClose}>No notifications</MenuItem>
+                  <MenuItem onClick={handleNotificationClose}>
+                    No notifications
+                  </MenuItem>
                 ) : (
                   <List sx={{ width: "100%", bgcolor: "background.paper" }}>
                     {sortedNotifications.map((notification) => (
                       <ListItem
                         button
                         key={notification.type + notification.id}
-                        onClick={() => markAsRead(notification.id, notification.type)}
+                        onClick={() =>
+                          markAsRead(notification.id, notification.type)
+                        }
                         sx={{
-                          backgroundColor: notification.isRead ? "#f0f0f0" : "#fff",
+                          backgroundColor: notification.isRead
+                            ? "#f0f0f0"
+                            : "#fff",
                           fontWeight: notification.isRead ? "normal" : "bold",
                           borderBottom: "1px solid #e0e0e0",
                           padding: "16px",
@@ -369,22 +417,40 @@ const Navbar = () => {
                           marginBottom: "8px",
                         }}
                         secondaryAction={
-                          notification.type === "event" && notification.user?.role === "Admin" || notification.user?.role === "Staff" ? (
-                            <Tooltip title={notification.pinned ? "Unpin Notification" : "Pin Notification"}>
+                          (notification.type === "event" &&
+                            notification.user?.role === "Admin") ||
+                          notification.user?.role === "Staff" ? (
+                            <Tooltip
+                              title={
+                                notification.pinned
+                                  ? "Unpin Notification"
+                                  : "Pin Notification"
+                              }
+                            >
                               <IconButton
                                 edge="end"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  togglePin(notification.id, notification.type, notification.pinned);
+                                  togglePin(
+                                    notification.id,
+                                    notification.type,
+                                    notification.pinned
+                                  );
                                 }}
                               >
-                                {notification.pinned ? <PushPinIcon sx={{ color: "#FFC107" }} /> : <PushPinOutlinedIcon />}
+                                {notification.pinned ? (
+                                  <PushPinIcon sx={{ color: "#FFC107" }} />
+                                ) : (
+                                  <PushPinOutlinedIcon />
+                                )}
                               </IconButton>
                             </Tooltip>
                           ) : null
                         }
                       >
-                        <ListItemIcon>{getNotificationIcon(notification.type)}</ListItemIcon>
+                        <ListItemIcon>
+                          {getNotificationIcon(notification.type)}
+                        </ListItemIcon>
                         <ListItemText
                           primary={notification.title || notification.message}
                           primaryTypographyProps={{
@@ -413,19 +479,25 @@ const Navbar = () => {
                                         component="span"
                                         display="block"
                                       >
-                                        {formatNotificationTime(notification.createdAt)}
+                                        {formatNotificationTime(
+                                          notification.createdAt
+                                        )}
                                       </Typography>
                                     )}
                                 </>
                               )}
-                              {notification.type !== "event" || notification.user?.role !== "Admin" || notification.user?.role !== "Staff" ? (
+                              {notification.type !== "event" ||
+                              notification.user?.role !== "Admin" ||
+                              notification.user?.role !== "Staff" ? (
                                 <Typography
                                   variant="caption"
                                   color="textSecondary"
                                   component="span"
                                   display="block"
                                 >
-                                  {formatNotificationTime(notification.createdAt)}
+                                  {formatNotificationTime(
+                                    notification.createdAt
+                                  )}
                                 </Typography>
                               ) : null}
                             </>
@@ -463,7 +535,7 @@ const Navbar = () => {
                   aria-haspopup="true"
                   aria-expanded={open ? "true" : undefined}
                 >
-                  {user.firstName} {user.lastName}
+                  {loggedInUser.firstName} {loggedInUser.lastName}
                 </Typography>
               </Box>
 
@@ -494,7 +566,7 @@ const Navbar = () => {
                   }}
                 >
                   <Typography fontWeight={"medium"}>
-                    {user.firstName} {user.lastName}
+                    {loggedInUser.firstName} {loggedInUser.lastName}
                   </Typography>
                   <Typography color={"textSecondary"}>{user.email}</Typography>
                 </Box>
@@ -512,7 +584,6 @@ const Navbar = () => {
                     </MenuItem>
                   </Link>
                 )}
-
 
                 {isAdmin && (
                   <Link

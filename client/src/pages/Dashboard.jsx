@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Card, CardContent, Grid, Avatar } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Avatar,
+} from "@mui/material";
 import {
   LineChart,
   Line,
@@ -11,7 +18,7 @@ import {
   ResponsiveContainer,
   Label,
 } from "recharts";
-import http from "../http"; 
+import http from "../http";
 
 const Dashboard = () => {
   const [totalUsers, setTotalUsers] = useState(0);
@@ -117,10 +124,18 @@ const Dashboard = () => {
                   <LineChart data={dailyUsage}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" tickFormatter={formatDate}>
-                      <Label value="Date (dd/mm/yyyy)" offset={-5} position="insideBottom" />
+                      <Label
+                        value="Date (dd/mm/yyyy)"
+                        offset={-5}
+                        position="insideBottom"
+                      />
                     </XAxis>
                     <YAxis>
-                      <Label value="Usage Count" angle={-90} position="insideLeft" />
+                      <Label
+                        value="Usage Count"
+                        angle={-90}
+                        position="insideLeft"
+                      />
                     </YAxis>
                     <Tooltip />
                     <Legend />
@@ -138,9 +153,9 @@ const Dashboard = () => {
               <Typography variant="h6" gutterBottom>
                 Top 5 Recent Customers
               </Typography>
-              <Grid container spacing={3} sx={{ mt: 2 }}>
+              <Grid container spacing={3} sx={{ paddingX: 1 }}>
                 {recentCustomers.slice(0, 5).map((customer, index) => (
-                  <Grid item xs={12} sm={4} key={index}>
+                  <Grid item xs={12} key={index}>
                     <Box
                       sx={{
                         display: "flex",
@@ -154,7 +169,7 @@ const Dashboard = () => {
                         sx={{
                           marginRight: 2,
                           color: "#000",
-                          fontWeight: "bold",
+                          fontWeight: "semibold",
                         }}
                       >
                         {index + 1}.
@@ -166,7 +181,9 @@ const Dashboard = () => {
                           width: 60,
                           height: 60,
                           marginRight: 2,
-                          backgroundColor: customer.pfpURL ? "transparent" : "#ccc",
+                          backgroundColor: customer.pfpURL
+                            ? "transparent"
+                            : "#ccc",
                         }}
                       >
                         {!customer.pfpURL && customer.firstName[0]}
@@ -185,21 +202,18 @@ const Dashboard = () => {
                           {customer.email}
                         </Typography>
                         <Typography variant="body2" color="textSecondary">
-                          {new Date(customer.createdAt).toLocaleDateString("en-GB")}
+                          {new Date(customer.createdAt).toLocaleDateString(
+                            "en-GB"
+                          )}
                         </Typography>
                       </Box>
                     </Box>
                   </Grid>
                 ))}
-                {/* Filler grid items to ensure correct alignment for 5 items */}
-                {recentCustomers.length < 5 && (
-                  <Grid item xs={12} sm={4} />
-                )}
               </Grid>
             </CardContent>
           </Card>
         </Grid>
-
       </Grid>
     </Box>
   );
