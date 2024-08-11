@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         defaultValue: function () {
           return this.firstName + this.lastName;
-        }
+        },
       },
       password: {
         type: DataTypes.STRING(100),
@@ -104,7 +104,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       profileDescription: {
         type: DataTypes.STRING(255),
-        allowNull: true
+        allowNull: true,
       },
       role: {
         type: DataTypes.ENUM("Customer", "Staff", "Admin"),
@@ -112,8 +112,25 @@ module.exports = (sequelize, DataTypes) => {
       },
       totalPoints: {
         type: DataTypes.INTEGER,
-        defaultValue: 0
-      }
+        defaultValue: 0,
+      },
+      pfpURL: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      deleteRequested: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
+      deleteRequestedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      lastLogin: {
+        // New field to track last login timestamp
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       tableName: "users",
@@ -122,8 +139,8 @@ module.exports = (sequelize, DataTypes) => {
           if (!user.username) {
             user.username = `${user.firstName}${user.lastName}`;
           }
-        }
-      }
+        },
+      },
     }
   );
 
@@ -132,9 +149,15 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId",
       onDelete: "cascade",
     });
-    User.hasMany(models.Follower, { as: 'followers', foreignKey: 'followedId' });
-    User.hasMany(models.Follower, { as: 'following', foreignKey: 'followerId' });
-    User.hasMany(models.Registration, { foreignKey: 'userId' });
+    User.hasMany(models.Follower, {
+      as: "followers",
+      foreignKey: "followedId",
+    });
+    User.hasMany(models.Follower, {
+      as: "following",
+      foreignKey: "followerId",
+    });
+    User.hasMany(models.Registration, { foreignKey: "userId" });
   };
 
   return User;

@@ -4,7 +4,7 @@ import { Box, Typography, TextField, Button, IconButton, Paper, Avatar, Tooltip,
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import http from '../http';
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import UserContext from '../contexts/UserContext';
 import { PhotoCamera, Close } from '@mui/icons-material';
@@ -14,68 +14,76 @@ function CreatePost() {
     const { user, darkMode } = useContext(UserContext);
     const [imageFile, setImageFile] = useState(null);
 
-    const formik = useFormik({
-        initialValues: {
-            title: "",
-            description: ""
-        },
-        validationSchema: yup.object({
-            title: yup.string().trim()
-                .min(3, 'Title must be at least 3 characters')
-                .max(100, 'Title must be at most 100 characters')
-                .required('Title is required'),
-            description: yup.string().trim()
-                .min(3, 'Description must be at least 3 characters')
-                .max(500, 'Description must be at most 500 characters')
-                .required('Description is required')
-        }),
-        onSubmit: (data) => {
-            if (!imageFile) {
-                toast.error('Image is required to create a post');
-                return;
-            }
+  const formik = useFormik({
+    initialValues: {
+      title: "",
+      description: "",
+    },
+    validationSchema: yup.object({
+      title: yup
+        .string()
+        .trim()
+        .min(3, "Title must be at least 3 characters")
+        .max(100, "Title must be at most 100 characters")
+        .required("Title is required"),
+      description: yup
+        .string()
+        .trim()
+        .min(3, "Description must be at least 3 characters")
+        .max(500, "Description must be at most 500 characters")
+        .required("Description is required"),
+    }),
+    onSubmit: (data) => {
+      if (!imageFile) {
+        toast.error("Image is required to create a post");
+        return;
+      }
 
-            const formData = new FormData();
-            formData.append('title', data.title.trim());
-            formData.append('description', data.description.trim());
-            formData.append('imageFile', imageFile);
+      const formData = new FormData();
+      formData.append("title", data.title.trim());
+      formData.append("description", data.description.trim());
+      formData.append("imageFile", imageFile);
 
-            http.post("/post", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            .then((res) => {
-                toast.success('Post created successfully');
-                navigate("/posts");
-            })
-            .catch(err => {
-                toast.error('Failed to create post');
-                console.error(err);
-            });
-        }
-    });
+      http
+        .post("/post", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          toast.success("Post created successfully");
+          navigate("/posts");
+        })
+        .catch((err) => {
+          toast.error("Failed to create post");
+          console.error(err);
+        });
+    },
+  });
 
-    const onFileChange = (e) => {
-        let file = e.target.files[0];
-        if (file) {
-            if (file.size > 1024 * 1024) {
-                toast.error('Maximum file size is 1MB');
-                return;
-            }
-            setImageFile(file);
-        }
-    };
+  const onFileChange = (e) => {
+    let file = e.target.files[0];
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        toast.error("Maximum file size is 1MB");
+        return;
+      }
+      setImageFile(file);
+    }
+  };
 
-    const handleCancel = () => {
-        navigate("/posts");
-    };
+  const handleCancel = () => {
+    navigate("/posts");
+  };
 
-    const getInitials = (name) => {
-        if (!name) return '';
-        const words = name.split(' ');
-        return words.map(word => word.charAt(0)).join('').toUpperCase();
-    };
+  const getInitials = (name) => {
+    if (!name) return "";
+    const words = name.split(" ");
+    return words
+      .map((word) => word.charAt(0))
+      .join("")
+      .toUpperCase();
+  };
 
     const getRandomColor = () => {
         const colors = darkMode
@@ -279,7 +287,6 @@ function CreatePost() {
                             Post
                         </Button>
                     </Box>
-                    <ToastContainer />
                 </Paper>
             </Slide>
         </Box>

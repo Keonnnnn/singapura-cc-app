@@ -28,6 +28,7 @@ import ResetPassword from "./pages/ResetPassword.jsx";
 import OtpVerification from "./pages/OtpVerification.jsx";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import FacilitiesWorkInProgress from "./pages/FacilitiesWorkInProgress";
 
 // Keon
 import Posts from "./pages/Posts";
@@ -41,7 +42,7 @@ import Events from "./pages/Events";
 import AddEvent from "./pages/AddEvent";
 import EditEvent from "./pages/EditEvent";
 import ChatBot from "react-chatbotify";
-import CustomerEvent from "./pages/CustomerEvents"; 
+import CustomerEvent from "./pages/CustomerEvents";
 import StaffEventConfirmation from "./pages/StaffEventConfirmation.jsx";
 import UserRegistrationHistory from "./pages/UserRegistrationHistory.jsx";
 
@@ -65,83 +66,6 @@ import ClaimRewards from "./pages/claimRewards.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import { ToastContainer } from "react-toastify";
-
-// Define the flow for the chatbot
-const flow = {
-  start: {
-    message: "Greetings to you! How can I help you today?",
-    transition: { duration: 1000 },
-    path: "show_options",
-  },
-  show_options: {
-    message: "Here are some options you can choose from:",
-    options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!", "I want to write feedback"],
-    path: "process_options",
-  },
-  unknown_input: {
-    message: "Sorry, I do not understand your message 😢! If you require further assistance you may click on ",
-    options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!", "I want to write feedback"],
-    path: "process_options",
-  },
-  prompt_again: {
-    message: "Do you need any other help?",
-    options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!", "I want to write feedback"],
-    path: "process_options",
-  },
-  process_options: {
-    transition: { duration: 0 },
-    path: async (params) => {
-      let link = "";
-      switch (params.userInput) {
-        case "Tell me about the events":
-          link = "/customer-events";
-          break;
-        case "I want to view my membership details":
-          link = "/membership";
-          break;
-        case "I want to connect with other people!":
-          link = "/posts";
-          break;
-        case "I want to write feedback":
-          return "handle_inquiry";
-        default:
-          return "unknown_input";
-      }
-      await params.injectMessage("Sit tight! I'll send you right there!");
-      setTimeout(() => {
-        window.open(link);
-      }, 2000);
-      return "repeat";
-    },
-  },
-  repeat: {
-    transition: { duration: 3000 },
-    path: "prompt_again",
-  },
-  handle_inquiry: {
-    message: "Thank you for your inquiry. We will review it and get back to you soon.",
-    path: "end",
-    processInput: (params) => {
-      console.log("User inquiry:", params.userInput);
-    },
-  },
-  end: {
-    message: "Thank you for using our service!",
-    end: true,
-  },
-};
-
-// Define options for the chatbot
-const options = {
-  theme: {
-    primaryColor: "#6667AB",
-    secondaryColor: "#e2160f",
-    showFooter: false,
-  },
-  chatHistory: {
-    storageKey: "example_theming",
-  },
-};
 
 function App() {
   const [user, setUser] = useState(null);
@@ -172,6 +96,94 @@ function App() {
     return <div>Loading...</div>;
   }
 
+  // Amelia's codes
+  const flow = {
+    start: {
+      message: "Greetings to you! How can I help you today?",
+      transition: { duration: 1000 },
+      path: "show_options",
+    },
+    show_options: {
+      message: "Here are some options you can choose from:",
+      options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!", "I want to write feedback"],
+      path: "process_options",
+    },
+    unknown_input: {
+      message: "Sorry, I do not understand your message 😢! If you require further assistance you may click on ",
+      options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!", "I want to write feedback"],
+      path: "process_options",
+    },
+    prompt_again: {
+      message: "Do you need any other help?",
+      options: ["Tell me about the events", "I want to view my membership details", "I want to connect with other people!", "I want to write feedback"],
+      path: "process_options",
+    },
+    process_options: {
+      transition: { duration: 0 },
+      path: async (params) => {
+        let link = "";
+        switch (params.userInput) {
+          case "Tell me about the events":
+            link = "/customer-events";
+            break;
+          case "I want to view my membership details":
+            link = "/membership";
+            break;
+          case "I want to connect with other people!":
+            link = "/posts";
+            break;
+          case "I want to write feedback":
+            return "handle_inquiry";
+          default:
+            return "unknown_input";
+        }
+        await params.injectMessage("Sit tight! I'll send you right there!");
+        setTimeout(() => {
+          window.open(link);
+        }, 2000);
+        return "repeat";
+      },
+    },
+    repeat: {
+      transition: { duration: 3000 },
+      path: "prompt_again",
+    },
+  
+    handle_inquiry: {
+      message: "Great! Would you like to send an email to the community club?",
+      options: ["Yes", "No"],
+      path: async (params) => {
+        switch (params.userInput) {
+          case "Yes":
+            await params.injectMessage("You may send an email to singapuracommunityclub@gmail.com");
+            return "prompt_again";
+          case "No":
+            return "prompt_again";
+          default:
+            return "unknown_input";
+        }
+      }
+    },
+  
+    end: {
+      message: "Thank you for using our service!",
+      end: true,
+    },
+  };
+  
+  // Define options for the chatbot
+  const options = {
+    theme: {
+      primaryColor: "#6667AB",
+      secondaryColor: "#e2160f",
+      showFooter: false,
+    },
+    chatHistory: {
+      storageKey: "example_theming",
+    }
+  };
+  
+
   return (
     <UserContext.Provider value={{ user, setUser, darkMode, toggleDarkMode }}>
       <Router>
@@ -195,6 +207,9 @@ function App() {
             />
             <Route path="/profile/:userId" element={<PostProfile darkMode={darkMode} />} />
 
+            <Route path="/facilities" element={<FacilitiesWorkInProgress />} />
+
+
             <Route
               path="/events"
               element={
@@ -205,7 +220,10 @@ function App() {
               }
             />
             <Route path="/customer-events" element={<CustomerEvent />} />
-            <Route path="/user-registration-history" element={<UserRegistrationHistory />} />
+            <Route
+              path={"/user-registration-history"}
+              element={<UserRegistrationHistory />}
+            />
             <Route
               path="/feedbackform"
               element={<ProtectedRoute element={FeedbackForm} />}
@@ -257,11 +275,11 @@ function App() {
             />
             <Route
               path="/announcements"
-              element={<AnnouncementList/>} 
+              element={<ProtectedRoute element={AnnouncementList} allowedRoles={["Admin", "Staff"]}/>} 
             />
             <Route
               path="/announcements/new"
-              element={<AnnouncementForm/>}
+              element={<ProtectedRoute element={AnnouncementForm} allowedRoles={["Admin", "Staff"]}/>}
             />
             {/* <Route
               path="/announcements/:id/edit"
@@ -337,12 +355,6 @@ function App() {
               element={<ProtectedRoute element={AddNotification} allowedRoles={["Admin", "Staff"]} />}
             />
             <Route path="/edit-event/:id" element={<EditEvent />} />
-
-            {/* chat bot */}
-            <Route
-              path="/chatbot"
-              element={<ChatBot steps={flow} options={options} />}
-            />
             <Route
               path="/admin/events"
               element={<ProtectedRoute element={Events} allowedRoles={["Admin", "Staff"]} />}
@@ -379,10 +391,16 @@ function App() {
               }
             />
           </Routes>
-          <Footer />
-          <ToastContainer />
         </ThemeProvider>
       </Router>
+      <ToastContainer />
+
+      {(!user || (user && user.role !== "Admin" && user.role !== "Staff")) && (
+        <>
+          <Footer />
+          <ChatBot flow={flow} options={options} />
+        </>
+      )}
     </UserContext.Provider>
   );
 }

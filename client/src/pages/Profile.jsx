@@ -8,8 +8,9 @@ import {
   IconButton,
   Grid,
   Avatar,
+  Divider,
+  Button,
 } from "@mui/material";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Edit } from "@mui/icons-material";
 import UserContext from "../contexts/UserContext";
@@ -29,6 +30,7 @@ const Profile = () => {
         try {
           const res = await http.get(`/user/profile/${id}`);
           setUser(res.data);
+          console.log(res.data);
         } catch (error) {
           console.error(error);
         }
@@ -39,7 +41,7 @@ const Profile = () => {
   }, []);
 
   const handleEdit = () => {
-    navigate("/profile/edit");
+    navigate("/profile/edit", { state: { user } });
   };
 
   return (
@@ -48,93 +50,124 @@ const Profile = () => {
         <>
           <UserSidebar />
           <Paper
-            elevation={3}
+            elevation={4}
             sx={{
-              p: 3,
-              maxWidth: 800,
+              p: 4,
+              maxWidth: 900,
               width: "100%",
+              borderRadius: "16px",
+              backgroundColor: "#f4f6f9",
               position: "relative",
-              borderRadius: "12px",
             }}
           >
             <IconButton
-              color="secondary"
+              color="primary"
               sx={{
                 position: "absolute",
-                top: 8,
-                right: 8,
-                bgcolor: "rgba(255,255,255,0.8)",
-                borderRadius: "25%",
-                gap: 1,
+                top: 16,
+                right: 16,
+                bgcolor: "white",
+                borderRadius: "50%",
+                boxShadow: 2,
+                color: "#D22B2B", // Updated to red color
+                "&:hover": {
+                  bgcolor: "rgba(255,255,255,0.9)",
+                },
               }}
               onClick={handleEdit}
             >
               <Edit />
-              <Typography>Edit</Typography>
             </IconButton>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+
+            <Box sx={{ display: "flex", alignItems: "center", mb: 4 }}>
               <Avatar
-                sx={{ width: 100, height: 100 }}
-                src={""}
-                alt={`${loggedInUser.firstName} ${loggedInUser.lastName}`}
+                sx={{
+                  width: 120,
+                  height: 120,
+                  border: "4px solid #D22B2B", // Updated to red color
+                  boxShadow: 3,
+                }}
+                src={user.pfpURL || ""}
+                alt={`${user.firstName} ${user.lastName}`}
               />
-              <Typography variant="h5" sx={{ ml: 2 }}>
-                {loggedInUser.firstName} {loggedInUser.lastName}
+              <Typography
+                variant="h4"
+                sx={{
+                  ml: 3,
+                  fontWeight: 700,
+                  color: "#333",
+                }}
+              >
+                {user.firstName} {user.lastName}
               </Typography>
             </Box>
 
+            <Divider sx={{ mb: 3 }} />
+
             <Box>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" gutterBottom sx={{ color: "#555" }}>
                 Basic Information
               </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={4}>
-                  <Typography variant="body1">
-                    <strong>Salutations:</strong> {user.salutations}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={4}>
+              <Grid container spacing={3}>
+                {user.role != "Admin" && (
+                  <Grid item xs={12} sm={4}>
+                    <Typography variant="body1">
+                      <strong>Salutations:</strong> {user.salutations}
+                    </Typography>
+                  </Grid>
+                )}
+                <Grid item xs={12} sm={user.role == "Admin" ? 6 : 4}>
                   <Typography variant="body1">
                     <strong>First Name:</strong> {user.firstName}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={12} sm={user.role == "Admin" ? 6 : 4}>
                   <Typography variant="body1">
                     <strong>Last Name:</strong> {user.lastName}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Date of Birth:</strong>{" "}
-                    {new Date(user.dateOfBirth).toLocaleDateString(
-                      "en-US",
-                      options
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Gender:</strong> {user.gender}
-                  </Typography>
-                </Grid>
+                {user.role != "Admin" && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Date of Birth:</strong>{" "}
+                      {new Date(user.dateOfBirth).toLocaleDateString(
+                        "en-US",
+                        options
+                      )}
+                    </Typography>
+                  </Grid>
+                )}
+                {user.role != "Admin" && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Gender:</strong> {user.gender}
+                    </Typography>
+                  </Grid>
+                )}
                 <Grid item xs={12} sm={6}>
                   <Typography variant="body1">
                     <strong>Email:</strong> {user.email}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body1">
-                    <strong>Mobile Number:</strong> {user.mobileNumber}
-                  </Typography>
-                </Grid>
+                {user.role != "Admin" && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="body1">
+                      <strong>Mobile Number:</strong> {user.mobileNumber}
+                    </Typography>
+                  </Grid>
+                )}
               </Grid>
 
               {user.role == "Customer" && (
                 <>
-                  <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ mt: 4, color: "#555" }}
+                  >
                     Residential Address
                   </Typography>
-                  <Grid container spacing={2}>
+                  <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <Typography variant="body1">
                         <strong>Block No.:</strong> {user.blockNo}
@@ -157,10 +190,14 @@ const Profile = () => {
                     </Grid>
                   </Grid>
 
-                  <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ mt: 4, color: "#555" }}
+                  >
                     Additional Information
                   </Typography>
-                  <Grid container spacing={2}>
+                  <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <Typography variant="body1">
                         <strong>ID Type:</strong> {user.idType}

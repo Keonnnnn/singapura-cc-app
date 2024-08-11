@@ -6,15 +6,26 @@ import {
   Grid,
   Paper,
   Switch,
+  Divider,
+  Typography,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import UserContext from "../contexts/UserContext";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import http from "../http";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const { user, setUser } = useContext(UserContext);
   const [otpEnabled, setOtpEnabled] = useState(user?.otpEnabled || false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const navigate = useNavigate();
 
   const handleOtpToggle = () => {
     const newOtpEnabled = !otpEnabled;
@@ -33,6 +44,33 @@ const Settings = () => {
       });
   };
 
+  const handleOpenDeleteDialog = () => {
+    setOpenDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpenDeleteDialog(false);
+  };
+
+  const handleAccountDeletion = () => {
+    http
+      .post(`/user/${user.id}/delete-request`)
+      .then(() => {
+        toast.success(
+          "Your account will be disabled for 24 hours before permanent deletion."
+        );
+        setOpenDeleteDialog(false);
+        // Optionally, you can log the user out here
+        localStorage.clear();
+        window.location = "/";
+        setUser(null);
+      })
+      .catch((error) => {
+        console.error("Error requesting account deletion:", error);
+        toast.error("Error requesting account deletion.");
+      });
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -47,25 +85,47 @@ const Settings = () => {
     if (user) {
       fetchUserData();
     }
-  }, [user]);
+  }, []);
 
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mt: 4, gap: 5 }}>
-      <ToastContainer />
       {user && (
         <>
           <UserSidebar />
           <Paper
             elevation={3}
             sx={{
-              p: 3,
-              maxWidth: 800,
+              p: 4,
+              maxWidth: 900,
               width: "100%",
+              borderRadius: "16px",
+              backgroundColor: "#f4f6f9",
               position: "relative",
-              borderRadius: "12px",
             }}
           >
-            <Grid container spacing={2} mt={2}>
+            <Typography
+              gutterBottom
+              variant="h4"
+              sx={{
+                my: 2,
+                textAlign: "center",
+                color: "#e2160f",
+                fontWeight: "bold",
+              }}
+            >
+              Account Settings
+            </Typography>
+            <Divider sx={{ my: 2 }} />
+
+            {/* Two-Factor Authentication */}
+            <Typography
+              variant="h6"
+              sx={{ color: "#e2160f", fontWeight: "bold" }}
+            >
+              Security Settings
+            </Typography>
+
+            <Grid container spacing={2}>
               <Grid item xs={12}>
                 <FormControlLabel
                   control={
@@ -74,11 +134,63 @@ const Settings = () => {
                   label="Enable Two-Factor Authentication (OTP)"
                 />
               </Grid>
-              {/* ... other settings */}
             </Grid>
+
+            <Divider sx={{ my: 3 }} />
+
+            {/* Delete Account */}
+            {user.role != "Admin" && (
+              <>
+                <Typography
+                  variant="h6"
+                  sx={{ color: "#e2160f", fontWeight: "bold" }}
+                >
+                  Danger Zone
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleOpenDeleteDialog}
+                  sx={{ mt: 2 }}
+                >
+                  Delete My Account
+                </Button>
+              </>
+            )}
           </Paper>
         </>
       )}
+      {/* Delete Account Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Delete Account?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to delete your account?  
+          </DialogContentText>
+
+          <DialogContentText>
+            This action will disable your account for 24 hours before permanent deletion. You can
+            undo this action by logging in again within 24 hours.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAccountDeletion}
+            color="error"
+            variant="contained"
+          >
+            Delete My Account
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
