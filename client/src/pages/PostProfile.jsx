@@ -23,88 +23,88 @@ function PostProfile() {
     const [selectedPost, setSelectedPost] = useState(null);
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false); // State for delete confirmation dialog
 
-  useEffect(() => {
-    if (userId) {
-      fetchUserProfile(userId);
-      fetchUserPosts(userId);
-      fetchFollowers(userId);
-      fetchFollowing(userId);
-      checkIfFollowing(userId);
-    }
-  }, [userId, isFollowing]);
+    useEffect(() => {
+        if (userId) {
+            fetchUserProfile(userId);
+            fetchUserPosts(userId);
+            fetchFollowers(userId);
+            fetchFollowing(userId);
+            checkIfFollowing(userId);
+        }
+    }, [userId, isFollowing]);
 
-  const fetchUserProfile = async (id) => {
-    try {
-      const res = await http.get(`/user/${id}`);
-      setProfileUser(res.data);
-      setNewUsername(res.data.username || "");
-      setNewDescription(res.data.profileDescription || "");
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-    }
-  };
+    const fetchUserProfile = async (id) => {
+        try {
+            const res = await http.get(`/user/${id}`);
+            setProfileUser(res.data);
+            setNewUsername(res.data.username || "");
+            setNewDescription(res.data.profileDescription || "");
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+        }
+    };
 
-  const fetchUserPosts = async (id) => {
-    try {
-      const res = await http.get(`/post?userId=${id}`);
-      setPostList(res.data);
-    } catch (error) {
-      console.error("Error fetching user posts:", error);
-    }
-  };
+    const fetchUserPosts = async (id) => {
+        try {
+            const res = await http.get(`/post?userId=${id}`);
+            setPostList(res.data);
+        } catch (error) {
+            console.error("Error fetching user posts:", error);
+        }
+    };
 
-  const fetchFollowers = async (id) => {
-    try {
-      const res = await http.get(`/user/${id}/followers`);
-      setFollowers(res.data);
-    } catch (error) {
-      console.error("Error fetching followers:", error);
-    }
-  };
+    const fetchFollowers = async (id) => {
+        try {
+            const res = await http.get(`/user/${id}/followers`);
+            setFollowers(res.data);
+        } catch (error) {
+            console.error("Error fetching followers:", error);
+        }
+    };
 
-  const fetchFollowing = async (id) => {
-    try {
-      const res = await http.get(`/user/${id}/following`);
-      setFollowing(res.data);
-    } catch (error) {
-      console.error("Error fetching following:", error);
-    }
-  };
+    const fetchFollowing = async (id) => {
+        try {
+            const res = await http.get(`/user/${id}/following`);
+            setFollowing(res.data);
+        } catch (error) {
+            console.error("Error fetching following:", error);
+        }
+    };
 
-  const checkIfFollowing = async (id) => {
-    try {
-      const res = await http.get(`/user/${user.id}/following`);
-      const followingIds = res.data.map((user) => user.id);
-      setIsFollowing(followingIds.includes(parseInt(id)));
-    } catch (error) {
-      console.error("Error checking following status:", error);
-    }
-  };
+    const checkIfFollowing = async (id) => {
+        try {
+            const res = await http.get(`/user/${user.id}/following`);
+            const followingIds = res.data.map((user) => user.id);
+            setIsFollowing(followingIds.includes(parseInt(id)));
+        } catch (error) {
+            console.error("Error checking following status:", error);
+        }
+    };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
+    const handleEdit = () => {
+        setIsEditing(true);
+    };
 
-  const handleSave = () => {
-    http
-      .put(`/user/${profileUser.id}`, {
-        username: newUsername,
-        profileDescription: newDescription,
-      })
-      .then((res) => {
-        setProfileUser(res.data);
-        setUser(res.data); // Update user context if the logged-in user is editing their own profile
-        setIsEditing(false);
-      })
-      .catch((error) => {
-        console.error("Failed to update profile:", error);
-      });
-  };
+    const handleSave = () => {
+        http
+            .put(`/user/${profileUser.id}`, {
+                username: newUsername,
+                profileDescription: newDescription,
+            })
+            .then((res) => {
+                setProfileUser(res.data);
+                setUser(res.data); // Update user context if the logged-in user is editing their own profile
+                setIsEditing(false);
+            })
+            .catch((error) => {
+                console.error("Failed to update profile:", error);
+            });
+    };
 
-  const handleOpen = (post) => {
-    setSelectedPost(post);
-    setOpen(true);
-  };
+    const handleOpen = (post) => {
+        setSelectedPost(post);
+        setOpen(true);
+    };
 
     const handleClose = () => {
         setOpen(false);
@@ -131,29 +131,29 @@ function PostProfile() {
             });
     };
 
-  const handleFollow = () => {
-    http
-      .post(`/user/${profileUser.id}/follow`)
-      .then(() => {
-        setIsFollowing(true);
-        fetchFollowers(profileUser.id);
-      })
-      .catch((error) => {
-        console.error("Failed to follow user:", error);
-      });
-  };
+    const handleFollow = () => {
+        http
+            .post(`/user/${profileUser.id}/follow`)
+            .then(() => {
+                setIsFollowing(true);
+                fetchFollowers(profileUser.id);
+            })
+            .catch((error) => {
+                console.error("Failed to follow user:", error);
+            });
+    };
 
-  const handleUnfollow = () => {
-    http
-      .delete(`/user/${profileUser.id}/unfollow`)
-      .then(() => {
-        setIsFollowing(false);
-        fetchFollowers(profileUser.id);
-      })
-      .catch((error) => {
-        console.error("Failed to unfollow user:", error);
-      });
-  };
+    const handleUnfollow = () => {
+        http
+            .delete(`/user/${profileUser.id}/unfollow`)
+            .then(() => {
+                setIsFollowing(false);
+                fetchFollowers(profileUser.id);
+            })
+            .catch((error) => {
+                console.error("Failed to unfollow user:", error);
+            });
+    };
 
     return (
         <Box sx={{ padding: 3, backgroundColor: darkMode ? '#000000' : '#f5f5f5', minHeight: '100vh' }}>
@@ -437,18 +437,20 @@ function PostProfile() {
             )}
 
             {/* Delete Confirmation Dialog */}
-            <Dialog open={deleteConfirmOpen} onClose={handleDeleteConfirmClose} sx={{ backgroundColor: darkMode ? '#1E1E1E' : 'inherit' }}>
-                <DialogTitle sx={{ color: darkMode ? '#BB86FC' : '#b71c1c' }}>Delete Post</DialogTitle>
-                <DialogContent sx={{ backgroundColor: darkMode ? '#1E1E1E' : 'inherit' }}>
-                    <DialogContentText>
+            <Dialog open={deleteConfirmOpen} onClose={handleDeleteConfirmClose}>
+                <DialogTitle sx={{ color: darkMode ? '#BB86FC' : '#b71c1c', backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    Delete Post
+                </DialogTitle>
+                <DialogContent sx={{ backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
+                    <DialogContentText sx={{ color: darkMode ? '#BB86FC' : '#b71c1c' }}>
                         Are you sure you want to delete this post? This action cannot be undone.
                     </DialogContentText>
                 </DialogContent>
-                <DialogActions>
+                <DialogActions sx={{ backgroundColor: darkMode ? '#1E1E1E' : '#ffffff' }}>
                     <Button onClick={handleDeleteConfirmClose} variant="outlined" sx={{ color: darkMode ? '#BB86FC' : '#b71c1c', borderColor: darkMode ? '#BB86FC' : '#b71c1c' }}>
                         Cancel
                     </Button>
-                    <Button onClick={deletePost} variant="contained" color="error" sx={{ borderRadius: '24px' }}>
+                    <Button onClick={deletePost} variant="contained" color="error" sx={{ borderRadius: '24px', backgroundColor: darkMode ? '#E53935' : '#b71c1c', '&:hover': { backgroundColor: darkMode ? '#D32F2F' : '#8e0000' } }}>
                         Delete
                     </Button>
                 </DialogActions>

@@ -172,6 +172,7 @@ function AddEvent() {
               <MenuItem value="Workshop">Workshop</MenuItem>
               <MenuItem value="Leisure">Leisure</MenuItem>
               <MenuItem value="Volunteer Work">Volunteer Work</MenuItem>
+              <MenuItem value="Volunteer Work">Sustainability</MenuItem>
             </Select>
             {formik.touched.type && formik.errors.type ? (
               <Typography color="error" variant="caption">

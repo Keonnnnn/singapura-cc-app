@@ -68,16 +68,7 @@ const sideMenuOptions = [
   {
     name: "Rewards",
     icon: rewardsIcon,
-    subOptions: [
-      {
-        name: "View All Rewards",
-        path: "/admin/rewards",
-      },
-      {
-        name: "Add Rewards",
-        path: "/admin/edit-rewards",
-      },
-    ],
+    path: "/admin/edit-rewards",
   },
   {
     name: "Notifications",
@@ -94,8 +85,8 @@ const sideMenuOptions = [
     ],
   },
   {
-    name: "Announcements", // New Announcements Section
-    icon: notificationsIcon, // Use an appropriate icon
+    name: "Announcements",
+    icon: notificationsIcon,
     subOptions: [
       {
         name: "View All Announcements",

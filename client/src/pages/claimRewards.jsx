@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
-import '../claimRewards.css';
-import { Paper, Box, Typography, Button } from '@mui/material';
+import { Paper, Box, Typography, Button, Grid } from '@mui/material';
+import { Link } from 'react-router-dom';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
 import UserSidebar from "../components/UserSidebar";
 
 function ClaimRewards() {
-  const [points, setPoints] = useState(0); // Initial state set to 0
+  const [points, setPoints] = useState(0);
   const [userTier, setUserTier] = useState('');
   const maxPoints = 100000;
   const [user, setUser] = useState(null);
@@ -16,18 +16,15 @@ function ClaimRewards() {
   const { user: loggedInUser } = useContext(UserContext);
   const { id } = loggedInUser;
   const [rewardList, setRewardList] = useState([]);
-  const [claimedRewards, setClaimedRewards] = useState([]); // State to track claimed rewards
+  const [claimedRewards, setClaimedRewards] = useState([]);
 
-  const USE_TESTING_POINTS = false; // Toggle this to true for testing points, false for actual points
+  const USE_TESTING_POINTS = false;
 
   const handleClaim = async (rewardId, rewardPoints) => {
     const newPoints = points - rewardPoints;
 
     try {
-      // Update the user's points
       await http.put(`/reward/updatePoints/${id}`, { totalPoints: newPoints });
-
-      // Associate the user with the claimed reward
       const claimResponse = await http.post('/reward/claim', { userId: id, rewardId });
 
       if (claimResponse.status === 409) {
@@ -40,7 +37,7 @@ function ClaimRewards() {
         ...prevUser,
         totalPoints: newPoints
       }));
-      setClaimedRewards([...claimedRewards, rewardId]); // Track claimed rewards
+      setClaimedRewards([...claimedRewards, rewardId]);
     } catch (error) {
       console.error('Error claiming reward:', error);
     }
@@ -63,7 +60,7 @@ function ClaimRewards() {
   useEffect(() => {
     const newTier = calculateUserTier(points);
     setUserTier(newTier);
-    updateMembershipType(newTier); // Update membership type whenever the tier changes
+    updateMembershipType(newTier);
   }, [points]);
 
   useEffect(() => {
@@ -76,16 +73,12 @@ function ClaimRewards() {
 
           const actualPoints = res.data.user.totalPoints;
           const testPoints = 80001;
-
-          // Use actual points or testing points based on the toggle
           const pointsToUse = USE_TESTING_POINTS ? testPoints : actualPoints;
           setPoints(pointsToUse);
 
           const initialTier = calculateUserTier(pointsToUse);
           setUserTier(initialTier);
           updateMembershipType(initialTier);
-
-          // Set claimed rewards
           setClaimedRewards(claimedRes.data.map(reward => reward.rewardId));
         } catch (error) {
           console.error(error);
@@ -98,11 +91,11 @@ function ClaimRewards() {
 
   const getProgressColor = (points) => {
     if (points <= 50000) {
-      return '#cd7f32'; // Bronze color
+      return '#cd7f32';
     } else if (points <= 80000) {
-      return '#c0c0c0'; // Silver color
+      return '#c0c0c0';
     } else {
-      return '#ffd700'; // Gold color
+      return '#ffd700';
     }
   };
 
@@ -112,7 +105,7 @@ function ClaimRewards() {
     if (points < 50000) {
       return `${points}... ${50000 - points} more points to reach Silver!`;
     } else if (points < 80000) {
-      return ` ${points}... ${80000 - points} more points to reach Gold!`;
+      return `${points}... ${80000 - points} more points to reach Gold!`;
     } else {
       return `You are at Gold level.`;
     }
@@ -124,12 +117,12 @@ function ClaimRewards() {
         const response = await http.get('/reward');
         setRewardList(response.data);
       } catch (error) {
-        console.error(error); // Log error if fetching rewards fails
+        console.error(error);
       }
     };
 
     getInitialRewards();
-  }, []); // Empty dependency array fetches on mount
+  }, []);
 
   const updateMembershipType = async (tier) => {
     try {
@@ -143,138 +136,144 @@ function ClaimRewards() {
     }
   };
 
-  // return (
-  //   <Box>
-  //   <UserSidebar/>
-  //   <UserContext.Provider value={{ user, setUser }}>
-  //     <Box>
-  //       <div style={{ width: 250, height: 250 }}>
-  //         <CircularProgressbar
-  //           value={percentage}
-  //           text={`${points} points`}
-  //           styles={buildStyles({
-  //             pathColor: getProgressColor(points),
-  //             textColor: '#000',
-  //             trailColor: '#d6d6d6',
-  //             textSize: '12px',
-  //           })}
-  //         />
-  //         <div className="progress-description">
-  //           {getNextLevelInfo(points)}
-  //         </div>
-
-  //         <Box >
-  //           {rewardList
-  //             .filter(reward => reward.Tier === userTier)
-  //             .filter(reward => !claimedRewards.includes(reward.id)) // Filter out claimed rewards
-  //             .map((reward) => {
-  //               const isClaimable = canClaimReward(reward.Tier, reward.Points);
-  //               return (
-  //                 <Paper key={reward.id} elevation={3} className='displayRewards'>
-  //                   <Typography variant="h5" className='rewardsdescription'>{reward.rewardName} <span style={{ marginLeft: '100px' }}>{reward.description}</span> <span style={{ marginLeft: '100px' }}><Button
-  //                     variant="contained"
-  //                     color="primary"
-  //                     onClick={() => handleClaim(reward.id, reward.Points)} // Pass rewardId and rewardPoints
-  //                     disabled={!isClaimable} // Disable button if reward is claimed
-  //                     sx={{
-  //                       backgroundColor: isClaimable ? 'green' : 'grey',
-  //                       '&:hover': { backgroundColor: isClaimable ? 'darkgreen' : 'grey' }
-  //                     }}
-  //                   >
-  //                     Claim
-  //                   </Button></span></Typography>
-  //                   <Typography variant="body1">Points: {reward.Points}</Typography>
-  //                   <Typography variant="body2">Tier: {reward.Tier}</Typography>
-  //                 </Paper>
-  //               );
-  //             })}
-  //         </Box>
-  //         <Box sx={{ marginTop: 5 }}>
-  //           <Typography variant="h6">Claimed Rewards:</Typography>
-  //           {claimedRewards.map(rewardId => {
-  //             const reward = rewardList.find(r => r.id === rewardId);
-  //             return (
-  //               <Typography key={rewardId} variant="body1">
-  //                 {reward.rewardName} - {reward.description}
-  //               </Typography>
-  //             );
-  //           })}
-  //         </Box>
-  //       </div>
-  //     </Box>
-  //   </UserContext.Provider>
-  //   </Box>
-  // );
-
   return (
-    <Box display="flex">
+    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 5, padding: 2, backgroundColor: '#f7f9fc' }}>
       <UserSidebar />
       <UserContext.Provider value={{ user, setUser }}>
-        <Box className="progress-and-rewards-container">
-          <div className="circular-progressbar-container">
-            <CircularProgressbar
-              value={percentage}
-              text={`${points} points`}
-              styles={buildStyles({
-                pathColor: getProgressColor(points),
-                textColor: '#000',
-                trailColor: '#d6d6d6',
-                textSize: '12px',
-              })}
-            />
-            <div className="progress-description">
+        <Paper
+          elevation={4}
+          sx={{
+            p: 4,
+            maxWidth: 900,
+            width: '100%',
+            borderRadius: '16px',
+            backgroundColor: '#ffffff',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          }}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
+            <Box>
+              <CircularProgressbar
+                value={percentage}
+                text={`${points} points`}
+                styles={buildStyles({
+                  pathColor: getProgressColor(points),
+                  textColor: '#333',
+                  trailColor: '#d6d6d6',
+                  textSize: '14px',
+                })}
+              />
+            </Box>
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 700,
+                color: '#333',
+              }}
+            >
               {getNextLevelInfo(points)}
-            </div>
-          </div>
+            </Typography>
+          </Box>
+
+          <Typography variant="h4" sx={{ fontWeight: 700, color: '#333', mb: 3, textAlign: 'center' }}>
+            Available Rewards
+          </Typography>
   
-          <Box className="rewards-container">
+          <Grid container spacing={3}>
             {rewardList
               .filter(reward => reward.Tier === userTier)
-              .filter(reward => !claimedRewards.includes(reward.id)) // Filter out claimed rewards
+              .filter(reward => !claimedRewards.includes(reward.id))
               .map((reward) => {
                 const isClaimable = canClaimReward(reward.Tier, reward.Points);
                 return (
-                  <Paper key={reward.id} elevation={3} className='display-rewards'>
-                    <Typography variant="h5" className='reward-name'>
-                      {reward.rewardName}
-                      <span className="reward-description">{reward.description}</span>
+                  <Grid item xs={12} sm={6} key={reward.id}>
+                    <Paper
+                      elevation={3}
+                      sx={{
+                        p: 3,
+                        borderRadius: 2,
+                        textAlign: 'center',
+                        backgroundColor: isClaimable ? '#e0f7fa' : '#f5f5f5',
+                        transition: 'transform 0.3s ease-in-out',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                          boxShadow: '0 6px 15px rgba(0,0,0,0.15)',
+                        },
+                      }}
+                    >
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                        {reward.rewardName}
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 2 }}>
+                        {reward.description}
+                      </Typography>
                       <Button
                         variant="contained"
-                        color="primary"
-                        onClick={() => handleClaim(reward.id, reward.Points)} // Pass rewardId and rewardPoints
-                        disabled={!isClaimable} // Disable button if reward is claimed
+                        onClick={() => handleClaim(reward.id, reward.Points)}
+                        disabled={!isClaimable}
                         sx={{
-                          backgroundColor: isClaimable ? 'green' : 'grey',
-                          '&:hover': { backgroundColor: isClaimable ? 'darkgreen' : 'grey' }
-                        }} className='claim-button'
+                          width: '100%',
+                          backgroundColor: isClaimable ? '#00796b' : '#bdbdbd',
+                          color: '#fff',
+                          '&:hover': { backgroundColor: isClaimable ? '#004d40' : '#bdbdbd' },
+                        }}
                       >
                         Claim
                       </Button>
-                    </Typography>
-                    <Typography variant="body1">Points: {reward.Points}</Typography>
-                    <Typography variant="body2">Tier: {reward.Tier}</Typography>
-                  </Paper>
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        Points: {reward.Points}
+                      </Typography>
+                      <Typography variant="body2">Tier: {reward.Tier}</Typography>
+                    </Paper>
+                  </Grid>
                 );
               })}
+          </Grid>
+
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#333', mt: 5, mb: 2, textAlign: 'center' }}>
+            Claimed Rewards
+          </Typography>
+          <Box sx={{ textAlign: 'center' }}>
+            {claimedRewards.length > 0 ? (
+              claimedRewards.map(rewardId => {
+                const reward = rewardList.find(r => r.id === rewardId);
+                return (
+                  <Typography key={rewardId} variant="body1">
+                    {reward.rewardName} - {reward.description}
+                  </Typography>
+                );
+              })
+            ) : (
+              <Typography variant="body1" color="textSecondary">
+                You haven't claimed any rewards yet.
+              </Typography>
+            )}
           </Box>
   
-          <Box className="claimed-rewards-container" sx={{ marginTop: 5 }}>
-            <Typography variant="h6">Claimed Rewards:</Typography>
-            {claimedRewards.map(rewardId => {
-              const reward = rewardList.find(r => r.id === rewardId);
-              return (
-                <Typography key={rewardId} variant="body1">
-                  {reward.rewardName} - {reward.description}
-                </Typography>
-              );
-            })}
+          <Box sx={{ mt: 5, textAlign: 'center' }}>
+            <Button
+              variant="contained"
+              color="secondary"
+              component={Link}
+              to="/Spin"
+              sx={{
+                backgroundColor: '#ff4081',
+                color: '#fff',
+                padding: '10px 20px',
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                borderRadius: '50px',
+                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)',
+                '&:hover': { backgroundColor: '#ff79b0' },
+              }}
+            >
+              Spin the Wheel
+            </Button>
           </Box>
-        </Box>
+        </Paper>
       </UserContext.Provider>
     </Box>
   );
-  
-
 }
 
 export default ClaimRewards;

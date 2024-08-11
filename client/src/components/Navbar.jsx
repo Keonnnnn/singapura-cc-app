@@ -281,9 +281,6 @@ const Navbar = () => {
                   <Link to="/feedbacklist" style={{ textDecoration: "none", color: "inherit" }}>
                     <MenuItem onClick={handleEventsClose}>View Feedback</MenuItem>
                   </Link>
-                  <Link to="/feedbackform" style={{ textDecoration: "none", color: "inherit" }}>
-                    <MenuItem onClick={handleEventsClose}>Add Feedback</MenuItem>
-                  </Link>
                 </Menu>
 
                 <Link to="/facilities">

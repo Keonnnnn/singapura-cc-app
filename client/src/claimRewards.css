@@ -9,10 +9,11 @@
 
 .circular-progressbar-container {
   text-align: center;
-  width: 250px;
-  height: 250px;
+  width: 80px; /* Further reduced width */
+  height: 80px; /* Further reduced height */
   margin-bottom: 30px; /* Space between progress bar and rewards */
 }
+
 
 .rewards-container {
   width: 70%;
@@ -24,7 +25,7 @@
 }
 
 .reward-description {
-  margin: 0px 100px 0px 100px;
+  margin: 0px 50px; /* Adjusted for smaller screen sizes */
 }
 
 .claimed-rewards-container {

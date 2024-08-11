@@ -36,7 +36,7 @@ function Events() {
                         <Card sx={{ display: 'flex', flexDirection: 'column', p: 2}}>
                             <IconButton color="primary"
                                 component={Link}
-                                to={`/editevent/${event.id}`}
+                                to={`/admin/edit-event/${event.id}`}
                                 sx={{ alignSelf: 'flex-end' }}
                             >
                                 <Edit />

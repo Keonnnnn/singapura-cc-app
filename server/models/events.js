@@ -47,7 +47,6 @@ module.exports = (sequelize, DataTypes) => {
     );
     Event.associate = function (models) {
         Event.hasMany(models.Registration, { foreignKey: 'eventId' });
-        Event.hasOne(models.Feedback, { foreignKey: 'eventId' });
     };
     return Events;
 }

@@ -249,19 +249,13 @@ function App() {
             <Route
               path="/ClaimRewards"
               element={
-                <ProtectedRoute
-                  element={ClaimRewards}
-                  allowedRoles={["Customer"]}
-                />
+                <ClaimRewards/>
               }
             />
             <Route
               path="/Spin"
               element={
-                <ProtectedRoute
-                  element={Spin}
-                  allowedRoles={["Customer"]}
-                />
+                <Spin/>
               }
             />
             <Route
@@ -353,7 +347,6 @@ function App() {
               path="/admin/edit-notification/:id"
               element={<ProtectedRoute element={AddNotification} allowedRoles={["Admin", "Staff"]} />}
             />
-            <Route path="/edit-event/:id" element={<EditEvent />} />
             <Route
               path="/admin/events"
               element={<ProtectedRoute element={Events} allowedRoles={["Admin", "Staff"]} />}
