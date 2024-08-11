@@ -4,7 +4,7 @@ import { Box, Typography, TextField, Button, Paper, IconButton, Dialog, DialogTi
 import { PhotoCamera, Delete, Close } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { ToastContainer, toast } from 'react-toastify';
+import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import http from '../http';
 import UserContext from '../contexts/UserContext';
@@ -15,104 +15,112 @@ function EditPost({ darkMode }) {
     const location = useLocation();
     const { user } = useContext(UserContext);
 
-    const [post, setPost] = useState({
-        title: "",
-        description: ""
-    });
-    const [imageFile, setImageFile] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [open, setOpen] = useState(false);
+  const [post, setPost] = useState({
+    title: "",
+    description: "",
+  });
+  const [imageFile, setImageFile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
 
     const redirectTo = location.state?.redirectTo || "/posts";
 
-    useEffect(() => {
-        http.get(`/post/${id}`)
-            .then((res) => {
-                setPost(res.data);
-                setImageFile(res.data.imageFile);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Failed to fetch post:", error);
-                toast.error('Failed to fetch post');
-            });
-    }, [id]);
+  useEffect(() => {
+    http
+      .get(`/post/${id}`)
+      .then((res) => {
+        setPost(res.data);
+        setImageFile(res.data.imageFile);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch post:", error);
+        toast.error("Failed to fetch post");
+      });
+  }, [id]);
 
-    const formik = useFormik({
-        initialValues: post,
-        enableReinitialize: true,
-        validationSchema: yup.object({
-            title: yup.string().trim()
-                .min(3, 'Title must be at least 3 characters')
-                .max(100, 'Title must be at most 100 characters')
-                .required('Title is required'),
-            description: yup.string().trim()
-                .min(3, 'Description must be at least 3 characters')
-                .max(500, 'Description must be at most 500 characters')
-                .required('Description is required')
-        }),
-        onSubmit: (data) => {
-            if (imageFile) {
-                data.imageFile = imageFile;
-            }
-            data.title = data.title.trim();
-            data.description = data.description.trim();
-            http.put(`/post/${id}`, data)
-                .then((res) => {
-                    console.log(res.data);
-                    navigate(redirectTo);
-                })
-                .catch((error) => {
-                    console.error("Failed to update post:", error);
-                    toast.error('Failed to update post');
-                });
-        }
-    });
+  const formik = useFormik({
+    initialValues: post,
+    enableReinitialize: true,
+    validationSchema: yup.object({
+      title: yup
+        .string()
+        .trim()
+        .min(3, "Title must be at least 3 characters")
+        .max(100, "Title must be at most 100 characters")
+        .required("Title is required"),
+      description: yup
+        .string()
+        .trim()
+        .min(3, "Description must be at least 3 characters")
+        .max(500, "Description must be at most 500 characters")
+        .required("Description is required"),
+    }),
+    onSubmit: (data) => {
+      if (imageFile) {
+        data.imageFile = imageFile;
+      }
+      data.title = data.title.trim();
+      data.description = data.description.trim();
+      http
+        .put(`/post/${id}`, data)
+        .then((res) => {
+          console.log(res.data);
+          navigate(redirectTo);
+        })
+        .catch((error) => {
+          console.error("Failed to update post:", error);
+          toast.error("Failed to update post");
+        });
+    },
+  });
 
-    const handleOpen = () => {
-        setOpen(true);
-    };
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-    const deletePost = () => {
-        http.delete(`/post/${id}`)
-            .then((res) => {
-                console.log(res.data);
-                navigate(redirectTo);
-            })
-            .catch((error) => {
-                console.error("Failed to delete post:", error);
-                toast.error('Failed to delete post');
-            });
-    };
+  const deletePost = () => {
+    http
+      .delete(`/post/${id}`)
+      .then((res) => {
+        console.log(res.data);
+        navigate(redirectTo);
+      })
+      .catch((error) => {
+        console.error("Failed to delete post:", error);
+        toast.error("Failed to delete post");
+      });
+  };
 
-    const onFileChange = (e) => {
-        let file = e.target.files[0];
-        if (file) {
-            if (file.size > 1024 * 1024) {
-                toast.error('Maximum file size is 1MB');
-                return;
-            }
+  const onFileChange = (e) => {
+    let file = e.target.files[0];
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        toast.error("Maximum file size is 1MB");
+        return;
+      }
 
-            let formData = new FormData();
-            formData.append('file', file);
-            http.post('/file/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-                .then((res) => {
-                    setImageFile(res.data.filename);
-                })
-                .catch((error) => {
-                    console.error("Failed to upload image:", error);
-                    toast.error('Failed to upload image');
-                });
-        }
-    };
+      let formData = new FormData();
+      formData.append("file", file);
+      http
+        .post("/file/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          setImageFile(res.data.filename);
+        })
+        .catch((error) => {
+          console.error("Failed to upload image:", error);
+          toast.error("Failed to upload image");
+        });
+    }
+  };
 
     const isAuthorized = user && (user.id === post.userId || user.role === 'Admin');
 
@@ -324,7 +332,6 @@ function EditPost({ darkMode }) {
                     </Dialog>
                 </Paper>
             </Slide>
-            <ToastContainer />
         </Box>
     );
 }

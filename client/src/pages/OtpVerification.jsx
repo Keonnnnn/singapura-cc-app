@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import http from "../http";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserContext from "../contexts/UserContext";
 
@@ -64,6 +64,17 @@ const OtpVerification = () => {
       setError("");
       localStorage.setItem("accessToken", response.data.accessToken);
       setUser(response.data.user);
+      const userItem = response.data.user
+      console.log(userItem)
+      if (userItem && userItem.deleteRequested === true) {
+        // set to false
+        console.log(response.data.user);
+        http.put(`/user/${response.data.user.id}`, {
+          ...response.data.user,
+          deleteRequested: false,
+          deleteRequestedAt: null,
+        });
+      }
       navigate("/"); // Redirect to home or another page after successful verification
     } catch (err) {
       setError(err.response ? err.response.data.message : "An error occurred");
@@ -99,7 +110,6 @@ const OtpVerification = () => {
               Verify OTP
             </Button>
           </Box>
-          <ToastContainer />
         </Box>
       </Box>
     </Container>

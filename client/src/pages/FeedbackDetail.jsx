@@ -1,100 +1,110 @@
-import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Button, TextField, Box, Paper, IconButton, Slider } from '@mui/material';
-import { Close } from '@mui/icons-material';
-import http from '../http';
-import UserContext from '../contexts/UserContext';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useEffect, useState, useContext } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  Button,
+  TextField,
+  Box,
+  Paper,
+  IconButton,
+  Slider,
+} from "@mui/material";
+import { Close } from "@mui/icons-material";
+import http from "../http";
+import UserContext from "../contexts/UserContext";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const FeedbackDetail = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const { user } = useContext(UserContext);
-    const [feedback, setFeedback] = useState(null);
-    const [userId, setUserId] = useState('');
-    const [eventId, setEventId] = useState(5);
-    const [content, setContent] = useState('');
-    const [response, setResponse] = useState('');
-    const [imageFile, setImageFile] = useState('');
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useContext(UserContext);
+  const [feedback, setFeedback] = useState(null);
+  const [userId, setUserId] = useState("");
+  const [eventId, setEventId] = useState(5);
+  const [content, setContent] = useState("");
+  const [response, setResponse] = useState("");
+  const [imageFile, setImageFile] = useState("");
 
-    useEffect(() => {
-        const fetchFeedback = async () => {
-            try {
-                const res = await http.get(`/feedback/${id}`);
-                setFeedback(res.data);
-                setUserId(res.data.userId);
-                setEventId(res.data.eventId);
-                setContent(res.data.content);
-                setResponse(res.data.response || '');
-                setImageFile(res.data.imageFile);
-            } catch (error) {
-                console.error('Failed to fetch feedback:', error);
-            }
-        };
-
-        fetchFeedback();
-    }, [id]);
-
-    const onFileChange = (e) => {
-        let file = e.target.files[0];
-        if (file) {
-            if (file.size > 1024 * 1024) {
-                toast.error('Maximum file size is 1MB');
-                return;
-            }
-            let formData = new FormData();
-            formData.append('file', file);
-            axios.post('/file/upload', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            })
-            .then((res) => {
-                setImageFile(res.data.filename);
-            })
-            .catch((error) => {
-                console.log(error.response);
-            });
-        }
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      try {
+        const res = await http.get(`/feedback/${id}`);
+        setFeedback(res.data);
+        setUserId(res.data.userId);
+        setEventId(res.data.eventId);
+        setContent(res.data.content);
+        setResponse(res.data.response || "");
+        setImageFile(res.data.imageFile);
+      } catch (error) {
+        console.error("Failed to fetch feedback:", error);
+      }
     };
 
-    const handleUpdate = async () => {
-        try {
-            await http.put(`/feedback/${id}`, {
-                userId,
-                eventId,
-                content,
-                response,
-                imageFile
-            });
-            alert('Feedback updated successfully');
-            navigate('/feedbacklist', { replace: true });
-        } catch (error) {
-            console.error('Failed to update feedback:', error);
-            alert('Failed to update feedback');
-        }
-    };
+    fetchFeedback();
+  }, [id]);
 
-    const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete this feedback?')) {
-            try {
-                await http.delete(`/feedback/${id}`, { data: { userId: user.id } });
-                alert('Feedback deleted successfully');
-                navigate('/feedbacklist', { replace: true });
-            } catch (error) {
-                console.error('Failed to delete feedback:', error);
-                alert('Failed to delete feedback');
-            }
-        }
-    };
-
-    if (!feedback) {
-        return <Typography>Loading...</Typography>;
+  const onFileChange = (e) => {
+    let file = e.target.files[0];
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        toast.error("Maximum file size is 1MB");
+        return;
+      }
+      let formData = new FormData();
+      formData.append("file", file);
+      axios
+        .post("/file/upload", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((res) => {
+          setImageFile(res.data.filename);
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
     }
+  };
 
-    const isEditable = userId === user.id || user.id === 1;
+  const handleUpdate = async () => {
+    try {
+      await http.put(`/feedback/${id}`, {
+        userId,
+        eventId,
+        content,
+        response,
+        imageFile,
+      });
+      alert("Feedback updated successfully");
+      navigate("/feedbacklist", { replace: true });
+    } catch (error) {
+      console.error("Failed to update feedback:", error);
+      alert("Failed to update feedback");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this feedback?")) {
+      try {
+        await http.delete(`/feedback/${id}`, { data: { userId: user.id } });
+        alert("Feedback deleted successfully");
+        navigate("/feedbacklist", { replace: true });
+      } catch (error) {
+        console.error("Failed to delete feedback:", error);
+        alert("Failed to delete feedback");
+      }
+    }
+  };
+
+  if (!feedback) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  const isEditable = userId === user.id || user.id === 1;
 
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
@@ -165,21 +175,34 @@ const FeedbackDetail = () => {
                                 Upload Image
                                 <input hidden accept="image/*" type="file" onChange={onFileChange} />
                             </Button> */}
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
-                                <Button variant="contained" color="primary" onClick={handleUpdate}>
-                                    Update Feedback
-                                </Button>
-                                <Button variant="contained" color="secondary" onClick={handleDelete}>
-                                    Delete Feedback
-                                </Button>
-                            </Box>
-                        </>
-                    )}
-                </form>
-                <ToastContainer />
-            </Paper>
-        </Box>
-    );
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "20px",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleUpdate}
+                >
+                  Update Feedback
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleDelete}
+                >
+                  Delete Feedback
+                </Button>
+              </Box>
+            </>
+          )}
+        </form>
+      </Paper>
+    </Box>
+  );
 };
 
 export default FeedbackDetail;

@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "singapuracc",
+  "private_key_id": "ea0a5d7ca2fbf0dcaa8e91d8f7e34a74603101e1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCNDFZRR+BMMECo\nqHSIF+kT++rTNCeWVcMl50Edx/MvBk14KRunig9dJZRf8MMETd4KYWXvjauZeNb1\nPdFqydIkZGn2ArgzyySrYXtcadv5GmEeBh5UpjQ+IGUSrL7izoav+N9h/kWd07Dl\nJUR3YkwYen+M96RJ5Z7f1n6mxRtgGNZ07pLgo6qBrocVbGM2tb1SdsgDcI0hrcKP\n1lyKLyaJTZhTKcnuweiT5CvG1SCdzY79YHlxy+f7wUUdLo2+R3tWEr82yDzkM1M0\nyIMwenMd/05Ya1PZ53Dua0anX3JMF3bgbr0qVCL6QZ6HOvvL9oPv7hBfOudBX5W+\nP0ZfyokvAgMBAAECggEAEMgefwY7wCTflJGSZ9zcbPXEr0Nd0Gu8z8Yvf7EaFIa9\n8eWGNk1dXZpKiI23TkxLdlW3UKS8/YIcpUopH/kKSS0vVEdnjjYF02RCTrEDrKRA\nWNemhTDPN3MYQ3wNLCQhb09/mIOt2cTln6Xq+v9ViXYNtgKC6A3rdLtrD0GVa73r\nkPeFl3ffo7EajZc1U/pvDN2fubBHfdMMP9PAezS/OuNgQ7iL0Xynm4S5nRV42ZUH\nX0bcvLr1tfQ/M2RD6rCV5nHJcxJXZd6XUR5pcgUvlwAhk6xR7A0hYqqmuRQOLwuv\n+/QV3iJ49Y1nnOUbCrNPp/a2pCFey2D61gBSezsW+QKBgQDBGnO+gUeizVKbLnv3\nWH3cqPh7/T7vE0gVrcP91jxaLgnG6vSWrTAEgohbCjivnvF/YXecM3R3+qnLZ0ai\n6dn2+l/YFGWBVSHFCFUi0S337FAy4kOPskNDMl2v9fCRd5LWGto0ysUvfCR91CFJ\nmC0WEftVIiQd8UpzFRkI7pPL5wKBgQC6/V47WOz985mej+2mWbQgLihochOSM2mx\n2D0jflgiI7pM2TwgU/TGXc+r+OcJIf4oUh06saumq7dKtVlSbfp9k93ZbpfnTJ5x\nkidapT2v7lceGC4M3Qf0SXSEf0ZKXLjLqTILpBT/RzVVz3WPNfVg0vQ8+cCO4b6v\nKWpABIpveQKBgQCu7rGwARnOSEbvQdsXpdjPT1tbp32dw0/oI7SLfcrKvy4oP603\n2sjHLSEtqELWBh0skjVzEcIO9ste8r4w07ybWxH8g+24jlC7V+MYWXtVP4Ufs44U\n3R7F/xiUUS6P+UzSHR1T+eVMMSA1xTgqnWsqtTuEUht57J7PRmuZhdfqPQKBgAC3\nVbQOfCHg2/bCgFuBvnHdG2SDA1YtAjufI2TOaBIBZwZCUrug9rAHzfLPqjrbuXh4\nEAqYgZrKz5Hmrefl6e6vMUtS5BwLrBOtRp9PQLQ6ynSgDRUZh51E5sBXKHLCdia5\niCqJP1dW83pXqBCbWUw8opjVMAqcDLnpA7IpEkqpAoGBAJtlTDvrIsmrwib1bKLE\nowBJFIAnOwy3N7B1gBJRBNFPqjVwT/bU3sleCCuwVaIRTisj3a/aFFg3rccfOS+X\nZbrP+bORlJ7HT0VdBdGVNV8Deoy20gKcDsXHMAFh5jIioaQQTUjWn9igljOM0L6D\nuMCq329AZJsz69HEUC2qV3wr\n-----END PRIVATE KEY-----\n",
+  "client_email": "singapuracc@singapuracc.iam.gserviceaccount.com",
+  "client_id": "110531740855064377783",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/singapuracc%40singapuracc.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

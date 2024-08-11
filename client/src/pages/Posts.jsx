@@ -27,15 +27,15 @@ function Posts({ darkMode }) {
         });
     };
 
-    useEffect(() => {
-        getPosts();
-    }, []);
+  useEffect(() => {
+    getPosts();
+  }, []);
 
-    const handleFilterChange = (event) => {
-        const newFilter = event.target.value;
-        setFilter(newFilter);
-        getPosts(newFilter);
-    };
+  const handleFilterChange = (event) => {
+    const newFilter = event.target.value;
+    setFilter(newFilter);
+    getPosts(newFilter);
+  };
 
     const getRandomColor = () => {
         const colors = ['#7D3C98', '#8E44AD', '#9B59B6', '#5B2C6F', '#6C3483', '#BB8FCE', '#C39BD3', '#AF7AC5', '#8E44AD', '#9C27B0', '#7B1FA2'];
@@ -43,18 +43,18 @@ function Posts({ darkMode }) {
         return colors[randomIndex];
     };
 
-    const getUserColor = (userId) => {
-        if (userColors[userId]) {
-            return userColors[userId];
-        } else {
-            const color = getRandomColor();
-            setUserColors(prevState => ({
-                ...prevState,
-                [userId]: color
-            }));
-            return color;
-        }
-    };
+  const getUserColor = (userId) => {
+    if (userColors[userId]) {
+      return userColors[userId];
+    } else {
+      const color = getRandomColor();
+      setUserColors((prevState) => ({
+        ...prevState,
+        [userId]: color,
+      }));
+      return color;
+    }
+  };
 
     const likePost = (postId) => {
         http.post(`/like/${postId}/like`).then(() => {
@@ -72,15 +72,15 @@ function Posts({ darkMode }) {
         });
     };
 
-    const handleOpen = (postId) => {
-        setSelectedPostId(postId);
-        setOpen(true);
-    };
+  const handleOpen = (postId) => {
+    setSelectedPostId(postId);
+    setOpen(true);
+  };
 
-    const handleClose = () => {
-        setOpen(false);
-        setSelectedPostId(null);
-    };
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedPostId(null);
+  };
 
     const handleDeletePost = () => {
         if (selectedPostId) {
