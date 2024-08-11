@@ -146,13 +146,12 @@ function Spin() {
   const filteredRewards = rewardList.filter(reward => reward.Tier !== user?.membershipType);
 
   return (
-    <Box sx={{marginTop:"100px"}}>
-      <UserSidebar/>
+    <Box sx={{ marginTop: "100px", display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' } }}>
+      <UserSidebar />
       <div className="spin-container">
         <h3 id='textpos'>You are currently a {user?.membershipType} member</h3>
         <div className="header-container">
-          <p id='textpos'>Buy spins, 1 Spin = 500 points</p>
-          <button id='buybtn' onClick={handleBuySpin}>buy</button>
+          <p id='textpos'>Buy spins, 1 Spin = 500 points <button id='buybtn' onClick={handleBuySpin}>buy</button></p>
         </div>
         <div className="wheel-wrapper">
           <div className="wheel-container">
@@ -163,11 +162,11 @@ function Spin() {
                 data={filteredRewards.map(reward => ({ option: reward.rewardName, style: { backgroundColor: 'lightgray' } }))}
                 backgroundColors={['#3e3e3e', '#df3428']}
                 textColors={['#ffffff']}
-                renderOptionContent={renderOption} // Pass the function directly
+                renderOptionContent={renderOption}
                 onStopSpinning={() => {
                   setMustSpin(false);
                   const wonOption = filteredRewards[prizeNumber].rewardName;
-                  setWonOption(wonOption); // Adjusting wonOption based on the actual option type
+                  setWonOption(wonOption);
                   setOpenReward(true);
                 }}
               />
@@ -184,10 +183,10 @@ function Spin() {
       <Dialog
         open={openReward}
         onClose={handleCloseReward}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id='alert-dialog-title'>Congratulations!</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Congratulations!</DialogTitle>
         <DialogContent>
           <p>{`You won ${wonOption}`}</p>
         </DialogContent>
@@ -197,7 +196,9 @@ function Spin() {
           </Button>
         </DialogActions>
       </Dialog>
+
     </Box>
+
   );
 }
 
