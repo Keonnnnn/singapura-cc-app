@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import http from "./http";
 import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx"; // Import Footer component
 import { theme, darkTheme } from "./themes/MyTheme";
@@ -206,6 +207,7 @@ function App() {
         <Navbar />
 
         <ThemeProvider theme={theme}>
+          <CssBaseline />
           <Routes>
             {/* customer routes */}
             <Route path="/" element={<Home />} />

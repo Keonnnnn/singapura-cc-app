@@ -47,7 +47,7 @@ function UserRegistrationHistory() {
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' }, justifyContent: 'center', mt: 4, gap: 5 }}>
             <UserSidebar />
             <Paper elevation={3} sx={{ p: 3, borderRadius: '12px', minHeight: '400px',maxWidth: 800,
-            width: "100%" }}>
+            width: "100%", minWidth: 0 }}>
                 <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', color: '#e2160f', mb: 4 }}>
                     My Event Registration History
                 </Typography>

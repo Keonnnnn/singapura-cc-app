@@ -55,6 +55,7 @@ const Profile = () => {
               p: 4,
               maxWidth: 900,
               width: "100%",
+              minWidth: 0,
               borderRadius: "16px",
               backgroundColor: "#f4f6f9",
               position: "relative",

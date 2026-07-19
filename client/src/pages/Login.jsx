@@ -107,6 +107,7 @@ function Login() {
             width: { xs: "100%", md: "50%" },
             height: { xs: 220, md: "auto" },
             flexShrink: 0,
+            minWidth: 0,
             borderTopRightRadius: 2,
             backgroundImage: `url(${loginImage})`,
             backgroundPosition: "left",
@@ -163,13 +164,14 @@ function Login() {
         <Box
           sx={{
             width: { xs: "100%", md: "50%" },
+            minWidth: 0,
             display: "flex",
             justifyContent: "center",
             bgcolor: "rgba(255, 255, 255, 0.8)", // Optional: semi-transparent background
             p: { xs: 2, md: 3 },
           }}
         >
-          <Box component="form" onSubmit={formik.handleSubmit} sx={{ width: "100%", maxWidth: 400 }}>
+          <Box component="form" onSubmit={formik.handleSubmit} sx={{ width: "100%", maxWidth: 400, minWidth: 0 }}>
             <Box
               sx={{
                 display: "flex",

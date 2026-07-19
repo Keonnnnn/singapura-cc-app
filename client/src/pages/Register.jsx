@@ -193,10 +193,10 @@ function Register() {
           <Box
             component="form"
             onSubmit={formik2.handleSubmit}
-            sx={{ width: "100%" }}
+            sx={{ width: "100%", minWidth: 0 }}
           >
             <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }} gap={{ xs: 0, md: 5 }}>
-              <Grid container spacing={2} sx={{ width: { xs: "100%", md: "50%" } }}>
+              <Grid container spacing={2} sx={{ width: { xs: "100%", md: "50%" }, minWidth: 0 }}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -335,7 +335,7 @@ function Register() {
                 </Grid>
                 {/* add ID type dropdown, ID number textfield, citizenship status dropdown, and race dropdown*/}
               </Grid>
-              <Grid container spacing={2} sx={{ width: { xs: "100%", md: "50%" } }}>
+              <Grid container spacing={2} sx={{ width: { xs: "100%", md: "50%" }, minWidth: 0 }}>
                 <Grid item xs={12}>
                   <FormControl
                     fullWidth
@@ -496,6 +496,7 @@ function Register() {
               width: { xs: "100%", md: "50%" },
               height: { xs: 220, md: "auto" },
               flexShrink: 0,
+              minWidth: 0,
               borderTopRightRadius: 2,
               backgroundImage: `url(${signupImage})`,
               backgroundPosition: "center",
@@ -552,13 +553,14 @@ function Register() {
           <Box
             sx={{
               width: { xs: "100%", md: "50%" },
+              minWidth: 0,
               display: "flex",
               justifyContent: "center",
               bgcolor: "rgba(255, 255, 255, 0.8)", // Optional: semi-transparent background
               p: { xs: 2, md: 3 },
             }}
           >
-            <Box component="form" onSubmit={formik1.handleSubmit} sx={{ width: "100%", maxWidth: 450 }}>
+            <Box component="form" onSubmit={formik1.handleSubmit} sx={{ width: "100%", maxWidth: 450, minWidth: 0 }}>
               <Box
                 sx={{
                   display: "flex",
