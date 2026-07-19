@@ -181,12 +181,12 @@ function Register() {
       {showSecondForm ? (
         <Box
           sx={{
-            mt: 10,
+            mt: { xs: 4, md: 10 },
             display: "flex",
             borderRadius: 2,
             overflow: "hidden",
             boxShadow: 3,
-            p: 5,
+            p: { xs: 2, md: 5 },
             justifyContent: "center",
           }}
         >
@@ -195,8 +195,8 @@ function Register() {
             onSubmit={formik2.handleSubmit}
             sx={{ width: "100%" }}
           >
-            <Box sx={{ display: "flex" }} gap={5}>
-              <Grid container spacing={2} sx={{ width: "50%" }}>
+            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" } }} gap={{ xs: 0, md: 5 }}>
+              <Grid container spacing={2} sx={{ width: { xs: "100%", md: "50%" } }}>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
@@ -335,7 +335,7 @@ function Register() {
                 </Grid>
                 {/* add ID type dropdown, ID number textfield, citizenship status dropdown, and race dropdown*/}
               </Grid>
-              <Grid container spacing={2} sx={{ width: "50%" }}>
+              <Grid container spacing={2} sx={{ width: { xs: "100%", md: "50%" } }}>
                 <Grid item xs={12}>
                   <FormControl
                     fullWidth
@@ -483,8 +483,9 @@ function Register() {
       ) : (
         <Box
           sx={{
-            mt: 10,
+            mt: { xs: 4, md: 10 },
             display: "flex",
+            flexDirection: { xs: "column", md: "row" },
             borderRadius: 2,
             overflow: "hidden",
             boxShadow: 3,
@@ -492,10 +493,13 @@ function Register() {
         >
           <Box
             sx={{
-              width: "50%",
+              width: { xs: "100%", md: "50%" },
+              height: { xs: 220, md: "auto" },
+              flexShrink: 0,
               borderTopRightRadius: 2,
               backgroundImage: `url(${signupImage})`,
               backgroundPosition: "center",
+              backgroundSize: "cover",
               display: "flex",
               flexDirection: "column",
               justifyContent: "flex-end",
@@ -503,7 +507,7 @@ function Register() {
           >
             <Box
               sx={{
-                p: 5,
+                p: { xs: 2, md: 5 },
               }}
             >
               <Box
@@ -512,8 +516,10 @@ function Register() {
                   p: 2,
                   borderRadius: 2,
                   display: "flex",
+                  flexWrap: "wrap",
                   alignItems: "center",
                   justifyContent: "space-between",
+                  gap: 1,
                 }}
               >
                 <Typography
@@ -545,13 +551,14 @@ function Register() {
           </Box>
           <Box
             sx={{
-              width: "50%",
+              width: { xs: "100%", md: "50%" },
               display: "flex",
+              justifyContent: "center",
               bgcolor: "rgba(255, 255, 255, 0.8)", // Optional: semi-transparent background
-              p: 3,
+              p: { xs: 2, md: 3 },
             }}
           >
-            <Box component="form" onSubmit={formik1.handleSubmit}>
+            <Box component="form" onSubmit={formik1.handleSubmit} sx={{ width: "100%", maxWidth: 450 }}>
               <Box
                 sx={{
                   display: "flex",
