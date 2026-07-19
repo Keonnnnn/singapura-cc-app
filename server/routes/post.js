@@ -5,17 +5,12 @@ const { Op } = require("sequelize");
 const yup = require("yup");
 const { validateToken, isAdmin } = require('../middlewares/auth');
 const multer = require('multer');
-const path = require('path');
+const { GCSStorageEngine } = require('../utils/gcsStorageEngine');
 
-// Configure Multer for file uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
-});
+// Uploads stream straight to GCS (Cloud Run's local disk is ephemeral and
+// isn't shared across instances, so files saved to public/uploads wouldn't
+// persist or be visible to every request).
+const storage = new GCSStorageEngine({ folder: 'uploads' });
 const upload = multer({ storage: storage });
 
 // Create a new post

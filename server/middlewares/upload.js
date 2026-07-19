@@ -1,16 +1,7 @@
 const multer = require('multer');
-const { nanoid } = require('nanoid');
-const path = require('path');
+const { GCSStorageEngine } = require('../utils/gcsStorageEngine');
 
-
-const storage = multer.diskStorage({
-    destination: (req, res, callback) => {
-        callback(null, './public/uploads');
-    },
-    filename: (req, file, callback) => {
-        callback(null, nanoid(10) + path.extname(file.originalname));
-    }
-});
+const storage = new GCSStorageEngine({ folder: 'uploads' });
 
 const upload = multer({
     storage: storage,
