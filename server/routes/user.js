@@ -10,9 +10,12 @@ const { validateToken, isAdmin } = require("../middlewares/auth");
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const { Storage } = require("@google-cloud/storage");
+// Locally, SERVICE_ACCOUNT_FILE points at a downloaded key file. In Cloud Run,
+// leave it unset so the client falls back to the service account attached to
+// the Cloud Run service (Application Default Credentials) — no key file needed.
 const storage = new Storage({
   projectId: process.env.PROJECT_ID,
-  keyFilename: process.env.SERVICE_ACCOUNT_FILE,
+  ...(process.env.SERVICE_ACCOUNT_FILE && { keyFilename: process.env.SERVICE_ACCOUNT_FILE }),
 });
 
 const upload = multer({

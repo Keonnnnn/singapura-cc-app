@@ -11,13 +11,13 @@ async function createAdminUser() {
             return;
         }
 
-        // Temporarily disable auto-increment
-        await sequelize.query(`ALTER TABLE users AUTO_INCREMENT = 1`);
+        // Temporarily reset the id sequence so the admin gets id 1
+        await sequelize.query(`SELECT setval(pg_get_serial_sequence('users', 'id'), 1, false)`);
 
         // Create admin user with ID 1
         const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
         await User.create({
-            id: 1, 
+            id: 1,
             firstName: 'Admin',
             lastName: 'User',
             email: process.env.ADMIN_EMAIL,
@@ -27,8 +27,8 @@ async function createAdminUser() {
 
         console.log("Admin user created successfully.");
 
-        // Reset auto-increment to continue from the next available ID
-        await sequelize.query(`ALTER TABLE users AUTO_INCREMENT = 2`);
+        // Reset the sequence to continue from the next available ID
+        await sequelize.query(`SELECT setval(pg_get_serial_sequence('users', 'id'), 2, false)`);
     } catch (err) {
         console.error("Error creating admin user:", err);
     }

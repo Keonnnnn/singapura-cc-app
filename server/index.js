@@ -73,7 +73,7 @@ db.sequelize
   .sync({ alter: true })
   .then(async () => {
     await createAdminUser();
-    const port = process.env.APP_PORT || 3000; // Default to 3000 if APP_PORT isn't set
+    const port = process.env.PORT || process.env.APP_PORT || 3000; // Cloud Run sets PORT
     app.listen(port, () => {
       console.log(`Server running on http://localhost:${port}`);
     });
