@@ -170,4 +170,17 @@
         margin: 10px 0;
         text-align: center;
     }
+
+    .subscribe-form {
+        flex-direction: column;
+        max-width: 280px;
+    }
+
+    .subscribe-form input {
+        max-width: 100%;
+    }
+
+    .subscribe-form button {
+        width: 100%;
+    }
 }

@@ -15,12 +15,19 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  ListItemButton,
   Tooltip,
   Switch,
   FormControlLabel,
   useTheme,
+  useMediaQuery,
+  Drawer,
 } from "@mui/material";
-import { Brightness4, Brightness7 } from "@mui/icons-material"; // Import icons for light/dark mode
+import {
+  Brightness4,
+  Brightness7,
+  Menu as MenuIcon,
+} from "@mui/icons-material"; // Import icons for light/dark mode
 import React, { useContext, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../logo.png";
@@ -50,12 +57,16 @@ const Navbar = () => {
   const [anchorElEvents, setAnchorElEvents] = useState(null);
   const location = useLocation();
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const open = Boolean(anchorEl);
   const openCustomer = Boolean(anchorElCustomer);
   const openAdmin = Boolean(anchorElAdmin);
   const openEvents = Boolean(anchorElEvents);
   const [notifications, setNotifications] = useState([]);
+
+  const closeMobileMenu = () => setMobileOpen(false);
 
   useEffect(() => {
     if (user == null && loggedInUser) {
@@ -271,17 +282,173 @@ const Navbar = () => {
               justifyContent="center"
               paddingTop={"10px"}
             >
-              <Avatar src={logo} sx={{ width: 60, height: 60 }} />
-              <Typography variant="h6" component="div">
+              <Avatar
+                src={logo}
+                sx={{ width: { xs: 40, md: 60 }, height: { xs: 40, md: 60 } }}
+              />
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ display: { xs: "none", sm: "block" } }}
+              >
                 SINGAPURA CC
               </Typography>
             </Grid>
           </Link>
 
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }} />
+
+          <IconButton
+            color="inherit"
+            onClick={() => setMobileOpen(true)}
+            sx={{ display: { xs: "inline-flex", md: "none" } }}
+          >
+            <MenuIcon />
+          </IconButton>
+
+          <Drawer
+            anchor="right"
+            open={mobileOpen}
+            onClose={closeMobileMenu}
+          >
+            <Box sx={{ width: 260 }} role="presentation">
+              <List>
+                {!isAdmin && (
+                  <>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        to="/customer-events"
+                        onClick={closeMobileMenu}
+                      >
+                        <ListItemText primary="All Events" />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        to="/feedbacklist"
+                        onClick={closeMobileMenu}
+                      >
+                        <ListItemText primary="View Feedback" />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        to="/facilities"
+                        onClick={closeMobileMenu}
+                      >
+                        <ListItemText primary="Facilities" />
+                      </ListItemButton>
+                    </ListItem>
+                    {user && user.role === "Customer" && (
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          component={Link}
+                          to="/posts"
+                          onClick={closeMobileMenu}
+                        >
+                          <ListItemText primary="Connect" />
+                        </ListItemButton>
+                      </ListItem>
+                    )}
+                  </>
+                )}
+                <Divider />
+                {user ? (
+                  <>
+                    {isAdmin && (
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          component={Link}
+                          to="/admin/dashboard"
+                          onClick={closeMobileMenu}
+                        >
+                          <ListItemText primary="Dashboard" />
+                        </ListItemButton>
+                      </ListItem>
+                    )}
+                    {isAdmin && (
+                      <ListItem disablePadding>
+                        <ListItemButton
+                          component={Link}
+                          to="/posts"
+                          onClick={closeMobileMenu}
+                        >
+                          <ListItemText primary="Blog" />
+                        </ListItemButton>
+                      </ListItem>
+                    )}
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        to="/notes"
+                        onClick={closeMobileMenu}
+                      >
+                        <ListItemText primary="My Notes" />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        to="/profile"
+                        onClick={closeMobileMenu}
+                      >
+                        <ListItemText primary="Profile" />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        to="/settings"
+                        onClick={closeMobileMenu}
+                      >
+                        <ListItemText primary="Settings" />
+                      </ListItemButton>
+                    </ListItem>
+                    <Divider />
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        onClick={() => {
+                          closeMobileMenu();
+                          logout();
+                        }}
+                      >
+                        <ListItemText primary="Logout" />
+                      </ListItemButton>
+                    </ListItem>
+                  </>
+                ) : (
+                  <>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        to="/register"
+                        onClick={closeMobileMenu}
+                      >
+                        <ListItemText primary="Sign Up" />
+                      </ListItemButton>
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        to="/login"
+                        onClick={closeMobileMenu}
+                      >
+                        <ListItemText primary="Login" />
+                      </ListItemButton>
+                    </ListItem>
+                  </>
+                )}
+              </List>
+            </Box>
+          </Drawer>
+
           <Box
             sx={{
               flexGrow: 1,
-              display: "flex",
+              display: { xs: "none", md: "flex" },
               justifyContent: "center",
               gap: 5,
             }}
@@ -335,9 +502,14 @@ const Navbar = () => {
           </Box>
 
           {location.pathname.startsWith("/posts") && (
-            <Box sx={{ display: "flex", alignItems: "center", ml: 1, mr: 2 }}>
-              {" "}
-              {/* Added mr: 2 to create spacing on the right */}
+            <Box
+              sx={{
+                display: { xs: "none", sm: "flex" },
+                alignItems: "center",
+                ml: 1,
+                mr: 2,
+              }}
+            >
               <FormControlLabel
                 control={
                   <Switch
@@ -363,7 +535,10 @@ const Navbar = () => {
           {user ? (
             <>
               {isAdmin && (
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+                >
                   Admin Management Portal
                 </Typography>
               )}
@@ -527,7 +702,7 @@ const Navbar = () => {
                   </Avatar>
                 </IconButton>
                 <Typography
-                  sx={{ cursor: "pointer" }}
+                  sx={{ cursor: "pointer", display: { xs: "none", sm: "block" } }}
                   aria-controls={open ? "account-menu" : undefined}
                   aria-haspopup="true"
                   aria-expanded={open ? "true" : undefined}
@@ -713,6 +888,7 @@ const Navbar = () => {
               >
                 <Typography
                   sx={{
+                    display: { xs: "none", sm: "block" },
                     backgroundColor: "#333",
                     color: "#fff",
                     fontWeight: "bold",
@@ -732,6 +908,7 @@ const Navbar = () => {
               >
                 <Typography
                   sx={{
+                    display: { xs: "none", sm: "block" },
                     color: "#D22B2B",
                     backgroundColor: "#fff",
                     border: "2px solid #D22B2B",

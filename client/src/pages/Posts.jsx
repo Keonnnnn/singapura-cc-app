@@ -94,18 +94,19 @@ function Posts({ darkMode }) {
     };
 
     return (
-        <Box sx={{ display: 'flex', backgroundColor: darkMode ? '#121212' : '#f5f5f5', minHeight: '100vh', borderRadius: 2, boxShadow: 3, mt: darkMode ? 0 : 2, pt: darkMode ? 0 : 2, color: darkMode ? '#f0e6ff' : '#000' }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, backgroundColor: darkMode ? '#121212' : '#f5f5f5', minHeight: '100vh', borderRadius: 2, boxShadow: 3, mt: darkMode ? 0 : 2, pt: darkMode ? 0 : 2, color: darkMode ? '#f0e6ff' : '#000' }}>
             <Box sx={{
-                width: 300,
+                width: { xs: '100%', md: 300 },
+                flexShrink: 0,
                 padding: 3,
                 backgroundColor: darkMode ? '#1c1c1c' : '#ffffff',
                 borderRight: darkMode ? '1px solid #282828' : '1px solid #ddd',
-                minHeight: '100vh',
+                minHeight: { xs: 'auto', md: '100vh' },
                 boxShadow: 3,
                 borderRadius: 2,
-                position: 'sticky',
+                position: { xs: 'static', md: 'sticky' },
                 top: 0,
-                height: '100vh',
+                height: { xs: 'auto', md: '100vh' },
                 mb: 4,
             }}>
                 <Typography variant="h6" sx={{ mb: 3, fontSize: '1.5rem', fontWeight: 'bold', fontStyle: 'italic', color: darkMode ? '#D32F2F' : '#000' }}>
@@ -201,7 +202,7 @@ function Posts({ darkMode }) {
                 </Box>
             </Box>
 
-            <Box sx={{ flexGrow: 1, padding: 3, marginLeft: 3 }}>
+            <Box sx={{ flexGrow: 1, padding: 3, marginLeft: { xs: 0, md: 3 }, minWidth: 0 }}>
                 <Typography variant="h5" sx={{ mb: 3, color: darkMode ? '#BB86FC' : '#000' }}>
                     Latest Events
                 </Typography>

@@ -44,7 +44,7 @@ function UserRegistrationHistory() {
   }, [token, userId]);
 
     return (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 5 }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' }, justifyContent: 'center', mt: 4, gap: 5 }}>
             <UserSidebar />
             <Paper elevation={3} sx={{ p: 3, borderRadius: '12px', minHeight: '400px',maxWidth: 800,
             width: "100%" }}>

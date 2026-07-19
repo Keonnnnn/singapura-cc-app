@@ -17,8 +17,9 @@ const ProtectedLayout = ({ children }) => {
         <Sidebar />
         <Box
           sx={{
-            p: 7.5,
+            p: { xs: 2, sm: 4, md: 7.5 },
             width: "100%",
+            minWidth: 0,
             minHeight: "100vh",
             overflowY: "auto",
           }}

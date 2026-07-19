@@ -137,7 +137,7 @@ function ClaimRewards() {
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 5, padding: 2, backgroundColor: '#f7f9fc' }}>
+    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'center', md: 'flex-start' }, justifyContent: 'center', gap: 5, padding: 2, backgroundColor: '#f7f9fc' }}>
       <UserSidebar />
       <UserContext.Provider value={{ user, setUser }}>
         <Paper

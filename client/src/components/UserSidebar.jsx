@@ -81,7 +81,9 @@ const UserSidebar = () => {
       {user && (
         <Box
           sx={{
-            width: 250,
+            width: { xs: "100%", md: 250 },
+            maxWidth: { xs: 400, md: 250 },
+            flexShrink: 0,
             bgcolor: "#f4f6f9",
             p: 2,
             borderRadius: "12px",
